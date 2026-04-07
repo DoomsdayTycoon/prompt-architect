@@ -439,6 +439,7 @@ function App(){
   const [authPassword,setAuthPassword]=useState("");
   const [authName,setAuthName]=useState("");
   const [authErr,setAuthErr]=useState("");
+  const [promptGenerated,setPromptGenerated]=useState(false);
   const ref=useRef(null);
   const isExp=mode==="expert";
   const ac=MODELS[model].col;
@@ -449,13 +450,16 @@ function App(){
 
   const go=useCallback(()=>{
     setShow(true);
-    // Save to history
-    const entry={topic,task,industry,output,model,timestamp:Date.now()};
-    const newHist=[entry,...history.filter(h=>h.topic!==topic)].slice(0,20);
-    setHistory(newHist);
-    saveHistory(newHist);
+    setPromptGenerated(true);
+    // Save to history only if user logged in
+    if(user){
+      const entry={topic,task,industry,output,model,timestamp:Date.now()};
+      const newHist=[entry,...history.filter(h=>h.topic!==topic)].slice(0,20);
+      setHistory(newHist);
+      saveHistory(newHist);
+    }
     setTimeout(()=>ref.current?.scrollIntoView({behavior:"smooth",block:"start"}),120);
-  },[topic,task,industry,output,model,history]);
+  },[topic,task,industry,output,model,history,user]);
 
   const cp=useCallback(()=>{try{navigator.clipboard.writeText(prompt).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2200);});}catch(e){const ta=document.createElement("textarea");ta.value=prompt;ta.style.cssText="position:fixed;left:-9999px;top:-9999px";document.body.appendChild(ta);ta.focus();ta.select();document.execCommand("copy");document.body.removeChild(ta);setCopied(true);setTimeout(()=>setCopied(false),2200);}},[prompt]);
 
@@ -533,64 +537,51 @@ function App(){
 
     <div style={{minHeight:"100vh",background:"var(--bg)",color:"var(--t1)",fontFamily:"var(--f)",paddingTop:60,paddingBottom:60,paddingLeft:14,paddingRight:14,maxWidth:760,margin:"0 auto"}}>
 
-      {/* HERO SECTION */}
-      <section style={{textAlign:"center",marginBottom:50,paddingTop:20}}>
-        <div style={{display:"inline-block",background:ac+"12",border:"1px solid "+ac+"33",borderRadius:20,padding:"6px 14px",marginBottom:16}}>
-          <span style={{fontSize:11,fontWeight:700,color:ac,textTransform:"uppercase",letterSpacing:"1px"}}>✨ Smart Prompt Engineering</span>
-        </div>
-        <h1 style={{fontSize:36,fontWeight:800,margin:"0 0 16px",lineHeight:1.2,color:"var(--t1)"}}>Turn vague ideas into expert-level AI prompts</h1>
-        <p style={{fontSize:15,color:"var(--t2)",margin:"0 0 32px",lineHeight:1.6,maxWidth:620,marginLeft:"auto",marginRight:"auto"}}>Prompt Architect analyzes your goal and automatically injects audience targeting, reasoning strategies, and domain expertise — so your AI delivers better results, every time.</p>
-        <div style={{display:"flex",justifyContent:"center",gap:12,flexWrap:"wrap",marginBottom:40}}>
-          <button onClick={()=>setShowAuth(!showAuth)} style={{display:"flex",alignItems:"center",gap:6,padding:"12px 24px",background:ac,color:"#fff",border:"none",borderRadius:10,fontWeight:700,fontSize:14,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>Start for free →</button>
-          <a href="#tool" style={{display:"flex",alignItems:"center",gap:6,padding:"12px 24px",background:"var(--s1)",color:"var(--t1)",border:"1px solid var(--bd)",borderRadius:10,fontWeight:600,fontSize:14,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s",textDecoration:"none"}}>See how it works ↓</a>
-        </div>
+      {/* HERO SECTION - COMPACT */}
+      <section style={{marginBottom:40,paddingTop:20}}>
+        <h1 style={{fontSize:32,fontWeight:800,margin:"0 0 12px",lineHeight:1.2,color:"var(--t1)"}}>Turn vague ideas into expert-level AI prompts</h1>
+        <p style={{fontSize:14,color:"var(--t2)",margin:"0 0 24px",lineHeight:1.5,maxWidth:600}}>Smart prompt engineering that analyzes your goal and automatically injects audience targeting, reasoning strategies, and domain expertise.</p>
       </section>
 
-      {/* HOW IT WORKS */}
-      <section style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(200px, 1fr))",gap:20,marginBottom:50}}>
-        {[{n:"1",t:"Describe your goal",d:"Any wording, any level of detail — we'll find what matters."},{n:"2",t:"Smart enhancement",d:"We inject audience, reasoning, and industry expertise."},{n:"3",t:"Copy & paste anywhere",d:"Use it in Claude, ChatGPT, Gemini, or any AI."}].map((s,i)=>(
-          <div key={i} style={{background:"var(--s1)",border:"1px solid var(--bd)",borderRadius:14,padding:20}}>
-            <div style={{width:40,height:40,borderRadius:10,background:ac+"18",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:18,color:ac,marginBottom:12}}>{s.n}</div>
-            <h3 style={{fontSize:15,fontWeight:700,margin:"0 0 8px",color:"var(--t1)"}}>{s.t}</h3>
-            <p style={{fontSize:13,color:"var(--t2)",margin:0,lineHeight:1.5}}>{s.d}</p>
+      {/* TWO-COLUMN LAYOUT */}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 280px",gap:30,marginBottom:40,alignItems:"start"}}>
+        {/* MAIN TOOL AREA */}
+        <div id="tool">
+          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:20}}>
+            <div style={{width:28,height:28,borderRadius:8,background:ac+"18",display:"flex",alignItems:"center",justifyContent:"center"}}>{I.bolt(16,ac)}</div>
+            <h2 style={{fontSize:20,fontWeight:700,margin:0}}>Build Your Prompt</h2>
           </div>
-        ))}
-      </section>
+          <p style={{color:"var(--t3)",fontSize:13,margin:"0 0 18px",fontWeight:450}}>No account needed. Create one after your first build to save history.</p>
+          <div style={{display:"flex",gap:8,marginBottom:20,flexWrap:"wrap"}}>
+            <div style={{display:"inline-flex",borderRadius:10,background:"var(--s1)",border:"1px solid var(--bd)",padding:3}}>
+              {[["amateur","seedling","Simple"],["expert","microscope","Expert"]].map(([m,ic,lb])=>(
+                <button key={m} onClick={()=>setMode(m)} style={{display:"flex",alignItems:"center",gap:6,padding:"8px 24px",border:"none",borderRadius:7.5,cursor:"pointer",background:mode===m?ac:"transparent",color:mode===m?"#fff":"var(--t3)",fontFamily:"var(--f)",fontSize:12.5,fontWeight:620,transition:"all .2s"}}>{I[ic](13,mode===m?"#fff":"var(--t3)")}{lb}</button>
+              ))}
+            </div>
+            {user&&history.length>0&&(
+              <button onClick={()=>setShowHistory(!showHistory)} style={{display:"flex",alignItems:"center",gap:5,padding:"8px 14px",borderRadius:10,border:"1px solid var(--bd)",background:"var(--s1)",color:"var(--t2)",cursor:"pointer",fontSize:12,fontFamily:"var(--f)",fontWeight:500}}>
+                {I.clock(13,"var(--t2)")} History ({history.length})
+              </button>
+            )}
+          </div>
+        </div>
 
-      {/* FEATURES */}
-      <section style={{background:"var(--s2)",borderRadius:14,padding:30,marginBottom:50}}>
-        <h2 style={{fontSize:18,fontWeight:700,textAlign:"center",margin:"0 0 24px",color:"var(--t1)"}}>Built for professionals</h2>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(180px, 1fr))",gap:20}}>
-          {[{i:"sparkle",t:"Smart Enhancement",d:"Detects vague input, auto-injects specificity"},{i:"target",t:"15 Industries",d:"Finance, tech, healthcare, legal, and more"},{i:"code",t:"5 AI Models",d:"Claude, ChatGPT, Gemini, Llama, Universal"}].map((f,j)=>(
-            <div key={j} style={{textAlign:"center"}}>
-              <div style={{display:"flex",justifyContent:"center",marginBottom:12}}>{I[f.i]?.(24,ac)}</div>
-              <h4 style={{fontSize:14,fontWeight:700,margin:"0 0 6px",color:"var(--t1)"}}>{f.t}</h4>
-              <p style={{fontSize:12,color:"var(--t3)",margin:0}}>{f.d}</p>
+        {/* RIGHT SIDEBAR - HOW IT WORKS */}
+        <aside style={{background:"var(--s1)",borderRadius:12,padding:20,border:"1px solid var(--bd)",position:"sticky",top:100}}>
+          <h3 style={{fontSize:13,fontWeight:700,margin:"0 0 16px",color:"var(--t1)",textTransform:"uppercase",letterSpacing:".5px"}}>How it works</h3>
+          {[{n:"1",t:"Describe goal"},{n:"2",t:"Get enhanced"},{n:"3",t:"Copy & paste"}].map((s,i)=>(
+            <div key={i} style={{display:"flex",gap:12,marginBottom:i<2?16:0}}>
+              <div style={{width:32,height:32,borderRadius:8,background:ac,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:13,flexShrink:0}}>{s.n}</div>
+              <div>
+                <p style={{fontSize:12,fontWeight:600,color:"var(--t1)",margin:"2px 0 2px"}}>{s.t}</p>
+                <p style={{fontSize:11,color:"var(--t3)",margin:0}}>
+                  {i===0?"Tell us your goal"  :i===1?"We inject specificity":  "Use anywhere"}
+                </p>
+              </div>
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* HEADER FOR TOOL */}
-      <header style={{textAlign:"center",marginBottom:30}} id="tool">
-        <div style={{display:"inline-flex",alignItems:"center",gap:10,marginBottom:5}}>
-          <div style={{width:34,height:34,borderRadius:9,background:ac+"18",display:"flex",alignItems:"center",justifyContent:"center"}}>{I.bolt(18,ac)}</div>
-          <h2 style={{fontSize:23,fontWeight:720,margin:0,letterSpacing:"-.7px"}}>Build Your Prompt</h2>
-        </div>
-        <p style={{color:"var(--t3)",fontSize:13,margin:"4px 0 18px",fontWeight:450}}>No account needed for free trial. Create one to save your history.</p>
-        <div style={{display:"flex",justifyContent:"center",gap:8,flexWrap:"wrap"}}>
-          <div style={{display:"inline-flex",borderRadius:10,background:"var(--s1)",border:"1px solid var(--bd)",padding:3}}>
-            {[["amateur","seedling","Simple"],["expert","microscope","Expert"]].map(([m,ic,lb])=>(
-              <button key={m} onClick={()=>setMode(m)} style={{display:"flex",alignItems:"center",gap:6,padding:"8px 24px",border:"none",borderRadius:7.5,cursor:"pointer",background:mode===m?ac:"transparent",color:mode===m?"#fff":"var(--t3)",fontFamily:"var(--f)",fontSize:12.5,fontWeight:620,transition:"all .2s"}}>{I[ic](13,mode===m?"#fff":"var(--t3)")}{lb}</button>
-            ))}
-          </div>
-          {user&&history.length>0&&(
-            <button onClick={()=>setShowHistory(!showHistory)} style={{display:"flex",alignItems:"center",gap:5,padding:"8px 14px",borderRadius:10,border:"1px solid var(--bd)",background:"var(--s1)",color:"var(--t2)",cursor:"pointer",fontSize:12,fontFamily:"var(--f)",fontWeight:500}}>
-              {I.clock(13,"var(--t2)")} History ({history.length})
-            </button>
-          )}
-        </div>
-      </header>
+        </aside>
+      </div>
 
       {/* HISTORY PANEL */}
       {showHistory&&history.length>0&&(
@@ -740,6 +731,12 @@ function App(){
             <span style={{display:"flex",alignItems:"center",gap:3}}>{I.file(10,"var(--t3)")} {OUTPUTS[output].l}</span>
             {language!=="English"&&<span style={{display:"flex",alignItems:"center",gap:3}}>{I.lang(10,"var(--t3)")} {language}</span>}
           </div>
+          {!user&&promptGenerated&&(
+            <div style={{padding:"20px",background:"var(--s2)",borderTop:"1px solid var(--bd)",textAlign:"center"}}>
+              <p style={{margin:"0 0 12px",fontSize:13,color:"var(--t2)",fontWeight:500}}>Save your prompt history and unlock advanced features</p>
+              <button onClick={()=>{setAuthMode("signup");setShowAuth(true);setAuthErr("");}} style={{padding:"10px 20px",background:ac,color:"#fff",border:"none",borderRadius:8,fontSize:13,fontWeight:700,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>Create account</button>
+            </div>
+          )}
         </div>
       )}
 
