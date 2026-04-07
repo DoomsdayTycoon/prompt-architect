@@ -34,6 +34,8 @@ const loginUser=(email,password)=>{const users=getStoredUsers();const user=users
 /* ═══════════════════════════════════════════════════════
    ICONS
    ═══════════════════════════════════════════════════════ */
+const LOGO=(s=24,c="currentColor")=><svg width={s} height={s} viewBox="0 0 32 32" fill="none" stroke={c} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 12L16 4L24 12"/><path d="M8 12L16 20L24 12"/><path d="M12 8L12 16M20 8L20 16"/><rect x="6" y="10" width="20" height="2" fill={c}/></svg>;
+
 const I={
   bolt:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
   seedling:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22V10"/><path d="M6 13c0-3.5 2.7-6 6-6"/><path d="M18 5c0 3.5-2.7 6-6 6"/><path d="M6 13c-2.2 0-4-1.8-4-4 0-3 2.5-5 5-5 1.5 0 3 .6 4 2"/><path d="M18 5c2.2 0 4 1.8 4 4 0 3-2.5 5-5 5-1.5 0-3-.6-4-2"/></svg>,
@@ -538,7 +540,7 @@ function App(){
     <nav style={{position:"fixed",top:0,left:0,right:0,background:"var(--s1)",borderBottom:"1px solid var(--bd)",zIndex:1000,padding:"12px 14px"}}>
       <div style={{maxWidth:760,margin:"0 auto",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
         <div style={{display:"flex",alignItems:"center",gap:8}}>
-          {I.bolt(20,ac)}
+          {LOGO(20,ac)}
           <span style={{fontWeight:700,fontSize:16,color:"var(--t1)"}}>Prompt Architect</span>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:12}}>
@@ -570,7 +572,7 @@ function App(){
         {/* MAIN TOOL AREA */}
         <div id="tool">
           <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:20}}>
-            <div style={{width:28,height:28,borderRadius:8,background:ac+"18",display:"flex",alignItems:"center",justifyContent:"center"}}>{I.bolt(16,ac)}</div>
+            <div style={{width:28,height:28,borderRadius:8,background:ac+"18",display:"flex",alignItems:"center",justifyContent:"center"}}>{LOGO(16,ac)}</div>
             <h2 style={{fontSize:20,fontWeight:700,margin:0}}>Build Your Prompt</h2>
           </div>
           <p style={{color:"var(--t3)",fontSize:13,margin:"0 0 18px",fontWeight:450}}>No account needed. Create one after your first build to save history.</p>
