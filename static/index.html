@@ -295,7 +295,7 @@ function getSmartEnhancements(topic,taskType,industry,output){
    PROMPT BUILD ENGINE
    ═══════════════════════════════════════════════════════ */
 function buildPrompt(p){
-  const {topic,taskType,model,tone,length,format,techniques,audience,extra,mode,industry,output,style,includes,language}=p;
+  const {topic,taskType,model,tone,length,format,techniques,audience,extra,special,mode,industry,output,style,includes,language}=p;
   const isXml=model==="claude";const isExp=mode==="expert";const lines=[];
   const sec=(tag,content)=>{
     if(isXml)lines.push("<"+tag+">\n"+content+"\n</"+tag+">");
@@ -400,6 +400,9 @@ function buildPrompt(p){
   // EXTRA
   if(extra)sec("additional_instructions",extra);
 
+  // SPECIAL REQUESTS
+  if(special)sec("special_requests_and_constraints",special);
+
   // ANTI-PATTERNS
   sec("avoid","- Do not open with filler phrases like \"Sure!\" or \"Great question!\" \u2014 begin directly with substance\n- Do not use vague hedging like \"it depends\" without explaining what it depends on specifically\n- Do not pad with generic background the audience already knows\n- Do not end with empty clich\u00e9s \u2014 close with actionable specifics\n- Do not repeat the same point in different words to inflate length");
 
@@ -450,6 +453,7 @@ function App(){
   const [techs,setTechs]=useState([]);
   const [aud,setAud]=useState("");
   const [extra,setExtra]=useState("");
+  const [special,setSpecial]=useState("");
   const [language,setLanguage]=useState("English");
   const [copied,setCopied]=useState(false);
   const [show,setShow]=useState(false);
@@ -469,7 +473,7 @@ function App(){
   const ac=MODELS[model].col;
   const acRgb={"#0891B2":"8,145,178","#D97706":"217,119,6","#10A37F":"16,163,127","#4285F4":"66,133,244","#8B5CF6":"139,92,246","#64748B":"100,116,139"}[ac];
 
-  const prompt=buildPrompt({topic,taskType:task,model,tone,length:len,format:fmt,techniques:techs,audience:aud,extra,mode,industry,output,style,includes,language});
+  const prompt=buildPrompt({topic,taskType:task,model,tone,length:len,format:fmt,techniques:techs,audience:aud,extra,special,mode,industry,output,style,includes,language});
   const enhancements=useMemo(()=>topic.trim()?getSmartEnhancements(topic,task,industry,output):[], [topic,task,industry,output]);
 
   const go=useCallback(()=>{
@@ -734,6 +738,10 @@ function App(){
 
         {isExp&&<Step ico="plus" title="Additional instructions" sub="Added verbatim as a final section">
           <textarea value={extra} onChange={e=>setExtra(e.target.value)} placeholder="e.g. Use Apple's 2024 10-K as the worked example, include sensitivity analysis..." rows={2} style={inp({resize:"vertical"})} />
+        </Step>}
+
+        {isExp&&<Step ico="info" title="Special requests (optional)" sub="Format, style, or content constraints">
+          <textarea value={special} onChange={e=>setSpecial(e.target.value)} placeholder="e.g. No emojis, use bullet points instead of paragraphs, make it casual and humorous, include code comments in German..." rows={2} style={inp({resize:"vertical"})} />
         </Step>}
 
         {/* GENERATE */}
