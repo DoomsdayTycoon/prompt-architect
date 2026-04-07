@@ -403,7 +403,7 @@ function App(){
   const [mode,setMode]=useState("amateur");
   const [topic,setTopic]=useState("");
   const [task,setTask]=useState("writing");
-  const [model,setModel]=useState("general");
+  const [model,setModel]=useState("claude");
   const [industry,setIndustry]=useState("general");
   const [output,setOutput]=useState("document");
   const [style,setStyle]=useState("formal");
@@ -508,8 +508,8 @@ function App(){
       <div style={{background:"var(--s1)",borderRadius:16,border:"1px solid var(--bd)",padding:"26px 20px",marginBottom:20}}>
 
         {/* TOPIC */}
-        <Step ico="pen" title="Describe your goal" sub="Be specific \u2014 but don't worry about being perfect. Smart enhancement fills the gaps.">
-          <textarea value={topic} onChange={e=>{setTopic(e.target.value);setShow(false);}} placeholder="e.g. Build a DCF valuation tutorial for finance students who understand basic accounting but are new to valuation models. Include a worked example using Apple's 2024 financials..." rows={3} style={inp({resize:"vertical"})} />
+        <Step ico="pen" title="Describe your goal" sub="Be specific but don't worry about being perfect. Smart enhancement fills the gaps.">
+          <textarea value={topic} onChange={e=>{setTopic(e.target.value);setShow(false);}} placeholder="e.g. Analyze Tesla's competitive position in the EV market vs BYD, Rivian, and legacy automakers. Focus on margins, market share trends, and technology moat." rows={3} style={inp({resize:"vertical"})} />
 
           {/* EXAMPLE PROMPTS */}
           {!topic.trim()&&(
