@@ -78,7 +78,7 @@ const MM=({id,size=22})=>{const s=size;if(id==="claude")return <svg width={s} he
 /* ═══════════════════════════════════════════════════════
    DATA — Models, Tasks, Industries, Outputs, etc.
    ═══════════════════════════════════════════════════════ */
-const MODELS={claude:{name:"Claude",col:"#D97706",tips:"XML tags, docs at top, detailed context"},chatgpt:{name:"ChatGPT",col:"#10A37F",tips:"Markdown headers, strict schemas, instructions top & bottom"},gemini:{name:"Gemini",col:"#4285F4",tips:"PTCF framework, formatting at top, great multimodal"},llama:{name:"Llama / OSS",col:"#8B5CF6",tips:"Concise & explicit, system prompts for roles"},general:{name:"Universal",col:"#64748B",tips:"Cross-model best practices"}};
+const MODELS={claude:{name:"Claude",col:"#0891B2",tips:"XML tags, docs at top, detailed context"},chatgpt:{name:"ChatGPT",col:"#10A37F",tips:"Markdown headers, strict schemas, instructions top & bottom"},gemini:{name:"Gemini",col:"#4285F4",tips:"PTCF framework, formatting at top, great multimodal"},llama:{name:"Llama / OSS",col:"#8B5CF6",tips:"Concise & explicit, system prompts for roles"},general:{name:"Universal",col:"#64748B",tips:"Cross-model best practices"}};
 
 const TASKS={writing:{l:"Writing",i:"pen"},coding:{l:"Coding",i:"code"},analysis:{l:"Analysis",i:"chart"},brainstorm:{l:"Brainstorm",i:"lightbulb"},summarize:{l:"Summarize",i:"fileText"},translate:{l:"Translate",i:"globe"},image:{l:"Image Gen",i:"palette"},roleplay:{l:"Role / Persona",i:"theater"},email:{l:"Email / Comms",i:"mail"},learning:{l:"Learning",i:"book"}};
 
@@ -437,7 +437,7 @@ function App(){
   const [mode,setMode]=useState("amateur");
   const [topic,setTopic]=useState("");
   const [task,setTask]=useState("writing");
-  const [model,setModel]=useState("general");
+  const [model,setModel]=useState("claude");
   const [industry,setIndustry]=useState("general");
   const [output,setOutput]=useState("document");
   const [style,setStyle]=useState("formal");
@@ -465,7 +465,7 @@ function App(){
   const ref=useRef(null);
   const isExp=mode==="expert";
   const ac=MODELS[model].col;
-  const acRgb={"#D97706":"217,119,6","#10A37F":"16,163,127","#4285F4":"66,133,244","#8B5CF6":"139,92,246","#64748B":"100,116,139"}[ac];
+  const acRgb={"#0891B2":"8,145,178","#D97706":"217,119,6","#10A37F":"16,163,127","#4285F4":"66,133,244","#8B5CF6":"139,92,246","#64748B":"100,116,139"}[ac];
 
   const prompt=buildPrompt({topic,taskType:task,model,tone,length:len,format:fmt,techniques:techs,audience:aud,extra,mode,industry,output,style,includes,language});
   const enhancements=useMemo(()=>topic.trim()?getSmartEnhancements(topic,task,industry,output):[], [topic,task,industry,output]);
