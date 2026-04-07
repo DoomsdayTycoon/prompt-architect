@@ -166,15 +166,36 @@ const STYLE_INST={formal:"Use formal register throughout. Complete sentences. No
 const OUTPUT_INST={document:"Structure as a professional document with title, sections, and clear hierarchy. Include table of contents for longer pieces.",email:"Format as a ready-to-send email with subject line, greeting, body, and sign-off. Optimize for mobile reading.",code:"Present as clean, runnable code with comments, imports, and usage examples. Specify language and dependencies.",presentation:"Structure as slide-ready content: title slide, key sections (3-5 bullets max per slide), speaker notes for each slide.",spreadsheet:"Organize as tabular data with clear headers, formulas/calculations noted, and summary rows. Specify column types.",social:"Format for the target platform's constraints (character limits, hashtag conventions). Include hook, body, CTA.",blog:"Include headline, meta description, introduction, subheaded sections, conclusion, and suggested tags/categories.",proposal:"Executive summary, problem statement, proposed solution, timeline, budget/pricing, team, and terms.",brief:"One-page format: objective, background, key findings, recommendations. Use bullet points for scannability.",docs:"Technical documentation format: overview, prerequisites, step-by-step guide, API reference if applicable, troubleshooting.",creative:"Focus on narrative quality, voice, and emotional impact. Follow genre conventions while finding a fresh angle.",checklist:"Numbered or checkbox-style steps. Group by phase/category. Include responsible party and deadline columns if relevant."};
 
 /* ═══════════════════════════════════════════════════════
-   EXAMPLE PROMPTS — "Try this" inspiration
+   EXAMPLE PROMPTS — Creative, sector-specific inspiration
    ═══════════════════════════════════════════════════════ */
 const EXAMPLES=[
-  {label:"Financial Analysis",topic:"Analyze Tesla's competitive position in the EV market vs BYD, Rivian, and legacy automakers. Focus on margins, market share trends, and technology moat.",task:"analysis",industry:"finance",output:"document",model:"claude"},
-  {label:"Marketing Strategy",topic:"Create a product launch strategy for a new AI-powered fitness app targeting millennials.",task:"writing",industry:"marketing",output:"proposal",model:"chatgpt"},
-  {label:"Code Review",topic:"Build a rate-limited REST API middleware in Node.js with Redis, supporting sliding window and token bucket algorithms.",task:"coding",industry:"tech",output:"code",model:"claude"},
-  {label:"Legal Brief",topic:"Draft a memo analyzing GDPR compliance requirements for a SaaS company expanding from US to EU markets.",task:"analysis",industry:"legal",output:"document",model:"general"},
-  {label:"Lesson Plan",topic:"Create an interactive lesson teaching recursion to first-year CS students who understand loops but haven't seen recursive thinking.",task:"learning",industry:"education",output:"document",model:"chatgpt"},
-  {label:"Executive Email",topic:"Write an email to the board summarizing Q3 results: revenue up 12% but margin compression due to supply chain costs. Propose mitigation.",task:"email",industry:"finance",output:"email",model:"general"},
+  // FINANCE
+  {sector:"Finance",label:"Valuation Deep Dive",topic:"Build a financial model comparing DCF valuations for a sustainable energy startup across bull/base/bear scenarios. Include sensitivities on capex, electricity prices, and battery cost learning curves.",task:"analysis",industry:"finance",output:"spreadsheet",model:"claude"},
+  {sector:"Finance",label:"Market Strategy Shift",topic:"Write an investment thesis for why commercial real estate faces structural headwinds post-2024 and which subsectors remain defensible. Assume the reader is a skeptical portfolio manager.",task:"writing",industry:"finance",output:"document",model:"general"},
+
+  // TECH
+  {sector:"Tech",label:"System Architecture",topic:"Design a distributed task queue system that handles 10M daily jobs, with priorities, retries, and guaranteed-once execution. Explain trade-offs between Redis-based and database-backed queues.",task:"coding",industry:"tech",output:"document",model:"claude"},
+  {sector:"Tech",label:"Product Roadmap",topic:"Propose a 6-month AI product roadmap for a B2B SaaS company: what early features unlock the most user value while being technically achievable? Include go-to-market angles.",task:"brainstorm",industry:"tech",output:"proposal",model:"chatgpt"},
+
+  // MARKETING
+  {sector:"Marketing",label:"Brand Positioning",topic:"Develop a positioning strategy for a D2C coffee brand competing against established players like Nespresso. What's the emotional hook that makes this worth paying premium prices for?",task:"writing",industry:"marketing",output:"proposal",model:"chatgpt"},
+  {sector:"Marketing",label:"Campaign Ideation",topic:"Brainstorm 5 unconventional product launch tactics for an app that helps people reduce screen time. The more creative/unexpected, the better—assume a $50K marketing budget.",task:"brainstorm",industry:"marketing",output:"document",model:"general"},
+
+  // LEGAL
+  {sector:"Legal",label:"Compliance Memo",topic:"Analyze what EU AI Act compliance means for a US-based company providing computer vision APIs to insurance companies in Europe. What changes are needed?",task:"analysis",industry:"legal",output:"document",model:"general"},
+  {sector:"Legal",label:"Contract Strategy",topic:"Outline a contract negotiation strategy for acquiring a competitor: what key terms protect us if post-close integration fails? Assume regulatory approval is already done.",task:"writing",industry:"legal",output:"document",model:"claude"},
+
+  // HEALTHCARE
+  {sector:"Healthcare",label:"Clinical Evidence",topic:"Summarize the clinical trial data and real-world outcomes for GLP-1 receptor agonists in managing type 2 diabetes. What are the gaps in evidence?",task:"summarize",industry:"healthcare",output:"document",model:"general"},
+  {sector:"Healthcare",label:"Care Pathway Design",topic:"Design a patient education program for post-operative cardiac surgery recovery. Include timeline, key milestones, warning signs, and how to re-engage patients who aren't following recommendations.",task:"writing",industry:"healthcare",output:"document",model:"claude"},
+
+  // EDUCATION
+  {sector:"Education",label:"Curriculum Design",topic:"Create a semester-long course outline for teaching business strategy using real case studies. How do we move beyond theory and develop students' ability to actually diagnose & solve problems?",task:"learning",industry:"education",output:"document",model:"claude"},
+  {sector:"Education",label:"Learning Outcomes",topic:"Design a lesson teaching statistical thinking to non-technical managers. They need to understand p-values, confidence intervals, and sample size—without heavy math.",task:"learning",industry:"education",output:"document",model:"chatgpt"},
+
+  // CONSULTING
+  {sector:"Consulting",label:"Market Entry Analysis",topic:"Develop a market entry strategy for a European SaaS company targeting the US mid-market. What are the go-to-market differences? Pricing? Sales model?",task:"analysis",industry:"consulting",output:"document",model:"claude"},
+  {sector:"Consulting",label:"Organizational Design",topic:"Propose a new org structure for a 200-person tech company scaling from 0 to $50M ARR. How do we avoid bureaucracy while maintaining coordination?",task:"writing",industry:"consulting",output:"proposal",model:"general"},
 ];
 
 /* ═══════════════════════════════════════════════════════
@@ -440,6 +461,7 @@ function App(){
   const [authName,setAuthName]=useState("");
   const [authErr,setAuthErr]=useState("");
   const [promptGenerated,setPromptGenerated]=useState(false);
+  const [exampleSector,setExampleSector]=useState("All");
   const ref=useRef(null);
   const isExp=mode==="expert";
   const ac=MODELS[model].col;
@@ -604,15 +626,27 @@ function App(){
 
         {/* TOPIC */}
         <Step ico="pen" title="Describe your goal" sub="Be specific \u2014 but don't worry about being perfect. Smart enhancement fills the gaps.">
-          <textarea value={topic} onChange={e=>{setTopic(e.target.value);setShow(false);}} placeholder="e.g. Build a DCF valuation tutorial for finance students who understand basic accounting but are new to valuation models. Include a worked example using Apple's 2024 financials..." rows={3} style={inp({resize:"vertical"})} />
+          <div style={{display:"flex",gap:8,marginBottom:12,alignItems:"flex-start"}}>
+            <textarea value={topic} onChange={e=>{setTopic(e.target.value);setShow(false);}} placeholder="e.g. Build a DCF valuation tutorial for finance students who understand basic accounting but are new to valuation models. Include a worked example using Apple's 2024 financials..." rows={3} style={{...inp({resize:"vertical"}),flex:1}} />
+            {topic.trim()&&(
+              <button onClick={()=>{setTopic("");setShow(false);}} style={{padding:"10px 12px",borderRadius:7,border:"1px solid #fca5a5",background:"#fee2e2",color:"#dc2626",cursor:"pointer",fontSize:11.5,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",alignSelf:"flex-start",whiteSpace:"nowrap"}}>{I.trash(12,"#dc2626")} Clear</button>
+            )}
+          </div>
 
           {/* EXAMPLE PROMPTS */}
           {!topic.trim()&&(
             <div style={{marginTop:12}}>
-              <div style={{fontSize:11,color:"var(--t3)",marginBottom:8,fontWeight:500}}>Try an example:</div>
+              <div style={{fontSize:11,color:"var(--t3)",marginBottom:8,fontWeight:600,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <span>Try an example by industry:</span>
+              </div>
+              <div style={{display:"flex",gap:6,marginBottom:12,flexWrap:"wrap"}}>
+                {["All",...new Set(EXAMPLES.map(e=>e.sector))].map((sector,i)=>(
+                  <button key={i} onClick={()=>setExampleSector(sector)} style={{padding:"6px 12px",borderRadius:7,border:"1px solid var(--bd)",background:exampleSector===sector?ac:"var(--s2)",color:exampleSector===sector?"#fff":"var(--t2)",cursor:"pointer",fontSize:11,fontFamily:"var(--f)",fontWeight:600,transition:"all .15s"}}>{sector}</button>
+                ))}
+              </div>
               <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-                {EXAMPLES.map((ex,i)=>(
-                  <button key={i} onClick={()=>loadExample(ex)} style={{padding:"6px 12px",borderRadius:7,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",cursor:"pointer",fontSize:11.5,fontFamily:"var(--f)",fontWeight:500,transition:"all .15s"}}>{ex.label}</button>
+                {EXAMPLES.filter(ex=>exampleSector==="All"||ex.sector===exampleSector).map((ex,i)=>(
+                  <button key={i} onClick={()=>{loadExample(ex);setExampleSector("All");}} style={{padding:"6px 12px",borderRadius:7,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",cursor:"pointer",fontSize:11.5,fontFamily:"var(--f)",fontWeight:500,transition:"all .15s"}}>{ex.label}</button>
                 ))}
               </div>
             </div>
