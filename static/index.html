@@ -3,23 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prompt Architect — Smart AI Prompt Engineering</title>
-<meta name="description" content="Turn vague ideas into expert-level AI prompts. Prompt Architect injects audience targeting, reasoning strategies, and domain expertise automatically.">
+<title>Prompt Architect</title>
+<meta name="description" content="Professional AI Prompt Generator — Smart prompt engineering for Claude, ChatGPT, Gemini, and open-source models">
 <meta property="og:title" content="Prompt Architect">
-<meta property="og:description" content="Smart AI prompt engineering for professionals">
-<style>
-body{margin:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-html,body{scroll-behavior:smooth}
-*{box-sizing:border-box}
-:root{--bg:#f8fafc;--s1:#ffffff;--s2:#f1f5f9;--bd:#e2e8f0;--t1:#0f172a;--t2:#475569;--t3:#94a3b8;--ac:#2563eb;--ac2:#0891b2;--shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);--shadow-lg:0 20px 25px -5px rgba(0,0,0,.1)}
-::-webkit-scrollbar{width:8px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--bd);border-radius:4px}
-::-webkit-scrollbar-thumb:hover{background:var(--t3)}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-@keyframes slideDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
-button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
-</style>
+<meta property="og:description" content="Professional-grade AI prompt generator with smart enhancement">
+<link rel="icon" href="/favicon.ico">
+<style>body{margin:0;background:#f8fafc;}</style>
 </head>
 <body>
 <div id="root"></div>
@@ -27,362 +16,639 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.4/babel.min.js"></script>
 <script type="text/babel">
-const {useState,useRef,useCallback,useEffect,useMemo}=React;
+const { useState, useRef, useCallback, useEffect, useMemo } = React;
 
-/* ════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════
    ICONS
-   ════════════════════════════════════════════════════════ */
+   ═══════════════════════════════════════════════════════ */
 const I={
-  bolt:(s=20,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
-  x:(s=20,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>,
-  menu:(s=20,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>,
-  sparkle:(s=20,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>,
-  arrow:(s=20,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="5 12 19 12M12 5l7 7-7 7"/></svg>,
-  check:(s=20,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
-  copy:(s=20,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>,
-  download:(s=20,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" y2="3"/></svg>,
-  logOut:(s=20,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 4l2 2m0 0l-2 2m2-2l-2-2m0 0l2-2m-8 12l4-4m0 0l4 4m-4-4l4-4"/></svg>,
-  trash:(s=20,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg>,
+  bolt:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
+  seedling:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22V10"/><path d="M6 13c0-3.5 2.7-6 6-6"/><path d="M18 5c0 3.5-2.7 6-6 6"/><path d="M6 13c-2.2 0-4-1.8-4-4 0-3 2.5-5 5-5 1.5 0 3 .6 4 2"/><path d="M18 5c2.2 0 4 1.8 4 4 0 3-2.5 5-5 5-1.5 0-3-.6-4-2"/></svg>,
+  microscope:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg>,
+  pen:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>,
+  code:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>,
+  chart:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>,
+  lightbulb:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>,
+  fileText:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>,
+  globe:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>,
+  palette:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r="1.5"/><circle cx="17.5" cy="10.5" r="1.5"/><circle cx="8.5" cy="7.5" r="1.5"/><circle cx="6.5" cy="12" r="1.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.7-.8 1.7-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.8-1.7 1.7-1.7H16c3.3 0 6-2.7 6-6 0-5.5-4.5-10-10-10Z"/></svg>,
+  theater:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16v11a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V4z"/><path d="M9 10h.01"/><path d="M15 10h.01"/><path d="M9.5 15a3.5 3.5 0 0 0 5 0"/></svg>,
+  mail:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>,
+  book:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>,
+  target:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>,
+  cpu:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/></svg>,
+  sliders:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="4" y1="21" y2="14"/><line x1="4" x2="4" y1="10" y2="3"/><line x1="12" x2="12" y1="21" y2="12"/><line x1="12" x2="12" y1="8" y2="3"/><line x1="20" x2="20" y1="21" y2="16"/><line x1="20" x2="20" y1="12" y2="3"/><line x1="2" x2="6" y1="14" y2="14"/><line x1="10" x2="14" y1="8" y2="8"/><line x1="18" x2="22" y1="16" y2="16"/></svg>,
+  copy:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>,
+  check:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
+  speaker:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 10v4M6 6v12M10 3v18M14 8v8M18 5v14M22 10v4"/></svg>,
+  ruler:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2M11.5 9.5l2-2M8.5 6.5l2-2M17.5 15.5l2-2"/></svg>,
+  layout:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18M9 21V9"/></svg>,
+  brain:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/></svg>,
+  users:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
+  plus:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5v14"/></svg>,
+  info:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>,
+  hash:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>,
+  sparkle:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>,
+  building:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4M8 6h.01M16 6h.01M12 6h.01M12 10h.01M8 10h.01M16 10h.01M12 14h.01M8 14h.01M16 14h.01"/></svg>,
+  file:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>,
+  layers:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.5-8.58 4.08a2 2 0 0 1-1.66 0L2 12.5"/><path d="m22 17-8.58 4.08a2 2 0 0 1-1.66 0L2 17"/></svg>,
+  checkList:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 18H3"/><path d="M11 12H3"/><path d="M15 6H3"/><path d="m16 18 2 2 4-4"/><path d="m16 12 2 2 4-4"/></svg>,
+  lang:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>,
+  download:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>,
+  clock:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
+  trash:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>,
+  wand:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8 19 13M17.8 6.2 19 5M3 21l9-9M12.2 6.2 11 5"/></svg>,
 };
 
-/* ════════════════════════════════════════════════════════
-   PROMPT GENERATION ENGINE (preserved from original)
-   ════════════════════════════════════════════════════════ */
-const MODELS={claude:{name:"Claude",col:"#D97706"},chatgpt:{name:"ChatGPT",col:"#10A37F"},gemini:{name:"Gemini",col:"#4285F4"},llama:{name:"Llama / OSS",col:"#8B5CF6"},general:{name:"Universal",col:"#64748B"}};
-const TASKS={writing:{l:"Writing"},coding:{l:"Coding"},analysis:{l:"Analysis"},brainstorm:{l:"Brainstorm"},summarize:{l:"Summarize"},translate:{l:"Translate"},image:{l:"Image Gen"},roleplay:{l:"Role / Persona"},email:{l:"Email / Comms"},learning:{l:"Learning"}};
-const INDUSTRIES={general:{l:"General"},finance:{l:"Finance"},healthcare:{l:"Healthcare"},legal:{l:"Legal"},marketing:{l:"Marketing"},tech:{l:"Tech / SaaS"},education:{l:"Education"},ecommerce:{l:"E-commerce"},consulting:{l:"Consulting"},realestate:{l:"Real Estate"},media:{l:"Media"},hr:{l:"HR"},manufacturing:{l:"Manufacturing"},government:{l:"Government"},research:{l:"Research"}};
-const OUTPUTS={document:{l:"Document"},email:{l:"Email"},code:{l:"Code"},presentation:{l:"Presentation"},spreadsheet:{l:"Spreadsheet"},social:{l:"Social"},blog:{l:"Blog"},proposal:{l:"Proposal"},brief:{l:"Brief"},docs:{l:"Documentation"},creative:{l:"Creative"},checklist:{l:"Checklist"}};
-const STYLES={formal:{l:"Formal"},conversational:{l:"Conversational"},technical:{l:"Technical"},persuasive:{l:"Persuasive"},narrative:{l:"Narrative"},instructional:{l:"Instructional"},analytical:{l:"Analytical"},minimalist:{l:"Minimalist"}};
-const TONES=[{v:"Professional"},{v:"Casual"},{v:"Academic"},{v:"Creative"},{v:"Friendly"},{v:"Authoritative"},{v:"Empathetic"}];
+const MM=({id,size=22})=>{const s=size;if(id==="claude")return <svg width={s} height={s} viewBox="0 0 32 32"><path d="M21 10.5l-6.5 11.3c-.4.7-1.4.7-1.8 0L6.2 10.5c-.4-.7.1-1.5.9-1.5h13c.8 0 1.3.8.9 1.5z" fill="#D97706"/><path d="M25 10.5l-3 5.2c-.4.7.1 1.5.9 1.5.5 0 .9-.3 1.1-.7l3-5.2c.4-.7-.1-1.5-.9-1.5-.5 0-.9.3-1.1.7z" fill="#D97706" opacity=".55"/></svg>;if(id==="chatgpt")return <svg width={s} height={s} viewBox="0 0 32 32"><path d="M16 6C10.48 6 6 10.48 6 16s4.48 10 10 10 10-4.48 10-10S21.52 6 16 6zm0 2.5a7.5 7.5 0 110 15 7.5 7.5 0 010-15z" fill="#10A37F"/><path d="M16 11v5.5l3.5 2" stroke="#10A37F" strokeWidth="2.2" strokeLinecap="round" fill="none"/></svg>;if(id==="gemini")return <svg width={s} height={s} viewBox="0 0 32 32"><path d="M16 5c0 6.5-5 11.5-11 11.5C11 16.5 16 21.5 16 28c0-6.5 5-11.5 11-11.5C21 16.5 16 11.5 16 5z" fill="#4285F4"/></svg>;if(id==="llama")return <svg width={s} height={s} viewBox="0 0 32 32"><rect x="6" y="6" width="20" height="20" rx="6" fill="none" stroke="#8B5CF6" strokeWidth="2.2"/><circle cx="12" cy="14.5" r="2" fill="#8B5CF6"/><circle cx="20" cy="14.5" r="2" fill="#8B5CF6"/><path d="M12 20c2 1.5 6 1.5 8 0" stroke="#8B5CF6" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>;return <svg width={s} height={s} viewBox="0 0 32 32"><circle cx="16" cy="16" r="9" fill="none" stroke="#64748B" strokeWidth="2" strokeDasharray="4 2.5"/><circle cx="16" cy="16" r="3.5" fill="#64748B"/></svg>;};
+
+/* ═══════════════════════════════════════════════════════
+   DATA — Models, Tasks, Industries, Outputs, etc.
+   ═══════════════════════════════════════════════════════ */
+const MODELS={claude:{name:"Claude",col:"#D97706",tips:"XML tags, docs at top, detailed context"},chatgpt:{name:"ChatGPT",col:"#10A37F",tips:"Markdown headers, strict schemas, instructions top & bottom"},gemini:{name:"Gemini",col:"#4285F4",tips:"PTCF framework, formatting at top, great multimodal"},llama:{name:"Llama / OSS",col:"#8B5CF6",tips:"Concise & explicit, system prompts for roles"},general:{name:"Universal",col:"#64748B",tips:"Cross-model best practices"}};
+
+const TASKS={writing:{l:"Writing",i:"pen"},coding:{l:"Coding",i:"code"},analysis:{l:"Analysis",i:"chart"},brainstorm:{l:"Brainstorm",i:"lightbulb"},summarize:{l:"Summarize",i:"fileText"},translate:{l:"Translate",i:"globe"},image:{l:"Image Gen",i:"palette"},roleplay:{l:"Role / Persona",i:"theater"},email:{l:"Email / Comms",i:"mail"},learning:{l:"Learning",i:"book"}};
+
+const INDUSTRIES={general:{l:"General",i:"target"},finance:{l:"Finance & Banking",i:"chart"},healthcare:{l:"Healthcare",i:"plus"},legal:{l:"Legal",i:"book"},marketing:{l:"Marketing & Ads",i:"speaker"},tech:{l:"Tech / SaaS",i:"code"},education:{l:"Education",i:"book"},ecommerce:{l:"E-commerce",i:"globe"},consulting:{l:"Consulting",i:"lightbulb"},realestate:{l:"Real Estate",i:"building"},media:{l:"Media & Content",i:"palette"},hr:{l:"HR & Recruiting",i:"users"},manufacturing:{l:"Manufacturing",i:"cpu"},government:{l:"Government",i:"building"},research:{l:"Research / R&D",i:"microscope"}};
+
+const OUTPUTS={document:{l:"Document / Report",i:"fileText"},email:{l:"Email",i:"mail"},code:{l:"Code / Script",i:"code"},presentation:{l:"Presentation",i:"layout"},spreadsheet:{l:"Spreadsheet / Data",i:"chart"},social:{l:"Social Media Post",i:"speaker"},blog:{l:"Blog / Article",i:"pen"},proposal:{l:"Proposal / Pitch",i:"target"},brief:{l:"Brief / Summary",i:"fileText"},docs:{l:"Documentation",i:"book"},creative:{l:"Creative / Story",i:"palette"},checklist:{l:"Checklist / SOP",i:"checkList"}};
+
+const STYLES={formal:{l:"Formal",i:"target"},conversational:{l:"Conversational",i:"speaker"},technical:{l:"Technical",i:"code"},persuasive:{l:"Persuasive",i:"bolt"},narrative:{l:"Narrative",i:"pen"},instructional:{l:"Instructional",i:"book"},analytical:{l:"Analytical",i:"chart"},minimalist:{l:"Minimalist",i:"ruler"}};
+
+const TONES=[{v:"Professional",i:"target"},{v:"Casual",i:"speaker"},{v:"Academic",i:"book"},{v:"Creative",i:"palette"},{v:"Friendly",i:"seedling"},{v:"Authoritative",i:"bolt"},{v:"Empathetic",i:"users"}];
 const LENGTHS=["Brief","Medium","Detailed","Comprehensive"];
-const FMTS={prose:{l:"Prose"},bullets:{l:"Bullets"},numbered:{l:"Steps"},table:{l:"Tables"},qa:{l:"Q&A"},json:{l:"JSON"},codeblock:{l:"Code blocks"},headers:{l:"Sections"},tldr:{l:"TL;DR"},framework:{l:"Framework"},flowchart:{l:"Flowchart"},before_after:{l:"Before/After"},pros_cons:{l:"Pros & Cons"},scorecard:{l:"Scorecard"},annotated:{l:"Examples"},markdown:{l:"Markdown"}};
-const INCLUDES={exec_summary:{l:"Executive Summary"},examples:{l:"Examples"},sources:{l:"Sources"},action_items:{l:"Action Items"},risks:{l:"Risk Assessment"},comparison:{l:"Comparison"},timeline:{l:"Timeline"},metrics:{l:"KPIs"},glossary:{l:"Glossary"},visuals:{l:"Visuals"}};
+const LEN_SUB={Brief:"200\u2013400 words",Medium:"500\u2013900 words",Detailed:"1000\u20131800 words",Comprehensive:"2000+ words"};
+const FMTS={prose:{l:"Prose paragraphs",i:"pen"},bullets:{l:"Bullet points",i:"checkList"},numbered:{l:"Numbered steps",i:"ruler"},table:{l:"Tables / Matrices",i:"layout"},qa:{l:"Q&A format",i:"users"},json:{l:"JSON / Structured",i:"code"},codeblock:{l:"Code blocks",i:"code"},headers:{l:"Sectioned with headers",i:"layers"},tldr:{l:"TL;DR + Detail",i:"fileText"},framework:{l:"Framework / Model",i:"brain"},flowchart:{l:"Flowchart / Decision tree",i:"sliders"},before_after:{l:"Before \u2192 After",i:"bolt"},pros_cons:{l:"Pros & Cons",i:"target"},scorecard:{l:"Scorecard / Rating",i:"chart"},annotated:{l:"Annotated examples",i:"lightbulb"},markdown:{l:"Markdown ready",i:"hash"}};
+
+const INCLUDES={exec_summary:{l:"Executive Summary",i:"fileText"},examples:{l:"Real-World Examples",i:"lightbulb"},sources:{l:"Source Citations",i:"book"},action_items:{l:"Action Items / Next Steps",i:"checkList"},risks:{l:"Risk Assessment",i:"target"},comparison:{l:"Comparison Table",i:"layout"},timeline:{l:"Timeline / Milestones",i:"ruler"},metrics:{l:"KPIs / Metrics",i:"chart"},glossary:{l:"Glossary / Definitions",i:"book"},visuals:{l:"Visual Descriptions",i:"palette"}};
+
+const TECHS={cot:{l:"Chain of Thought",i:"brain"},fewshot:{l:"Few-Shot Examples",i:"layout"},constraints:{l:"Strict Constraints",i:"ruler"},selfcheck:{l:"Self-Verification",i:"target"},compare:{l:"Compare Options",i:"sliders"},iterative:{l:"Iterative Refine",i:"bolt"},roleplay:{l:"Role Assignment",i:"theater"}};
+
 const LANGS=["English","Spanish","French","German","Portuguese","Italian","Dutch","Norwegian","Swedish","Danish","Chinese","Japanese","Korean","Arabic","Hindi","Russian","Polish","Turkish"];
 
-const IND_CONTEXT={general:"",finance:"Use financial terminology (EBITDA, DCF, IRR, NPV, P/E). Reference GAAP/IFRS, Basel III. Be precise with numbers and currencies.",healthcare:"Use medical terminology appropriately. Reference clinical guidelines (WHO, NIH, CDC). Note HIPAA considerations. Distinguish evidence levels.",legal:"Use precise legal terminology. Cite statutes/case law. Note jurisdictional variations. Structure with IRAC (Issue, Rule, Application, Conclusion).",marketing:"Use marketing terminology (CAC, LTV, ROAS). Reference platform best practices. Include measurable KPIs.",tech:"Use technical terminology accurately. Reference industry standards and best practices. Consider scalability, security, performance.",education:"Apply pedagogical best practices (Bloom's taxonomy, scaffolding). Design for learning outcomes.",ecommerce:"Use industry metrics (AOV, conversion rate, CLV). Reference platform best practices.",consulting:"Use structured problem-solving frameworks. Present with pyramid principle. Quantify impact.",realestate:"Use industry terminology (cap rate, NOI, GRM). Reference market analysis methodologies.",media:"Consider platform algorithms, content lifecycle, SEO best practices.",hr:"Reference employment law, DEI, organizational psychology. Use HR terminology.",manufacturing:"Use OEE, Six Sigma, lean terminology. Reference ISO standards.",government:"Reference regulatory frameworks. Use clear, accessible language.",research:"Use rigorous methodology. Distinguish hypotheses from findings. Address reproducibility."};
+/* ═══════════════════════════════════════════════════════
+   DEEP KNOWLEDGE — Industry, Role, Methodology, Quality
+   ═══════════════════════════════════════════════════════ */
+const IND_CONTEXT={
+  general:"",
+  finance:"You operate within the financial services industry. Use standard financial terminology (EBITDA, DCF, IRR, NPV, P/E, WACC, etc.). Reference recognized frameworks (GAAP/IFRS, Basel III, SEC guidelines). Be precise with numbers \u2014 always specify units, time periods, and currencies. Distinguish between audited figures and estimates. Flag any regulatory compliance considerations. Use industry-standard valuation and risk assessment methodologies.",
+  healthcare:"You operate within healthcare. Use proper medical terminology (ICD codes, clinical nomenclature) while remaining accessible to the stated audience. Reference evidence-based practices, clinical guidelines (WHO, NIH, CDC), and peer-reviewed research. Be meticulous with HIPAA/data privacy considerations. Always note that clinical decisions should involve qualified professionals. Distinguish between clinical evidence levels (meta-analyses vs. case studies).",
+  legal:"You operate within the legal profession. Use precise legal terminology and cite relevant statutes, regulations, or case law where applicable. Note jurisdictional variations. Structure arguments with clear legal reasoning (IRAC: Issue, Rule, Application, Conclusion). Flag areas where legal counsel should be consulted. Distinguish between settled law, emerging precedent, and legal opinion.",
+  marketing:"You operate in marketing and advertising. Use current marketing terminology (CAC, LTV, ROAS, conversion funnel, attribution). Reference data-driven strategies and current platform best practices. Consider brand voice consistency, audience segmentation, and channel-specific optimization. Include measurable KPIs for every recommendation. Reference current consumer behavior trends and competitive positioning.",
+  tech:"You operate in the technology / SaaS industry. Use current technical terminology accurately. Reference industry-standard architectures, protocols, and best practices. Consider scalability, security, maintainability, and performance implications. Cite official documentation where relevant. Distinguish between stable and emerging technologies. Address technical debt and migration considerations.",
+  education:"You operate in education. Apply pedagogical best practices (Bloom's taxonomy, UDL, scaffolded learning). Consider diverse learning styles and accessibility needs. Reference current educational standards and research. Design for measurable learning outcomes. Include formative assessment checkpoints.",
+  ecommerce:"You operate in e-commerce and digital retail. Use industry metrics (AOV, conversion rate, cart abandonment, CLV). Reference platform-specific best practices (Shopify, WooCommerce, headless commerce). Consider UX/UI, mobile-first design, payment flows, and logistics. Address SEO, merchandising, and personalization strategies.",
+  consulting:"You operate as a management consultant. Use structured problem-solving frameworks (MECE, hypothesis-driven, issue trees). Present findings with the pyramid principle (conclusion first, supporting evidence below). Quantify impact wherever possible. Provide implementation roadmaps with clear ownership and timelines. Address stakeholder management.",
+  realestate:"You operate in real estate. Use industry terminology (cap rate, NOI, GRM, comps, basis points). Reference market analysis methodologies, zoning regulations, and financing structures. Consider market cycles, demographic trends, and regulatory environment. Provide comparative market analyses where relevant.",
+  media:"You operate in media and content production. Consider audience engagement metrics, platform algorithms, content lifecycle, and distribution strategies. Reference current content trends, SEO best practices, and multi-platform optimization. Address brand safety, editorial standards, and content governance.",
+  hr:"You operate in human resources and talent management. Reference current employment law, DEI best practices, and organizational psychology. Use HR terminology (ATS, EVP, engagement scores, turnover rates). Consider compliance, employee experience, and labor market dynamics. Address both strategic HR and operational needs.",
+  manufacturing:"You operate in manufacturing and industrial operations. Use industry terminology (OEE, Six Sigma, lean, kaizen, MTBF). Reference quality standards (ISO 9001, ISO 14001). Consider supply chain optimization, safety regulations (OSHA), and continuous improvement frameworks. Address Industry 4.0 and IoT considerations.",
+  government:"You operate in the public sector / government. Reference relevant regulatory frameworks, compliance requirements, and public policy standards. Use clear, accessible language appropriate for public communication. Consider transparency, accountability, and stakeholder engagement. Address procurement, budgetary constraints, and inter-agency coordination.",
+  research:"You operate in academic or R&D research. Use rigorous scientific methodology and appropriate statistical frameworks. Reference peer-reviewed literature and established research paradigms. Clearly distinguish between hypotheses, findings, and interpretations. Address reproducibility, limitations, and ethical considerations. Follow discipline-specific citation and reporting standards."
+};
 
-const ROLE_DEEP={writing:"a senior writer with 15+ years crafting compelling narratives",coding:"a principal engineer with deep expertise across languages and design patterns",analysis:"a senior analyst with expertise in research and structured thinking",brainstorm:"a creative strategist combining design thinking and lateral thinking",summarize:"an expert editor specializing in clarity and accuracy",translate:"a professional translator with native fluency",image:"an expert AI image prompt engineer",roleplay:"a skilled domain expert with authentic voice",email:"a professional communications specialist",learning:"an expert educator applying pedagogical best practices"};
+const ROLE_DEEP={
+  writing:"a senior professional writer and content strategist with 15+ years crafting compelling narratives, persuasive copy, and audience-tailored content across industries",
+  coding:"a principal software engineer and architect with deep expertise across languages, design patterns, testing, and production-grade systems",
+  analysis:"a senior analyst and strategic consultant with expertise in quantitative/qualitative research, statistical reasoning, and structured decision frameworks",
+  brainstorm:"a creative strategist and innovation consultant combining design thinking, lateral thinking, and structured ideation frameworks",
+  summarize:"an expert editor and information architect specializing in distilling complex material into clear, accurate, well-structured summaries",
+  translate:"a professional translator with native fluency, deep cultural understanding, and domain-specific terminology expertise",
+  image:"an expert AI image prompt engineer with deep knowledge of composition, lighting, color theory, and model-specific syntax (Midjourney, DALL-E, SD, Flux)",
+  roleplay:"a skilled domain expert capable of embodying specific personas with authentic voice and consistent character",
+  email:"a professional communications specialist expert in business writing, persuasion psychology, and stakeholder management",
+  learning:"an expert educator applying Bloom's taxonomy, scaffolded learning, and active recall techniques"
+};
 
-const METHODOLOGY={writing:["Open with a compelling hook","Structure with clear narrative arc","Support with concrete examples","Vary sentence length for readability","Use precise transitions","Close with memorable conclusion"],coding:["Analyze requirements and state assumptions","Write clean, idiomatic code","Include comprehensive comments","Add error handling and validation","Provide usage examples","Suggest testing strategies"],analysis:["Lead with executive summary","Define scope and methodology","Apply established frameworks","Support with specific data","Address counterarguments","Present actionable recommendations"],brainstorm:["Generate ideas without self-censoring","For each idea: title, 2-3 sentences, why it works","Organize by feasibility and impact","Include both incremental and bold ideas","Identify synergies","Highlight top 3 with reasoning"],summarize:["Open with single-sentence overview","Organize by importance","Preserve critical nuances","Use direct, concrete language","Include action items","Note what was omitted"],translate:["Preserve meaning and tone","Adapt idioms","Maintain consistent terminology","Flag untranslatable concepts","Preserve structure"],image:["Specify subject in vivid detail","Define artistic style","Include lighting and quality","Specify camera angle","Add color palette","Include negative prompts"],roleplay:["Establish persona background and expertise","Define knowledge boundaries","Maintain consistent voice","React authentically"],email:["Lead with clear subject line","Put key ask first","Keep paragraphs short","End with specific CTA","Include needed context"],learning:["Assess starting knowledge","Scaffold from simple to complex","Use 2-3 real-world analogies","Include understanding checks","Address misconceptions","Summarize and suggest next steps"]};
+const METHODOLOGY={
+  writing:["Open with a compelling hook that immediately captures reader attention","Structure with a clear narrative arc: setup \u2192 development \u2192 resolution","Support every claim with concrete examples, data points, or anecdotes","Vary sentence length and structure for rhythm and readability","Use precise transitions that create logical flow between sections","Close with a memorable conclusion reinforcing the core message with a clear call-to-action"],
+  coding:["Analyze requirements and state any assumptions upfront","Write clean, idiomatic code following the language's official style guide","Include comprehensive inline comments explaining non-obvious decisions","Add proper error handling, input validation, and edge case coverage","Provide usage examples and integration guidance","Suggest testing strategies, note performance trade-offs and security considerations"],
+  analysis:["Lead with an executive summary stating the key finding or recommendation","Define scope, methodology, data sources, assumptions, and limitations","Apply established frameworks appropriate to the domain","Support every claim with specific data points or cited reasoning","Address counterarguments, risks, and alternative interpretations","Present comparative analysis using structured formats","Conclude with prioritized, actionable recommendations and clear next steps","Distinguish between facts, estimates, and opinions throughout"],
+  brainstorm:["Generate ideas across multiple categories without self-censoring","For each idea: clear title, 2-3 sentence description, why it could work","Organize by feasibility (low/med/high), impact (low/med/high), effort required","Include both safe/incremental and bold/unconventional ideas","Identify combinations or synergies between ideas","Highlight top 3 recommendations with detailed reasoning"],
+  summarize:["Open with a single-sentence overview of the core message","Organize key points by importance, not source order","Preserve critical nuances, caveats, and conditions","Use direct, concrete language \u2014 zero filler","Include any action items, deadlines, or decisions","Note what was intentionally omitted and why"],
+  translate:["Preserve meaning, tone, and intent \u2014 not just literal words","Adapt idioms to culturally equivalent expressions","Maintain consistent terminology for domain-specific terms","Flag ambiguous terms or untranslatable concepts","Preserve original formatting and structure"],
+  image:["Specify subject with precise vivid detail","Define artistic style explicitly","Include lighting direction and quality","Specify camera angle and lens if photographic","Add color palette and mood descriptors","Include negative prompts to exclude unwanted elements"],
+  roleplay:["Establish persona background, expertise, and communication style","Define knowledge boundaries","Maintain consistent voice throughout","React authentically based on persona domain expertise"],
+  email:["Lead with a clear subject line that communicates purpose immediately","Put key ask or information first \u2014 don't bury it","Keep paragraphs short (2-3 sentences) for mobile readability","End with specific, time-bound call to action","Include relevant context needed to take action"],
+  learning:["Assess starting knowledge and build from there","Scaffold from simple to complex","Use 2-3 real-world analogies per major concept","Include understanding checks with practice questions","Address common misconceptions explicitly","Summarize and suggest next steps for deeper learning"]
+};
 
-const QUALITY={writing:"Every paragraph has clear purpose. Every claim needs evidence. Match readability to audience.",coding:"Code is syntactically correct, follows DRY/SOLID, handles edge cases.",analysis:"Every conclusion traces to evidence. Separate correlation from causation. State confidence.",brainstorm:"Ideas are specific and actionable. Each is distinct. Include unconventional angles.",summarize:"Summary stands alone. Reader gets all key points. Zero unnecessary words.",translate:"Native speaker wouldn't detect translation. Preserves nuance and humor.",image:"Prompt produces consistent results. Zero ambiguity in composition and style.",roleplay:"Persona feels authentic. Consistent. Reflects genuine expertise.",email:"Accomplishes goal in single read. No ambiguity about action. Professional.",learning:"Learner can teach concept to someone else after reading."};
+const QUALITY={
+  writing:"Every paragraph must have a clear purpose. No filler. Every claim needs evidence. Match readability to the audience level.",
+  coding:"Code must be syntactically correct, follow DRY/SOLID principles, handle edge cases, and be production-ready.",
+  analysis:"Every conclusion must trace to evidence. Separate correlation from causation. State confidence levels. Quantify impact.",
+  brainstorm:"Ideas must be specific and actionable \u2014 not vague platitudes. Each should be distinct. Include at least one unconventional angle.",
+  summarize:"Summary must stand alone. A reader who only reads it should understand all key points. Zero unnecessary words.",
+  translate:"A native speaker should not detect it was translated. Preserve nuance, humor, and cultural context.",
+  image:"Prompt should produce consistent, reproducible results. Zero ambiguity in composition and style.",
+  roleplay:"Persona must feel authentic. Maintain consistency. Responses reflect genuine domain expertise.",
+  email:"Must accomplish its goal in a single read. No ambiguity about expected action. Professional enough to forward to anyone.",
+  learning:"Learner should be able to teach the concept to someone else after reading."
+};
 
-const TONE_INST={Professional:"Polished, direct. Avoid slang. Project competence.",Casual:"Conversational. Contractions OK. Still accurate.",Academic:"Precise. Cite reasoning. Hedge when uncertain.",Creative:"Vivid, evocative. Metaphors. Varied rhythm.",Friendly:"Warm, encouraging. Use 'we/let's'. Supportive.",Authoritative:"Confident, declarative. Back every assertion.",Empathetic:"Acknowledge emotions. Validate before solving."};
+const TONE_INST={Professional:"Polished, business-appropriate language. Direct. Avoid slang. Project competence.",Casual:"Conversational \u2014 like explaining to a smart friend. Contractions OK. Still accurate.",Academic:"Precise scholarly language. Cite reasoning. Hedge when uncertain. Follow academic structure.",Creative:"Vivid, evocative. Metaphors, unexpected choices, varied rhythm. Prioritize engagement.",Friendly:"Warm, encouraging, inclusive. Use 'we/let's'. Reassure. Make reader feel supported.",Authoritative:"Confident, declarative statements. Back every assertion with evidence. Command of subject.",Empathetic:"Acknowledge perspective/emotions. Validate before solving. Gentle with difficult information."};
 
-const STYLE_INST={formal:"Formal register throughout. Complete sentences. No contractions.",conversational:"Natural speech. Short and long sentences mixed. Rhetorical questions OK.",technical:"Precise vocabulary. Define on first use. Logic-driven.",persuasive:"Lead with strongest argument. Social proof. Address objections.",narrative:"Tell a story. Characters, scenes, tension, resolution.",instructional:"Step-by-step. Action verbs. Anticipate mistakes.",analytical:"Data-driven. Evidence before conclusions. Objective.",minimalist:"Maximum clarity, minimum words. Every word earns its place."};
+const STYLE_INST={formal:"Use formal register throughout. Complete sentences. No contractions. Structured paragraphs with topic sentences. Professional vocabulary.",conversational:"Write naturally as if speaking. Contractions encouraged. Short sentences mixed with longer ones. Rhetorical questions OK. Avoid stiff phrasing.",technical:"Precise technical vocabulary. Define terms on first use. Logical structure. Code examples where relevant. Cite specifications and documentation.",persuasive:"Lead with strongest argument. Use social proof, data, and emotional appeal strategically. Address objections proactively. Strong call to action.",narrative:"Tell a story. Use characters, scenes, tension, and resolution. Show don't tell. Vivid sensory details. Clear narrative arc.",instructional:"Step-by-step. Action verbs to start each instruction. Anticipate mistakes. Include tips and warnings. Test understanding at intervals.",analytical:"Data-driven. Present evidence before conclusions. Use frameworks and structured comparisons. Quantify wherever possible. Objective tone.",minimalist:"Maximum clarity, minimum words. Short sentences. No decoration. Every word must earn its place. White space between ideas."};
 
-function buildPrompt({topic,taskType,model,tone,length,format,language}){
-  const isXml=model==="claude";
-  const lines=[];
+const OUTPUT_INST={document:"Structure as a professional document with title, sections, and clear hierarchy. Include table of contents for longer pieces.",email:"Format as a ready-to-send email with subject line, greeting, body, and sign-off. Optimize for mobile reading.",code:"Present as clean, runnable code with comments, imports, and usage examples. Specify language and dependencies.",presentation:"Structure as slide-ready content: title slide, key sections (3-5 bullets max per slide), speaker notes for each slide.",spreadsheet:"Organize as tabular data with clear headers, formulas/calculations noted, and summary rows. Specify column types.",social:"Format for the target platform's constraints (character limits, hashtag conventions). Include hook, body, CTA.",blog:"Include headline, meta description, introduction, subheaded sections, conclusion, and suggested tags/categories.",proposal:"Executive summary, problem statement, proposed solution, timeline, budget/pricing, team, and terms.",brief:"One-page format: objective, background, key findings, recommendations. Use bullet points for scannability.",docs:"Technical documentation format: overview, prerequisites, step-by-step guide, API reference if applicable, troubleshooting.",creative:"Focus on narrative quality, voice, and emotional impact. Follow genre conventions while finding a fresh angle.",checklist:"Numbered or checkbox-style steps. Group by phase/category. Include responsible party and deadline columns if relevant."};
+
+/* ═══════════════════════════════════════════════════════
+   EXAMPLE PROMPTS — "Try this" inspiration
+   ═══════════════════════════════════════════════════════ */
+const EXAMPLES=[
+  {label:"Financial Analysis",topic:"Analyze Tesla's competitive position in the EV market vs BYD, Rivian, and legacy automakers. Focus on margins, market share trends, and technology moat.",task:"analysis",industry:"finance",output:"document",model:"claude"},
+  {label:"Marketing Strategy",topic:"Create a product launch strategy for a new AI-powered fitness app targeting millennials.",task:"writing",industry:"marketing",output:"proposal",model:"chatgpt"},
+  {label:"Code Review",topic:"Build a rate-limited REST API middleware in Node.js with Redis, supporting sliding window and token bucket algorithms.",task:"coding",industry:"tech",output:"code",model:"claude"},
+  {label:"Legal Brief",topic:"Draft a memo analyzing GDPR compliance requirements for a SaaS company expanding from US to EU markets.",task:"analysis",industry:"legal",output:"document",model:"general"},
+  {label:"Lesson Plan",topic:"Create an interactive lesson teaching recursion to first-year CS students who understand loops but haven't seen recursive thinking.",task:"learning",industry:"education",output:"document",model:"chatgpt"},
+  {label:"Executive Email",topic:"Write an email to the board summarizing Q3 results: revenue up 12% but margin compression due to supply chain costs. Propose mitigation.",task:"email",industry:"finance",output:"email",model:"general"},
+];
+
+/* ═══════════════════════════════════════════════════════
+   SMART ENHANCEMENT ENGINE
+   Analyzes raw user input and intelligently enriches it.
+   This is the core intelligence — makes the output better
+   than what the user could specify manually.
+   ═══════════════════════════════════════════════════════ */
+function analyzeInput(topic){
+  const t=topic.toLowerCase();
+  const words=t.split(/\s+/);
+  const signals={vague:false,missingAudience:true,missingScope:true,missingDeliverable:true,hasNumbers:false,hasComparison:false,hasTimeframe:false,short:words.length<12};
+
+  if(/\b(about|regarding|on the topic of|related to|something about)\b/.test(t)&&words.length<15)signals.vague=true;
+  if(/\b(for|targeting|aimed at|audience|readers?|users?|students?|managers?|developers?|executives?|beginners?|seniors?|juniors?)\b/.test(t))signals.missingAudience=false;
+  if(/\b(focus on|scope|specifically|covering|including|limited to|within|between|from .+ to)\b/.test(t))signals.missingScope=false;
+  if(/\b(create|build|write|draft|produce|generate|design|develop|make|prepare|deliver|output|format)\b/.test(t))signals.missingDeliverable=false;
+  if(/\d/.test(t))signals.hasNumbers=true;
+  if(/\b(vs\.?|versus|compar|against|between|differ|better|worse|alternative)\b/.test(t))signals.hasComparison=true;
+  if(/\b(q[1-4]|202[0-9]|timeline|deadline|by |until |before |after |this (week|month|quarter|year))\b/.test(t))signals.hasTimeframe=true;
+
+  return signals;
+}
+
+function getSmartEnhancements(topic,taskType,industry,output){
+  const signals=analyzeInput(topic);
+  const enhancements=[];
+
+  // Vague or too short — add specificity guidance
+  if(signals.vague||signals.short){
+    enhancements.push({type:"specificity",label:"Added specificity guidance",text:"Be specific and concrete. Where the request is broad, narrow the focus to the most high-impact aspects. Provide depth over breadth \u2014 a thorough treatment of fewer points is more valuable than a shallow overview of many."});
+  }
+
+  // Missing audience — smart infer from context
+  if(signals.missingAudience){
+    const audienceMap={
+      finance:{analysis:"senior financial analysts and portfolio managers",writing:"CFOs, investors, and financial decision-makers",email:"C-suite executives and board members",learning:"finance professionals seeking to deepen expertise"},
+      healthcare:{analysis:"clinical directors and healthcare administrators",writing:"medical professionals and healthcare policy makers",learning:"medical students and junior clinicians"},
+      legal:{analysis:"senior partners and in-house counsel",writing:"attorneys and legal professionals",learning:"law students and junior associates"},
+      marketing:{analysis:"CMOs and growth leads",writing:"brand managers and marketing directors",brainstorm:"creative directors and growth teams"},
+      tech:{coding:"senior developers who will maintain this code",analysis:"CTOs and engineering managers",writing:"technical product managers and engineering leads",learning:"developers with 1-3 years experience"},
+      education:{learning:"students (assume foundational knowledge in the subject area)",writing:"educators and curriculum designers"},
+      consulting:{analysis:"C-suite clients expecting McKinsey-level deliverables",writing:"senior stakeholders who need to make decisions based on this"},
+    };
+    const fallback={analysis:"knowledgeable professionals who expect depth and precision",writing:"engaged professionals who value clarity and actionable insight",coding:"experienced developers who value clean, maintainable code",brainstorm:"cross-functional team members evaluating ideas for feasibility",summarize:"busy decision-makers who need the key points fast",email:"professional recipients who expect clear, action-oriented communication",learning:"motivated learners with foundational knowledge in the subject",translate:"native speakers of the target language",image:"users familiar with AI image generation tools",roleplay:"an audience that expects authentic, consistent persona responses"};
+    const indMap=audienceMap[industry]||{};
+    const inferred=indMap[taskType]||fallback[taskType]||"knowledgeable professionals who expect depth and precision";
+    enhancements.push({type:"audience",label:"Smart audience targeting",text:"Target audience: "+inferred+". Calibrate vocabulary, assumed knowledge, and depth accordingly."});
+  }
+
+  // Missing scope — add intelligent scoping
+  if(signals.missingScope&&!signals.short){
+    enhancements.push({type:"scope",label:"Intelligent scoping",text:"Prioritize the most decision-relevant aspects. If the topic is broad, identify the 3-5 most critical dimensions and go deep on those rather than attempting exhaustive coverage."});
+  }
+
+  // Comparison detected — add structured comparison framework
+  if(signals.hasComparison){
+    enhancements.push({type:"comparison",label:"Comparison framework added",text:"Structure any comparisons using consistent evaluation criteria. For each option: state the criterion, provide evidence, and give a clear assessment. Conclude with a recommendation and the conditions under which alternatives would be preferred."});
+  }
+
+  // Industry-specific auto-enhancements
+  const industryBoosts={
+    finance:!signals.hasNumbers?{type:"precision",label:"Financial precision added",text:"Quantify all claims with specific figures, percentages, or ranges. Specify time periods, currencies, and whether figures are actual or estimated. Use standard financial metrics appropriate to the analysis type."}:null,
+    healthcare:{type:"safety",label:"Clinical safety note added",text:"Include appropriate disclaimers where clinical decisions are involved. Distinguish between evidence levels. Note when specialist consultation is recommended."},
+    legal:{type:"jurisdiction",label:"Jurisdictional awareness added",text:"Note jurisdictional applicability and variations. Flag where local legal counsel should verify. Distinguish between established precedent and emerging law."},
+    tech:taskType==="coding"?{type:"production",label:"Production readiness added",text:"Address error handling, edge cases, security implications, and performance characteristics. Include type annotations where applicable. Note any dependency version requirements."}:null,
+  };
+  const boost=industryBoosts[industry];
+  if(boost)enhancements.push(boost);
+
+  // Task-specific auto-techniques
+  const autoTechniques={
+    analysis:["Think through your reasoning step by step. Show your analytical framework explicitly.","Before finalizing, verify: Are conclusions supported by evidence? Are there counterarguments you haven't addressed? Are recommendations specific and actionable?"],
+    coding:["Before writing code, briefly state your approach and any assumptions. After implementation, note testing strategies and potential edge cases."],
+    brainstorm:["Push beyond the obvious. After generating initial ideas, deliberately explore unconventional angles and cross-domain inspiration."],
+    email:["Before writing, identify: What is the single most important thing the recipient should do after reading this? Structure everything around that action."],
+  };
+  const autoTech=autoTechniques[taskType];
+  if(autoTech){
+    enhancements.push({type:"technique",label:"Smart reasoning strategy",text:autoTech.join(" ")});
+  }
+
+  // Output-specific structural guidance
+  if(output==="presentation"){
+    enhancements.push({type:"structure",label:"Presentation structure optimized",text:"Each slide should make exactly one point. Use the assertion-evidence model: slide title states the conclusion, body provides the evidence. Maximum 3-5 bullets per slide. Include speaker notes with talking points and transition cues."});
+  }
+  if(output==="proposal"){
+    enhancements.push({type:"structure",label:"Proposal persuasion framework",text:"Structure for maximum persuasive impact: lead with the problem (make the reader feel the pain), then the solution (make it feel inevitable), then evidence (make it feel safe). End with clear next steps and urgency."});
+  }
+
+  return enhancements;
+}
+
+/* ═══════════════════════════════════════════════════════
+   PROMPT BUILD ENGINE
+   ═══════════════════════════════════════════════════════ */
+function buildPrompt(p){
+  const {topic,taskType,model,tone,length,format,techniques,audience,extra,mode,industry,output,style,includes,language}=p;
+  const isXml=model==="claude";const isExp=mode==="expert";const lines=[];
   const sec=(tag,content)=>{
-    if(isXml)lines.push(`<${tag}>\n${content}\n</${tag}>`);
-    else lines.push(`## ${tag.charAt(0).toUpperCase()+tag.slice(1).replace(/_/g," ")}\n${content}`);
+    if(isXml)lines.push("<"+tag+">\n"+content+"\n</"+tag+">");
+    else if(model==="gemini")lines.push("**"+tag.toUpperCase().replace(/_/g," ")+"**\n"+content);
+    else lines.push("## "+tag.charAt(0).toUpperCase()+tag.replace(/_/g," ").slice(1)+"\n"+content);
   };
 
-  sec("role",`You are ${ROLE_DEEP[taskType]||"a helpful expert"}.`);
-  if(IND_CONTEXT[taskType])sec("domain_expertise",IND_CONTEXT[taskType]);
+  // ROLE
+  sec("role","You are "+( ROLE_DEEP[taskType]||"a helpful expert assistant")+".");
 
-  sec("task",topic+"\n\nYour response must be thorough, well-structured, and demonstrate expert-level depth. Deliver genuine professional value.");
+  // INDUSTRY CONTEXT
+  if(industry!=="general"&&IND_CONTEXT[industry])sec("domain_expertise",IND_CONTEXT[industry]);
 
-  const fmtLabels=Array.isArray(format)?format.map(f=>FMTS[f]?.l||f).join(", "):(FMTS[format]?.l||format);
-  const ctx=[`Tone: ${tone}`,`Style: ${STYLES[taskType]?.l||"professional"}`,`Length: ${length}`,`Format: ${fmtLabels}`];
-  if(language&&language!=="English")ctx.push(`Language: Respond entirely in ${language}`);
+  // TASK + SMART ENHANCEMENT
+  const enhancements=getSmartEnhancements(topic,taskType,industry,output);
+  const smartContext=enhancements.filter(e=>e.type==="specificity"||e.type==="scope").map(e=>e.text).join("\n\n");
+  const taskBlock=topic+(smartContext?"\n\n"+smartContext:"")+"\n\nYour response must be thorough, well-structured, and demonstrate expert-level depth. Deliver genuine professional value \u2014 not a surface-level overview.";
+  sec("task",taskBlock);
+
+  // CONTEXT
+  const fmtLabels=(Array.isArray(format)?format:[format]).map(f=>FMTS[f]?.l||f).join(", ");
+  const audienceEnhancement=enhancements.find(e=>e.type==="audience");
+  const ctx=[];
+  if(audience)ctx.push("Target audience: "+audience);
+  else if(audienceEnhancement)ctx.push(audienceEnhancement.text);
+  else ctx.push("Target audience: Knowledgeable professionals who expect depth and precision");
+  ctx.push("Tone: "+tone+" \u2014 "+(TONE_INST[tone]||""));
+  ctx.push("Writing style: "+(STYLES[style]?.l||style)+" \u2014 "+(STYLE_INST[style]||""));
+  ctx.push("Length: "+(LEN_SUB[length]||length));
+  ctx.push("Output format: "+fmtLabels);
+  if(language&&language!=="English")ctx.push("Language: Respond entirely in "+language+". Use natural, native-quality "+language+" throughout.");
   sec("context",ctx.join("\n"));
 
-  const methods=METHODOLOGY[taskType]||METHODOLOGY.writing;
-  sec("methodology","Follow this approach:\n\n"+methods.map((m,i)=>`${i+1}. ${m}`).join("\n"));
+  // OUTPUT TYPE
+  if(output&&OUTPUT_INST[output])sec("output_type",OUTPUT_INST[output]);
 
+  // METHODOLOGY
+  const methods=METHODOLOGY[taskType]||METHODOLOGY.writing;
+  sec("methodology","Follow this structured approach:\n\n"+methods.map((m,i)=>(i+1)+". "+m).join("\n"));
+
+  // QUALITY
   sec("quality_standards",QUALITY[taskType]||QUALITY.writing);
 
-  sec("avoid","- No filler phrases like 'Sure!' or 'Great question!'\n- No vague hedging without specifics\n- No generic background the audience knows\n- No empty clichés\n- No repetition to inflate length");
+  // FORMAT DETAIL
+  const fmtArr=Array.isArray(format)?format:[format];
+  const FMT_INST={
+    prose:"Use flowing, well-structured paragraphs with clear topic sentences and logical transitions. Use subheadings to organize major sections.",
+    bullets:"Use concise bullet points grouped under clear section headers. Each bullet should be a complete thought (1-2 sentences). Lead with the most important information in each bullet.",
+    numbered:"Present key sequences as clearly numbered steps. Start each step with a bold action verb. Include brief explanations under each step when needed.",
+    table:"Organize comparative or multi-variable information into well-labeled tables with clear column headers. Add a narrative summary before and after each table highlighting key takeaways.",
+    qa:"Structure appropriate sections as specific questions followed by thorough answers. Order from foundational to advanced. Make each Q&A pair self-contained.",
+    json:"Where structured data is appropriate, return valid JSON with descriptive camelCase key names. Include a description field for each major section.",
+    codeblock:"Present any technical content as clean, well-commented code blocks. Specify the language. Include imports, type annotations, error handling, and usage examples.",
+    headers:"Use a clear hierarchy of section headers (H2 for major sections, H3 for subsections). Every section should be scannable independently. Include a table of contents for longer responses.",
+    tldr:"Begin with a TL;DR section (3-5 sentences capturing the absolute essence), then follow with the full detailed response. The TL;DR must be useful on its own.",
+    framework:"Structure your response around a recognized framework or model relevant to the domain. Name the framework explicitly, explain why it applies, and map your analysis to its components.",
+    flowchart:"Include text-based decision trees or flowcharts (using arrows and branching) to illustrate processes, decisions, or workflows. Label each decision point and outcome clearly.",
+    before_after:"Where applicable, use Before / After comparisons to illustrate transformations, improvements, or changes. Show concrete examples of the current state vs. the recommended state.",
+    pros_cons:"For any recommendation or option, include a structured Pros & Cons analysis. Be specific \u2014 generic pros/cons like 'saves time' need quantification or context.",
+    scorecard:"Evaluate options using a structured scorecard or rating matrix. Define clear criteria, use a consistent scale (e.g., 1-5 or Low/Med/High), and include weighted totals if appropriate.",
+    annotated:"Include annotated examples that walk through real or realistic scenarios step by step, with inline commentary explaining why each element matters and what to watch for.",
+    markdown:"Format the entire response as clean, valid Markdown ready for direct use in documentation, READMEs, or CMS platforms. Use proper heading hierarchy, code fences, links, and emphasis."
+  };
+  const fmtL=[];
+  if(fmtArr.length===0)fmtL.push("Use the most appropriate format for the content.");
+  else fmtL.push("Combine these formatting approaches throughout your response as appropriate:\n\n"+fmtArr.map((f,i)=>(i+1)+". **"+(FMTS[f]?.l||f)+"**: "+(FMT_INST[f]||"")).join("\n"));
+  const lenG={Brief:"~200\u2013400 words. Only highest-impact information.",Medium:"~500\u2013900 words. Cover all major aspects with supporting detail.",Detailed:"~1000\u20131800 words. Thorough explanations, examples, and nuance.",Comprehensive:"~2000+ words. Exhaustive reference-grade. Every dimension with depth, examples, evidence."};
+  fmtL.push(lenG[length]||lenG.Medium);
+  sec("formatting",fmtL.join("\n\n"));
+
+  // INCLUDES
+  if(includes.length>0){
+    const incInst=[];
+    if(includes.includes("exec_summary"))incInst.push("Begin with an Executive Summary (3-5 sentences) stating the core findings or recommendations upfront");
+    if(includes.includes("examples"))incInst.push("Include at least 2-3 real-world examples that illustrate key points concretely \u2014 use named companies, real scenarios, or plausible case studies");
+    if(includes.includes("sources"))incInst.push("Cite sources for factual claims. Name specific reports, studies, publications, or datasets. Do not fabricate citations.");
+    if(includes.includes("action_items"))incInst.push("End with a clear Action Items / Next Steps section: numbered, specific, with owners and timelines where applicable");
+    if(includes.includes("risks"))incInst.push("Include a Risk Assessment section: identify top 3-5 risks, their likelihood (high/med/low), impact, and mitigation strategies");
+    if(includes.includes("comparison"))incInst.push("Include a structured Comparison Table evaluating options on the same criteria. Use consistent scoring or rating.");
+    if(includes.includes("timeline"))incInst.push("Include a Timeline / Milestones section with specific phases, deliverables, and estimated dates");
+    if(includes.includes("metrics"))incInst.push("Define specific measurable KPIs / Metrics for success. Include baseline, target, and measurement method for each.");
+    if(includes.includes("glossary"))incInst.push("Include a Glossary section defining all technical terms, acronyms, and domain-specific jargon used");
+    if(includes.includes("visuals"))incInst.push("Describe recommended Visuals / Charts: what type (bar, line, flowchart, etc.), what data it shows, and why it helps the reader");
+    sec("required_sections","Your response MUST include these sections:\n\n"+incInst.map((x,i)=>(i+1)+". "+x).join("\n"));
+  }
+
+  // SMART ENHANCEMENTS — injected intelligently
+  const smartTechniques=enhancements.filter(e=>e.type==="technique"||e.type==="comparison"||e.type==="precision"||e.type==="safety"||e.type==="jurisdiction"||e.type==="production"||e.type==="structure");
+  if(smartTechniques.length>0){
+    sec("smart_guidance","The following expert guidance has been automatically applied based on your task context:\n\n"+smartTechniques.map(e=>"- "+e.text).join("\n\n"));
+  }
+
+  // TECHNIQUES (user-selected)
+  if(techniques.includes("cot"))sec("reasoning","Think through this step by step. Show your reasoning explicitly \u2014 walk through logic, evaluate alternatives, explain each conclusion.");
+  if(techniques.includes("fewshot"))sec("examples_format",isXml?"Model your response after this pattern:\n\n<example>\n  <input>[Describe example input]</input>\n  <ideal_output>[Describe ideal output]</ideal_output>\n</example>\n\n(Replace with your own examples)":"Model your response after this pattern:\n\n**Example Input:** [Describe example input]\n**Ideal Output:** [Describe ideal output]\n\n*(Replace with your own examples)*");
+  if(techniques.includes("constraints"))sec("constraints","1. Never fabricate facts, statistics, or sources\n2. If uncertain, say so explicitly with confidence level\n3. Stay tightly focused \u2014 no tangential drift\n4. Distinguish between established facts, analysis, and speculation\n5. Flag potentially incorrect assumptions before proceeding");
+  if(techniques.includes("selfcheck"))sec("self_verification","Before submitting, verify:\n- Does it fully address every aspect of the task?\n- Is structure clear and scannable?\n- Are all claims supported?\n- Is tone consistent and audience-appropriate?\n- No unnecessary repetition or filler?\nRevise any section that fails these checks.");
+  if(techniques.includes("compare"))sec("comparative_approach","Present each option with clear label and description. Evaluate on same criteria. Use structured comparison for 3+ options. State recommendation with reasoning. Note circumstances favoring alternatives.");
+  if(techniques.includes("iterative"))sec("refinement","After initial draft: re-read as target audience, identify gaps or weak arguments, provide improved version, note what changed and why.");
+  if(techniques.includes("roleplay"))sec("persona_depth","Embody this role fully. Draw on deep domain expertise. Use vocabulary and reasoning patterns natural to this role. Maintain consistent perspective throughout.");
+
+  // EXTRA
+  if(extra)sec("additional_instructions",extra);
+
+  // ANTI-PATTERNS
+  sec("avoid","- Do not open with filler phrases like \"Sure!\" or \"Great question!\" \u2014 begin directly with substance\n- Do not use vague hedging like \"it depends\" without explaining what it depends on specifically\n- Do not pad with generic background the audience already knows\n- Do not end with empty clich\u00e9s \u2014 close with actionable specifics\n- Do not repeat the same point in different words to inflate length");
 
   return lines.join("\n\n");
 }
 
-/* ════════════════════════════════════════════════════════
-   MAIN APP
-   ════════════════════════════════════════════════════════ */
-function App(){
-  const [view,setView]=useState("landing");
-  const [user,setUser]=useState(()=>{try{return JSON.parse(localStorage.getItem("pa_user"))}catch{return null}});
-  const [showAuth,setShowAuth]=useState(false);
-  const [authMode,setAuthMode]=useState("signup");
-  const [authEmail,setAuthEmail]=useState("");
-  const [authPass,setAuthPass]=useState("");
-  const [authName,setAuthName]=useState("");
-  const [authError,setAuthError]=useState("");
+/* ═══════════════════════════════════════════════════════
+   HISTORY — localStorage persistence
+   ═══════════════════════════════════════════════════════ */
+const HISTORY_KEY="promptarchitect_history";
+function loadHistory(){try{return JSON.parse(localStorage.getItem(HISTORY_KEY))||[];}catch(e){return[];}}
+function saveHistory(h){try{localStorage.setItem(HISTORY_KEY,JSON.stringify(h.slice(0,20)));}catch(e){}}
 
+/* ═══════════════════════════════════════════════════════
+   UI COMPONENTS
+   ═══════════════════════════════════════════════════════ */
+const Chip=({active,onClick,children,accent,sx})=><button onClick={onClick} style={{display:"flex",alignItems:"center",gap:6,padding:"8px 14px",borderRadius:8,border:"1.5px solid "+(active?accent||"var(--ac)":"var(--bd)"),background:active?(accent||"var(--ac)")+"14":"var(--s2)",color:active?accent||"var(--ac)":"var(--t2)",cursor:"pointer",fontSize:12.5,fontWeight:active?600:450,fontFamily:"var(--f)",transition:"all .15s",whiteSpace:"nowrap",...sx}}>{children}</button>;
+
+const Step=({ico,title,sub,children,collapsed,onToggle})=>(
+  <div style={{marginBottom:26}}>
+    <div onClick={onToggle} style={{display:"flex",alignItems:"center",gap:10,marginBottom:sub&&!collapsed?4:collapsed?0:10,cursor:onToggle?"pointer":"default"}}>
+      <span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:30,height:30,borderRadius:8,background:"var(--ac)14",flexShrink:0}}>{I[ico]?.(14,"var(--ac)")}</span>
+      <span style={{fontSize:14,fontWeight:650,color:"var(--t1)",fontFamily:"var(--f)",letterSpacing:"-.2px",flex:1}}>{title}</span>
+      {onToggle&&<span style={{color:"var(--t3)",fontSize:12,transition:"transform .2s",transform:collapsed?"rotate(-90deg)":"rotate(0deg)"}}>&#9660;</span>}
+    </div>
+    {!collapsed&&sub&&<p style={{margin:"0 0 10px 40px",fontSize:12,color:"var(--t3)",fontFamily:"var(--f)"}}>{sub}</p>}
+    {!collapsed&&<div style={{marginLeft:40}}>{children}</div>}
+  </div>
+);
+
+const Wrap=({children})=><div style={{display:"flex",flexWrap:"wrap",gap:6}}>{children}</div>;
+
+/* ═══════════════════════════════════════════════════════
+   MAIN APP
+   ═══════════════════════════════════════════════════════ */
+function App(){
+  const [mode,setMode]=useState("amateur");
   const [topic,setTopic]=useState("");
   const [task,setTask]=useState("writing");
-  const [model,setModel]=useState("claude");
+  const [model,setModel]=useState("general");
+  const [industry,setIndustry]=useState("general");
+  const [output,setOutput]=useState("document");
+  const [style,setStyle]=useState("formal");
   const [tone,setTone]=useState("Professional");
   const [len,setLen]=useState("Medium");
   const [fmt,setFmt]=useState(["prose","headers"]);
+  const [includes,setIncludes]=useState([]);
+  const [techs,setTechs]=useState([]);
+  const [aud,setAud]=useState("");
+  const [extra,setExtra]=useState("");
   const [language,setLanguage]=useState("English");
   const [copied,setCopied]=useState(false);
   const [show,setShow]=useState(false);
-  const resultRef=useRef(null);
+  const [history,setHistory]=useState(()=>loadHistory());
+  const [showHistory,setShowHistory]=useState(false);
+  const ref=useRef(null);
+  const isExp=mode==="expert";
+  const ac=MODELS[model].col;
+  const acRgb={"#D97706":"217,119,6","#10A37F":"16,163,127","#4285F4":"66,133,244","#8B5CF6":"139,92,246","#64748B":"100,116,139"}[ac];
 
-  const prompt=useMemo(()=>buildPrompt({topic,taskType:task,model,tone,length:len,format:fmt,language}),[topic,task,model,tone,len,fmt,language]);
+  const prompt=buildPrompt({topic,taskType:task,model,tone,length:len,format:fmt,techniques:techs,audience:aud,extra,mode,industry,output,style,includes,language});
+  const enhancements=useMemo(()=>topic.trim()?getSmartEnhancements(topic,task,industry,output):[], [topic,task,industry,output]);
 
-  const handleSignup=useCallback(()=>{
-    if(!authName.trim()){setAuthError("Name required");return;}
-    if(!authEmail.includes("@")){setAuthError("Valid email required");return;}
-    if(authPass.length<6){setAuthError("Password min 6 chars");return;}
-    const newUser={name:authName,email:authEmail};
-    localStorage.setItem("pa_user",JSON.stringify(newUser));
-    setUser(newUser);
-    setShowAuth(false);
-    setAuthEmail("");setAuthPass("");setAuthName("");setAuthError("");
-    setView("app");
-  },[authName,authEmail,authPass]);
-
-  const handleLogin=useCallback(()=>{
-    if(!authEmail.includes("@")){setAuthError("Valid email required");return;}
-    if(authPass.length<6){setAuthError("Password min 6 chars");return;}
-    try{
-      const users=JSON.parse(localStorage.getItem("pa_users"))||[];
-      const found=users.find(u=>u.email===authEmail&&u.password===authPass);
-      if(found){
-        localStorage.setItem("pa_user",JSON.stringify({name:found.name,email:found.email}));
-        setUser({name:found.name,email:found.email});
-        setShowAuth(false);
-        setAuthEmail("");setAuthPass("");setAuthError("");
-        setView("app");
-      }else{
-        setAuthError("Email or password incorrect");
-      }
-    }catch(e){setAuthError("Error logging in");}
-  },[authEmail,authPass]);
-
-  const handleLogout=useCallback(()=>{
-    localStorage.removeItem("pa_user");
-    setUser(null);
-    setTopic("");setShow(false);
-    setView("landing");
-  },[]);
-
-  const handleGenerate=useCallback(()=>{
-    if(!topic.trim())return;
+  const go=useCallback(()=>{
     setShow(true);
-    setTimeout(()=>resultRef.current?.scrollIntoView({behavior:"smooth",block:"start"}),100);
-  },[topic]);
+    // Save to history
+    const entry={topic,task,industry,output,model,timestamp:Date.now()};
+    const newHist=[entry,...history.filter(h=>h.topic!==topic)].slice(0,20);
+    setHistory(newHist);
+    saveHistory(newHist);
+    setTimeout(()=>ref.current?.scrollIntoView({behavior:"smooth",block:"start"}),120);
+  },[topic,task,industry,output,model,history]);
 
-  const handleCopy=useCallback(()=>{
-    navigator.clipboard.writeText(prompt).then(()=>{
-      setCopied(true);
-      setTimeout(()=>setCopied(false),2000);
-    });
-  },[prompt]);
+  const cp=useCallback(()=>{try{navigator.clipboard.writeText(prompt).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2200);});}catch(e){const ta=document.createElement("textarea");ta.value=prompt;ta.style.cssText="position:fixed;left:-9999px;top:-9999px";document.body.appendChild(ta);ta.focus();ta.select();document.execCommand("copy");document.body.removeChild(ta);setCopied(true);setTimeout(()=>setCopied(false),2200);}},[prompt]);
 
-  const handleClear=useCallback(()=>{
-    setTopic("");
-    setShow(false);
-  },[]);
+  const exportTxt=useCallback(()=>{const blob=new Blob([prompt],{type:"text/plain"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="prompt-"+(task)+"-"+Date.now()+".txt";a.click();URL.revokeObjectURL(url);},[prompt,task]);
 
-  const handleLoadExample=useCallback((text)=>{
-    setTopic(text);
-    setShow(false);
-  },[]);
+  const loadExample=useCallback((ex)=>{setTopic(ex.topic);setTask(ex.task);setIndustry(ex.industry);setOutput(ex.output);setModel(ex.model);setShow(false);},[]);
 
-  /* ════════════════════════════════════════════════════════
-     LANDING PAGE
-     ════════════════════════════════════════════════════════ */
-  if(view==="landing"){
-    return<div style={{minHeight:"100vh",background:"var(--bg)"}}>
-      {/* NAVBAR */}
-      <nav style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"20px max(20px, 5vw)",maxWidth:"1200px",margin:"0 auto"}}>
-        <div style={{display:"flex",alignItems:"center",gap:10,fontSize:20,fontWeight:700,color:"var(--ac)"}}>
-          {I.bolt(24,"var(--ac)")}Prompt Architect
+  const loadFromHistory=useCallback((h)=>{setTopic(h.topic);setTask(h.task);setIndustry(h.industry);setOutput(h.output);setModel(h.model);setShowHistory(false);setShow(false);},[]);
+
+  const clearHistory=useCallback(()=>{setHistory([]);saveHistory([]);setShowHistory(false);},[]);
+
+  const ti=useCallback(v=>setIncludes(p=>p.includes(v)?p.filter(x=>x!==v):[...p,v]),[]);
+  const tf=useCallback(v=>setFmt(p=>p.includes(v)?p.filter(x=>x!==v):[...p,v]),[]);
+  const tt=useCallback(v=>setTechs(p=>p.includes(v)?p.filter(x=>x!==v):[...p,v]),[]);
+
+  const inp=(sx={})=>({width:"100%",padding:12,borderRadius:9,border:"1.5px solid var(--bd)",background:"var(--bg)",color:"var(--t1)",fontSize:13.5,fontFamily:"var(--f)",outline:"none",transition:"border .2s",lineHeight:1.6,...sx});
+
+  return <>
+    <style>{`
+      @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+      :root{--f:'Instrument Sans',-apple-system,sans-serif;--m:'IBM Plex Mono',monospace;--bg:#f8fafc;--s1:#ffffff;--s2:#f1f5f9;--bd:#e2e8f0;--t1:#1e293b;--t2:#475569;--t3:#94a3b8;--ac:${ac};--ac-rgb:${acRgb}}
+      *{box-sizing:border-box}::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}::-webkit-scrollbar-track{background:transparent}
+      @keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+      @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+      @keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+      @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+      body{background:#f8fafc}
+      textarea:focus,input:focus{border-color:${ac}!important;box-shadow:0 0 0 3px ${ac}20}
+    `}</style>
+    <div style={{minHeight:"100vh",background:"var(--bg)",color:"var(--t1)",fontFamily:"var(--f)",padding:"24px 14px 60px",maxWidth:760,margin:"0 auto"}}>
+
+      {/* HEADER */}
+      <header style={{textAlign:"center",marginBottom:30}}>
+        <div style={{display:"inline-flex",alignItems:"center",gap:10,marginBottom:5}}>
+          <div style={{width:34,height:34,borderRadius:9,background:ac+"18",display:"flex",alignItems:"center",justifyContent:"center"}}>{I.bolt(18,ac)}</div>
+          <h1 style={{fontSize:23,fontWeight:720,margin:0,letterSpacing:"-.7px"}}>Prompt Architect</h1>
         </div>
-        <div style={{display:"flex",gap:12,alignItems:"center"}}>
-          <button onClick={()=>{setShowAuth(true);setAuthMode("login");}} style={{padding:"10px 16px",border:"none",background:"transparent",color:"var(--t2)",fontWeight:500,cursor:"pointer",fontSize:14}}>Log in</button>
-          <button onClick={()=>{setShowAuth(true);setAuthMode("signup");setAuthName("");setAuthEmail("");setAuthPass("");setAuthError("");}} style={{padding:"10px 20px",border:"none",background:"var(--ac)",color:"white",borderRadius:6,fontWeight:600,cursor:"pointer",fontSize:14}}>Get Started</button>
+        <p style={{color:"var(--t3)",fontSize:13,margin:"4px 0 18px",fontWeight:450}}>Smart AI prompt engineering \u2014 your input gets enhanced automatically</p>
+        <div style={{display:"flex",justifyContent:"center",gap:8,flexWrap:"wrap"}}>
+          <div style={{display:"inline-flex",borderRadius:10,background:"var(--s1)",border:"1px solid var(--bd)",padding:3}}>
+            {[["amateur","seedling","Simple"],["expert","microscope","Expert"]].map(([m,ic,lb])=>(
+              <button key={m} onClick={()=>setMode(m)} style={{display:"flex",alignItems:"center",gap:6,padding:"8px 24px",border:"none",borderRadius:7.5,cursor:"pointer",background:mode===m?ac:"transparent",color:mode===m?"#fff":"var(--t3)",fontFamily:"var(--f)",fontSize:12.5,fontWeight:620,transition:"all .2s"}}>{I[ic](13,mode===m?"#fff":"var(--t3)")}{lb}</button>
+            ))}
+          </div>
+          {history.length>0&&(
+            <button onClick={()=>setShowHistory(!showHistory)} style={{display:"flex",alignItems:"center",gap:5,padding:"8px 14px",borderRadius:10,border:"1px solid var(--bd)",background:"var(--s1)",color:"var(--t2)",cursor:"pointer",fontSize:12,fontFamily:"var(--f)",fontWeight:500}}>
+              {I.clock(13,"var(--t2)")} History ({history.length})
+            </button>
+          )}
         </div>
-      </nav>
+      </header>
 
-      {/* HERO */}
-      <section style={{padding:"80px max(20px,5vw)",background:"linear-gradient(135deg, #eff6ff 0%, #f0fdfa 100%)",textAlign:"center"}}>
-        <div style={{maxWidth:"800px",margin:"0 auto"}}>
-          <div style={{display:"inline-block",padding:"8px 16px",background:"var(--ac)",color:"white",borderRadius:20,fontSize:12,fontWeight:600,marginBottom:20}}>Smart Prompt Engineering</div>
-          <h1 style={{fontSize:"clamp(28px,6vw,48px)",fontWeight:800,color:"var(--t1)",margin:"0 0 16px",lineHeight:1.2}}>Turn vague ideas into expert-level AI prompts</h1>
-          <p style={{fontSize:18,color:"var(--t2)",margin:"0 0 40px",lineHeight:1.6}}>Prompt Architect analyzes your goal and automatically injects audience targeting, reasoning strategies, and domain expertise — so your AI delivers better results, every time.</p>
-          <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap",marginBottom:60}}>
-            <button onClick={()=>{setShowAuth(true);setAuthMode("signup");}} style={{padding:"14px 28px",background:"var(--ac)",color:"white",border:"none",borderRadius:8,fontSize:16,fontWeight:600,cursor:"pointer",display:"flex",alignItems:"center",gap:8}}>Start for free {I.arrow(18,"white")}</button>
-            <button onClick={()=>window.scrollTo({top:window.innerHeight*1.5,behavior:"smooth"})} style={{padding:"14px 28px",border:"2px solid var(--ac)",color:"var(--ac)",background:"transparent",borderRadius:8,fontSize:16,fontWeight:600,cursor:"pointer"}}>See how it works</button>
+      {/* HISTORY PANEL */}
+      {showHistory&&history.length>0&&(
+        <div style={{background:"var(--s1)",borderRadius:14,border:"1px solid var(--bd)",padding:16,marginBottom:20,animation:"fadeIn .2s ease"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+            <span style={{fontSize:13,fontWeight:640,color:"var(--t1)"}}>Recent Prompts</span>
+            <button onClick={clearHistory} style={{display:"flex",alignItems:"center",gap:4,padding:"4px 10px",borderRadius:6,border:"1px solid rgba(239,68,68,.3)",background:"transparent",color:"#ef4444",cursor:"pointer",fontSize:11,fontFamily:"var(--f)"}}>{I.trash(11,"#ef4444")} Clear</button>
+          </div>
+          {history.map((h,i)=>(
+            <button key={i} onClick={()=>loadFromHistory(h)} style={{display:"block",width:"100%",textAlign:"left",padding:"10px 12px",marginBottom:4,borderRadius:8,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t1)",cursor:"pointer",fontFamily:"var(--f)",fontSize:12,lineHeight:1.4,transition:"border-color .15s"}}>
+              <div style={{fontWeight:600,marginBottom:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{h.topic}</div>
+              <div style={{color:"var(--t3)",fontSize:11}}>{TASKS[h.task]?.l} \u00b7 {INDUSTRIES[h.industry]?.l} \u00b7 {new Date(h.timestamp).toLocaleDateString()}</div>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* FORM */}
+      <div style={{background:"var(--s1)",borderRadius:16,border:"1px solid var(--bd)",padding:"26px 20px",marginBottom:20}}>
+
+        {/* TOPIC */}
+        <Step ico="pen" title="Describe your goal" sub="Be specific \u2014 but don't worry about being perfect. Smart enhancement fills the gaps.">
+          <textarea value={topic} onChange={e=>{setTopic(e.target.value);setShow(false);}} placeholder="e.g. Build a DCF valuation tutorial for finance students who understand basic accounting but are new to valuation models. Include a worked example using Apple's 2024 financials..." rows={3} style={inp({resize:"vertical"})} />
+
+          {/* EXAMPLE PROMPTS */}
+          {!topic.trim()&&(
+            <div style={{marginTop:12}}>
+              <div style={{fontSize:11,color:"var(--t3)",marginBottom:8,fontWeight:500}}>Try an example:</div>
+              <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                {EXAMPLES.map((ex,i)=>(
+                  <button key={i} onClick={()=>loadExample(ex)} style={{padding:"6px 12px",borderRadius:7,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",cursor:"pointer",fontSize:11.5,fontFamily:"var(--f)",fontWeight:500,transition:"all .15s"}}>{ex.label}</button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* SMART ENHANCEMENT BADGES */}
+          {topic.trim()&&enhancements.length>0&&(
+            <div style={{marginTop:12,padding:"10px 14px",borderRadius:10,background:ac+"0A",border:"1px solid "+ac+"1A",animation:"fadeIn .3s ease"}}>
+              <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:8}}>
+                {I.wand(13,ac)}
+                <span style={{fontSize:11.5,fontWeight:640,color:ac}}>Smart Enhancements Active</span>
+              </div>
+              <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
+                {enhancements.map((e,i)=>(
+                  <span key={i} style={{padding:"3px 9px",borderRadius:5,background:ac+"14",color:ac,fontSize:10.5,fontWeight:550}}>{e.label}</span>
+                ))}
+              </div>
+            </div>
+          )}
+        </Step>
+
+        {/* TASK + INDUSTRY */}
+        <Step ico="layout" title="Task type">
+          <Wrap>{Object.entries(TASKS).map(([k,v])=><Chip key={k} active={task===k} accent={ac} onClick={()=>setTask(k)}>{I[v.i]?.(12,task===k?ac:"var(--t3)")}{v.l}</Chip>)}</Wrap>
+        </Step>
+
+        <Step ico="building" title="Industry / Sector" sub="Injects domain-specific terminology, frameworks, and compliance requirements">
+          <Wrap>{Object.entries(INDUSTRIES).map(([k,v])=><Chip key={k} active={industry===k} accent={ac} onClick={()=>setIndustry(k)}>{I[v.i]?.(12,industry===k?ac:"var(--t3)")}{v.l}</Chip>)}</Wrap>
+        </Step>
+
+        {/* OUTPUT TYPE */}
+        <Step ico="file" title="Output type" sub="What deliverable format should the AI produce?">
+          <Wrap>{Object.entries(OUTPUTS).map(([k,v])=><Chip key={k} active={output===k} accent={ac} onClick={()=>setOutput(k)}>{I[v.i]?.(12,output===k?ac:"var(--t3)")}{v.l}</Chip>)}</Wrap>
+        </Step>
+
+        {/* AI MODEL */}
+        <Step ico="cpu" title="Target AI model">
+          <Wrap>
+            {Object.entries(MODELS).map(([k,v])=>(
+              <button key={k} onClick={()=>setModel(k)} style={{display:"flex",alignItems:"center",gap:7,padding:"8px 14px",borderRadius:9,border:"1.5px solid "+(model===k?v.col:"var(--bd)"),background:model===k?v.col+"14":"var(--s2)",color:model===k?v.col:"var(--t2)",cursor:"pointer",fontSize:12.5,fontWeight:model===k?620:450,fontFamily:"var(--f)",transition:"all .15s"}}><MM id={k} size={17}/>{v.name}</button>
+            ))}
+          </Wrap>
+          <div style={{marginTop:9,padding:"8px 12px",borderRadius:8,background:ac+"0C",border:"1px solid "+ac+"1A",fontSize:11.5,color:"var(--t2)",lineHeight:1.5,display:"flex",gap:7,alignItems:"center"}}>{I.info(13,ac)}<span>{MODELS[model].tips}</span></div>
+        </Step>
+
+        {/* STYLE */}
+        <Step ico="pen" title="Writing style">
+          <Wrap>{Object.entries(STYLES).map(([k,v])=><Chip key={k} active={style===k} accent={ac} onClick={()=>setStyle(k)}>{I[v.i]?.(12,style===k?ac:"var(--t3)")}{v.l}</Chip>)}</Wrap>
+        </Step>
+
+        {/* TONE */}
+        <Step ico="speaker" title="Tone">
+          <Wrap>{TONES.map(({v,i:ic})=><Chip key={v} active={tone===v} accent={ac} onClick={()=>setTone(v)}>{I[ic]?.(12,tone===v?ac:"var(--t3)")}{v}</Chip>)}</Wrap>
+        </Step>
+
+        {/* LENGTH + FORMAT */}
+        <Step ico="ruler" title="Length">
+          <Wrap>{LENGTHS.map(l=><Chip key={l} active={len===l} accent={ac} onClick={()=>setLen(l)} sx={{flexDirection:"column",alignItems:"flex-start",gap:0,padding:"8px 14px"}}><span>{l}</span><span style={{fontSize:10.5,color:"var(--t3)",fontWeight:400}}>{LEN_SUB[l]}</span></Chip>)}</Wrap>
+        </Step>
+
+        <Step ico="layout" title="Response format" sub="Select one or more \u2014 they combine in the prompt">
+          <Wrap>{Object.entries(FMTS).map(([k,v])=><Chip key={k} active={fmt.includes(k)} accent={ac} onClick={()=>tf(k)}>{I[v.i]?.(12,fmt.includes(k)?ac:"var(--t3)")}{v.l}</Chip>)}</Wrap>
+        </Step>
+
+        {/* LANGUAGE */}
+        <Step ico="lang" title="Language">
+          <Wrap>{LANGS.map(l=><Chip key={l} active={language===l} accent={ac} onClick={()=>setLanguage(l)}>{l}</Chip>)}</Wrap>
+        </Step>
+
+        {/* INCLUDES */}
+        <Step ico="checkList" title="Include sections" sub="Select specific sections that must appear in the response">
+          <Wrap>{Object.entries(INCLUDES).map(([k,v])=><Chip key={k} active={includes.includes(k)} accent={ac} onClick={()=>ti(k)}>{I[v.i]?.(12,includes.includes(k)?ac:"var(--t3)")}{v.l}</Chip>)}</Wrap>
+        </Step>
+
+        {/* EXPERT SECTIONS */}
+        {isExp&&<Step ico="brain" title="Advanced techniques" sub="Each adds a dedicated instruction block to the prompt">
+          <Wrap>{Object.entries(TECHS).map(([k,v])=><Chip key={k} active={techs.includes(k)} accent={ac} onClick={()=>tt(k)}>{I[v.i]?.(12,techs.includes(k)?ac:"var(--t3)")}{v.l}</Chip>)}</Wrap>
+        </Step>}
+
+        {isExp&&<Step ico="users" title="Target audience" sub="Override smart audience detection with a specific audience">
+          <input value={aud} onChange={e=>setAud(e.target.value)} placeholder="Leave blank for smart detection, or specify: e.g. Finance students, mid-level managers, senior developers..." style={inp()} />
+        </Step>}
+
+        {isExp&&<Step ico="plus" title="Additional instructions" sub="Added verbatim as a final section">
+          <textarea value={extra} onChange={e=>setExtra(e.target.value)} placeholder="e.g. Use Apple's 2024 10-K as the worked example, include sensitivity analysis..." rows={2} style={inp({resize:"vertical"})} />
+        </Step>}
+
+        {/* GENERATE */}
+        <div style={{display:"flex",justifyContent:"center",paddingTop:8}}>
+          <button onClick={go} disabled={!topic.trim()} style={{display:"flex",alignItems:"center",gap:8,padding:"12px 38px",borderRadius:10,border:"none",background:topic.trim()?ac:"rgba(255,255,255,.04)",color:topic.trim()?"#fff":"var(--t3)",fontSize:14,fontWeight:660,fontFamily:"var(--f)",cursor:topic.trim()?"pointer":"not-allowed",transition:"all .2s",boxShadow:topic.trim()?"0 6px 28px "+ac+"35":"none"}}>{I.sparkle(15,topic.trim()?"#fff":"var(--t3)")} Generate Prompt</button>
+        </div>
+      </div>
+
+      {/* RESULT */}
+      {show&&topic.trim()&&(
+        <div ref={ref} style={{background:"var(--s1)",borderRadius:16,border:"1px solid var(--bd)",overflow:"hidden",animation:"up .35s ease"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"13px 20px",borderBottom:"1px solid var(--bd)",flexWrap:"wrap",gap:8}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+              <MM id={model} size={18}/>
+              <span style={{fontWeight:640,fontSize:13}}>{MODELS[model].name}</span>
+              <span style={{fontSize:11,color:ac,background:ac+"14",padding:"2px 8px",borderRadius:5,fontWeight:600}}>{INDUSTRIES[industry].l}</span>
+              <span style={{fontSize:11,color:"var(--t3)",background:"var(--s2)",padding:"2px 8px",borderRadius:5}}>{isExp?"Expert":"Simple"}</span>
+              {enhancements.length>0&&<span style={{fontSize:11,color:"#10B981",background:"#10B98114",padding:"2px 8px",borderRadius:5,fontWeight:600,display:"flex",alignItems:"center",gap:3}}>{I.wand(10,"#10B981")} {enhancements.length} smart boost{enhancements.length!==1?"s":""}</span>}
+            </div>
+            <div style={{display:"flex",gap:6}}>
+              <button onClick={exportTxt} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 12px",borderRadius:7,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{I.download(12,"var(--t2)")} .txt</button>
+              <button onClick={cp} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 14px",borderRadius:7,border:"none",background:copied?"#10A37F":ac,color:"#fff",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{copied?I.check(12,"#fff"):I.copy(12,"#fff")}{copied?"Copied":"Copy"}</button>
+            </div>
+          </div>
+          <pre style={{padding:"20px 22px",margin:0,whiteSpace:"pre-wrap",wordWrap:"break-word",fontSize:12,lineHeight:1.8,fontFamily:"var(--m)",color:"var(--t2)",background:"var(--bg)",maxHeight:600,overflow:"auto"}}>{prompt}</pre>
+          <div style={{padding:"10px 20px",borderTop:"1px solid var(--bd)",display:"flex",gap:14,flexWrap:"wrap",fontSize:11,color:"var(--t3)"}}>
+            <span style={{display:"flex",alignItems:"center",gap:3}}>{I.hash(10,"var(--t3)")} {prompt.length} chars</span>
+            <span style={{display:"flex",alignItems:"center",gap:3}}>{I.fileText(10,"var(--t3)")} ~{Math.ceil(prompt.split(/\s+/).length/0.75)} tokens</span>
+            <span style={{display:"flex",alignItems:"center",gap:3}}>{I[TASKS[task].i]?.(10,"var(--t3)")} {TASKS[task].l}</span>
+            <span style={{display:"flex",alignItems:"center",gap:3}}>{I.target(10,"var(--t3)")} {tone}</span>
+            <span style={{display:"flex",alignItems:"center",gap:3}}>{I.file(10,"var(--t3)")} {OUTPUTS[output].l}</span>
+            {language!=="English"&&<span style={{display:"flex",alignItems:"center",gap:3}}>{I.lang(10,"var(--t3)")} {language}</span>}
           </div>
         </div>
-      </section>
-
-      {/* HOW IT WORKS */}
-      <section style={{padding:"80px max(20px,5vw)",maxWidth:"1000px",margin:"0 auto"}}>
-        <h2 style={{textAlign:"center",fontSize:32,fontWeight:700,color:"var(--t1)",marginBottom:60}}>How it works</h2>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(280px, 1fr))",gap:40}}>
-          {[
-            {num:1,title:"Describe your goal",desc:"Write anything, even vaguely. Prompt Architect understands intent."},
-            {num:2,title:"We enhance it",desc:"Smart analysis injects audience targeting, reasoning patterns, and expert strategies."},
-            {num:3,title:"Copy and paste",desc:"Use the crafted prompt in Claude, ChatGPT, Gemini, or any AI. Get professional results."}
-          ].map(({num,title,desc})=>(
-            <div key={num} style={{padding:30,background:"var(--s1)",borderRadius:12,border:`1px solid var(--bd)`,boxShadow:"var(--shadow)"}}>
-              <div style={{width:40,height:40,background:"var(--ac)",color:"white",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,fontWeight:700,marginBottom:16}}>{num}</div>
-              <h3 style={{fontSize:18,fontWeight:700,color:"var(--t1)",margin:"0 0 8px"}}>{title}</h3>
-              <p style={{color:"var(--t2)",fontSize:14,margin:0,lineHeight:1.6}}>{desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* FEATURES */}
-      <section style={{padding:"80px max(20px,5vw)",background:"var(--s2)",maxWidth:"1000px",margin:"0 auto",borderRadius:12}}>
-        <h2 style={{textAlign:"center",fontSize:28,fontWeight:700,color:"var(--t1)",marginBottom:40}}>Professional-grade features</h2>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(300px, 1fr))",gap:30}}>
-          {[
-            {icon:I.sparkle(24,"var(--ac)"),title:"Smart Enhancement",desc:"Auto-injects audience, reasoning, industry context"},
-            {icon:I.check(24,"var(--ac)"),title:"15 Industries",desc:"Finance, Healthcare, Legal, Tech, Marketing, and more"},
-            {icon:I.bolt(24,"var(--ac)"),title:"5 AI Models",desc:"Claude, ChatGPT, Gemini, Llama, Universal"}
-          ].map(({icon,title,desc},i)=>(
-            <div key={i}>
-              <div style={{marginBottom:12}}>{icon}</div>
-              <h3 style={{fontSize:16,fontWeight:700,color:"var(--t1)",margin:"0 0 8px"}}>{title}</h3>
-              <p style={{color:"var(--t2)",fontSize:14,margin:0}}>{desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA BANNER */}
-      <section style={{padding:"60px max(20px,5vw)",textAlign:"center"}}>
-        <h2 style={{fontSize:28,fontWeight:700,color:"var(--t1)",margin:"0 0 20px"}}>Ready to get better AI results?</h2>
-        <button onClick={()=>{setShowAuth(true);setAuthMode("signup");}} style={{padding:"14px 32px",background:"var(--ac)",color:"white",border:"none",borderRadius:8,fontSize:16,fontWeight:600,cursor:"pointer",display:"inline-flex",alignItems:"center",gap:8}}>Get Started Free {I.arrow(18,"white")}</button>
-      </section>
+      )}
 
       {/* FOOTER */}
-      <footer style={{padding:"40px",textAlign:"center",color:"var(--t3)",fontSize:14,borderTop:"1px solid var(--bd)"}}>
-        <p style={{margin:0}}>Built by <strong>Ola Slettebak</strong> • <a href="https://github.com/DoomsdayTycoon/prompt-architect" target="_blank" style={{color:"var(--ac)",textDecoration:"none"}}>GitHub</a></p>
+      <footer style={{textAlign:"center",marginTop:40,paddingTop:20,borderTop:"1px solid var(--bd)"}}>
+        <p style={{color:"var(--t3)",fontSize:11.5,margin:0}}>Prompt Architect \u2014 Smart AI prompt engineering</p>
+        <p style={{color:"var(--t3)",fontSize:10.5,margin:"4px 0 0",opacity:.6}}>No data leaves your browser. All prompt generation happens locally.</p>
       </footer>
-
-      {/* AUTH MODAL */}
-      {showAuth&&<div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.5)",display:"flex",alignItems:"center",justifyContent:"center",padding:20,zIndex:1000}}>
-        <div style={{background:"var(--s1)",borderRadius:12,padding:40,maxWidth:400,width:"100%",boxShadow:"var(--shadow-lg)",animation:"slideDown .3s ease"}}>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:24}}>
-            <h2 style={{margin:0,fontSize:20,fontWeight:700,color:"var(--t1)"}}>{authMode==="signup"?"Create account":"Log in"}</h2>
-            <button onClick={()=>{setShowAuth(false);setAuthError("");}} style={{background:"none",border:"none",cursor:"pointer",padding:0}}>{I.x(20,"var(--t3)")}</button>
-          </div>
-
-          {authMode==="signup"&&<input type="text" placeholder="Full name" value={authName} onChange={e=>setAuthName(e.target.value)} style={{width:"100%",padding:12,borderRadius:6,border:"1px solid var(--bd)",marginBottom:12,fontFamily:"inherit",fontSize:14}}/>}
-          <input type="email" placeholder="Email" value={authEmail} onChange={e=>setAuthEmail(e.target.value)} style={{width:"100%",padding:12,borderRadius:6,border:"1px solid var(--bd)",marginBottom:12,fontFamily:"inherit",fontSize:14}}/>
-          <input type="password" placeholder="Password" value={authPass} onChange={e=>setAuthPass(e.target.value)} style={{width:"100%",padding:12,borderRadius:6,border:"1px solid var(--bd)",marginBottom:12,fontFamily:"inherit",fontSize:14}}/>
-
-          {authError&&<div style={{padding:10,background:"#fee2e2",color:"#991b1b",borderRadius:6,marginBottom:12,fontSize:13}}>{authError}</div>}
-
-          <button onClick={authMode==="signup"?handleSignup:handleLogin} style={{width:"100%",padding:12,background:"var(--ac)",color:"white",border:"none",borderRadius:6,fontWeight:600,cursor:"pointer",marginBottom:12}}>
-            {authMode==="signup"?"Create Account":"Log In"}
-          </button>
-
-          <button onClick={()=>{setAuthMode(authMode==="signup"?"login":"signup");setAuthError("");}} style={{width:"100%",padding:12,background:"var(--s2)",border:"none",borderRadius:6,cursor:"pointer",color:"var(--ac)",fontWeight:500,fontSize:14}}>
-            {authMode==="signup"?"Already have one? Log in":"Don't have one? Sign up"}
-          </button>
-        </div>
-      </div>}
-    </div>;
-  }
-
-  /* ════════════════════════════════════════════════════════
-     APP PAGE
-     ════════════════════════════════════════════════════════ */
-  return<div style={{minHeight:"100vh",background:"var(--bg)"}}>
-    {/* NAVBAR */}
-    <nav style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"16px max(20px,5vw)",borderBottom:"1px solid var(--bd)",background:"var(--s1)"}}>
-      <div style={{display:"flex",alignItems:"center",gap:10,fontSize:18,fontWeight:700,color:"var(--ac)",cursor:"pointer"}} onClick={()=>setView("landing")}>
-        {I.bolt(22,"var(--ac)")}Prompt Architect
-      </div>
-      <div style={{display:"flex",alignItems:"center",gap:16}}>
-        <span style={{color:"var(--t2)",fontSize:14}}>{user?.name}</span>
-        <button onClick={handleLogout} style={{display:"flex",alignItems:"center",gap:6,padding:"8px 14px",background:"transparent",border:"1px solid var(--bd)",borderRadius:6,cursor:"pointer",fontSize:13,fontWeight:500,color:"var(--t2)"}}>{I.logOut(16,"var(--t2)")}Log out</button>
-      </div>
-    </nav>
-
-    {/* MAIN */}
-    <div style={{maxWidth:"900px",margin:"0 auto",padding:"40px max(20px,5vw)"}}>
-      <div style={{background:"var(--s1)",borderRadius:12,padding:40,boxShadow:"var(--shadow)"}}>
-        <h1 style={{fontSize:28,fontWeight:700,color:"var(--t1)",margin:"0 0 8px"}}>Describe your goal</h1>
-        <p style={{color:"var(--t2)",fontSize:14,margin:"0 0 24px"}}>Be specific or vague — we'll enhance it into an expert prompt.</p>
-
-        <textarea value={topic} onChange={e=>setTopic(e.target.value)} placeholder="e.g. Analyze Tesla's competitive position in the EV market vs BYD, Rivian, and legacy automakers" style={{width:"100%",padding:16,borderRadius:8,border:"1px solid var(--bd)",fontFamily:"inherit",fontSize:14,lineHeight:1.6,minHeight:120,resize:"vertical",marginBottom:16}}/>
-
-        {topic&&<button onClick={handleClear} style={{padding:"8px 12px",background:"var(--s2)",border:"1px solid var(--bd)",borderRadius:6,cursor:"pointer",fontSize:12,fontWeight:500,color:"var(--t2)",marginBottom:24,display:"flex",alignItems:"center",gap:4}}>{I.x(14,"var(--t2)")}Clear</button>}
-
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(200px, 1fr))",gap:16,marginBottom:30}}>
-          <div>
-            <label style={{display:"block",fontSize:12,fontWeight:600,color:"var(--t3)",marginBottom:8}}>Task Type</label>
-            <select value={task} onChange={e=>setTask(e.target.value)} style={{width:"100%",padding:10,borderRadius:6,border:"1px solid var(--bd)",fontFamily:"inherit",fontSize:13,background:"var(--s2)",color:"var(--t1)"}}>
-              {Object.entries(TASKS).map(([k,v])=><option key={k} value={k}>{v.l}</option>)}
-            </select>
-          </div>
-
-          <div>
-            <label style={{display:"block",fontSize:12,fontWeight:600,color:"var(--t3)",marginBottom:8}}>AI Model</label>
-            <select value={model} onChange={e=>setModel(e.target.value)} style={{width:"100%",padding:10,borderRadius:6,border:"1px solid var(--bd)",fontFamily:"inherit",fontSize:13,background:"var(--s2)",color:"var(--t1)"}}>
-              {Object.entries(MODELS).map(([k,v])=><option key={k} value={k}>{v.name}</option>)}
-            </select>
-          </div>
-
-          <div>
-            <label style={{display:"block",fontSize:12,fontWeight:600,color:"var(--t3)",marginBottom:8}}>Tone</label>
-            <select value={tone} onChange={e=>setTone(e.target.value)} style={{width:"100%",padding:10,borderRadius:6,border:"1px solid var(--bd)",fontFamily:"inherit",fontSize:13,background:"var(--s2)",color:"var(--t1)"}}>
-              {TONES.map(({v})=><option key={v} value={v}>{v}</option>)}
-            </select>
-          </div>
-
-          <div>
-            <label style={{display:"block",fontSize:12,fontWeight:600,color:"var(--t3)",marginBottom:8}}>Length</label>
-            <select value={len} onChange={e=>setLen(e.target.value)} style={{width:"100%",padding:10,borderRadius:6,border:"1px solid var(--bd)",fontFamily:"inherit",fontSize:13,background:"var(--s2)",color:"var(--t1)"}}>
-              {LENGTHS.map(l=><option key={l} value={l}>{l}</option>)}
-            </select>
-          </div>
-
-          <div>
-            <label style={{display:"block",fontSize:12,fontWeight:600,color:"var(--t3)",marginBottom:8}}>Format</label>
-            <select value={fmt[0]||""} onChange={e=>setFmt([e.target.value])} style={{width:"100%",padding:10,borderRadius:6,border:"1px solid var(--bd)",fontFamily:"inherit",fontSize:13,background:"var(--s2)",color:"var(--t1)"}}>
-              {Object.entries(FMTS).map(([k,v])=><option key={k} value={k}>{v.l}</option>)}
-            </select>
-          </div>
-
-          <div>
-            <label style={{display:"block",fontSize:12,fontWeight:600,color:"var(--t3)",marginBottom:8}}>Language</label>
-            <select value={language} onChange={e=>setLanguage(e.target.value)} style={{width:"100%",padding:10,borderRadius:6,border:"1px solid var(--bd)",fontFamily:"inherit",fontSize:13,background:"var(--s2)",color:"var(--t1)"}}>
-              {LANGS.map(l=><option key={l} value={l}>{l}</option>)}
-            </select>
-          </div>
-        </div>
-
-        <button onClick={handleGenerate} disabled={!topic.trim()} style={{width:"100%",padding:14,background:topic.trim()?"var(--ac)":"var(--t3)",color:"white",border:"none",borderRadius:8,fontWeight:600,cursor:topic.trim()?"pointer":"not-allowed",fontSize:15,display:"flex",alignItems:"center",justifyContent:"center",gap:8,transition:"all .2s"}}>
-          {I.sparkle(18,"white")}Generate Expert Prompt
-        </button>
-      </div>
-
-      {show&&topic.trim()&&<div ref={resultRef} style={{marginTop:40,background:"var(--s1)",borderRadius:12,padding:40,boxShadow:"var(--shadow)",animation:"fadeIn .3s ease"}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:24}}>
-          <h2 style={{margin:0,fontSize:20,fontWeight:700,color:"var(--t1)"}}>Your Prompt</h2>
-          <div style={{display:"flex",gap:8}}>
-            <button onClick={handleCopy} style={{padding:"8px 14px",background:copied?"#10b981":"var(--ac)",color:"white",border:"none",borderRadius:6,cursor:"pointer",fontSize:13,fontWeight:600,display:"flex",alignItems:"center",gap:6,transition:"all .2s"}}>
-              {copied?I.check(16,"white"):I.copy(16,"white")}{copied?"Copied":"Copy"}
-            </button>
-          </div>
-        </div>
-
-        <pre style={{padding:20,background:"var(--bg)",borderRadius:8,overflow:"auto",maxHeight:400,fontSize:12,lineHeight:1.7,color:"var(--t2)",fontFamily:"'IBM Plex Mono', monospace",border:"1px solid var(--bd)"}}>{prompt}</pre>
-
-        <div style={{marginTop:16,display:"flex",gap:8,fontSize:12,color:"var(--t3)"}}>
-          <span>{prompt.length} characters</span>
-          <span>~{Math.ceil(prompt.split(/\s+/).length/0.75)} tokens</span>
-        </div>
-      </div>}
     </div>
-  </div>;
+  </>;
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
 </script>
 </body>
 </html>
