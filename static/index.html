@@ -462,8 +462,10 @@ function App(){
       @keyframes fadeIn{from{opacity:0}to{opacity:1}}
       @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
       textarea:focus,input:focus{border-color:${ac}!important}
+      @media(max-width:768px){body{padding:0 10px}}
+      h1{font-size:clamp(18px,5vw,23px)!important}
     `}</style>
-    <div style={{minHeight:"100vh",background:"var(--bg)",color:"var(--t1)",fontFamily:"var(--f)",padding:"24px 14px 60px",maxWidth:760,margin:"0 auto"}}>
+    <div style={{minHeight:"100vh",background:"var(--bg)",color:"var(--t1)",fontFamily:"var(--f)",padding:"24px clamp(10px,5vw,20px) 60px",maxWidth:780,margin:"0 auto"}}>
 
       {/* HEADER */}
       <header style={{textAlign:"center",marginBottom:30}}>
@@ -605,7 +607,7 @@ function App(){
 
         {/* GENERATE */}
         <div style={{display:"flex",justifyContent:"center",paddingTop:8}}>
-          <button onClick={go} disabled={!topic.trim()} style={{display:"flex",alignItems:"center",gap:8,padding:"12px 38px",borderRadius:10,border:"none",background:topic.trim()?ac:"rgba(255,255,255,.04)",color:topic.trim()?"#fff":"var(--t3)",fontSize:14,fontWeight:660,fontFamily:"var(--f)",cursor:topic.trim()?"pointer":"not-allowed",transition:"all .2s",boxShadow:topic.trim()?"0 6px 28px "+ac+"35":"none"}}>{I.sparkle(15,topic.trim()?"#fff":"var(--t3)")} Generate Prompt</button>
+          <button onClick={go} disabled={!topic.trim()} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"12px clamp(16px,5vw,38px)",borderRadius:10,border:"none",width:"clamp(200px, 100%, 400px)",background:topic.trim()?ac:"rgba(255,255,255,.04)",color:topic.trim()?"#fff":"var(--t3)",fontSize:14,fontWeight:660,fontFamily:"var(--f)",cursor:topic.trim()?"pointer":"not-allowed",transition:"all .2s",boxShadow:topic.trim()?"0 6px 28px "+ac+"35":"none"}}>{I.sparkle(15,topic.trim()?"#fff":"var(--t3)")} Generate Prompt</button>
         </div>
       </div>
 
