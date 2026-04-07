@@ -19,6 +19,19 @@
 const { useState, useRef, useCallback, useEffect, useMemo } = React;
 
 /* ═══════════════════════════════════════════════════════
+   AUTH & USER STATE MANAGEMENT
+   ═══════════════════════════════════════════════════════ */
+const loadUser=()=>{try{const u=localStorage.getItem("pa_user");return u?JSON.parse(u):null;}catch(e){return null;}};
+const saveUser=(u)=>{localStorage.setItem("pa_user",JSON.stringify(u));};
+const getStoredUsers=()=>{try{const u=localStorage.getItem("pa_users");return u?JSON.parse(u):[];}catch(e){return [];}};
+const saveUsers=(users)=>{localStorage.setItem("pa_users",JSON.stringify(users));};
+const validateEmail=(e)=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+const validatePassword=(p)=>p.length>=6;
+const signupUser=(name,email,password)=>{if(!validateEmail(email))return {ok:false,msg:"Invalid email"};if(!validatePassword(password))return {ok:false,msg:"Password must be 6+ chars"};const users=getStoredUsers();if(users.find(u=>u.email===email))return {ok:false,msg:"Email already registered"};const newUser={name,email,password};users.push(newUser);saveUsers(users);return {ok:true,user:{name,email}};};
+const loginUser=(email,password)=>{const users=getStoredUsers();const user=users.find(u=>u.email===email&&u.password===password);return user?{ok:true,user:{name:user.name,email:user.email}}:{ok:false,msg:"Invalid email or password"};};
+
+
+/* ═══════════════════════════════════════════════════════
    ICONS
    ═══════════════════════════════════════════════════════ */
 const I={
@@ -419,6 +432,13 @@ function App(){
   const [show,setShow]=useState(false);
   const [history,setHistory]=useState(()=>loadHistory());
   const [showHistory,setShowHistory]=useState(false);
+  const [user,setUser]=useState(()=>loadUser());
+  const [showAuth,setShowAuth]=useState(false);
+  const [authMode,setAuthMode]=useState("login");
+  const [authEmail,setAuthEmail]=useState("");
+  const [authPassword,setAuthPassword]=useState("");
+  const [authName,setAuthName]=useState("");
+  const [authErr,setAuthErr]=useState("");
   const ref=useRef(null);
   const isExp=mode==="expert";
   const ac=MODELS[model].col;
@@ -453,6 +473,29 @@ function App(){
 
   const inp=(sx={})=>({width:"100%",padding:12,borderRadius:9,border:"1.5px solid var(--bd)",background:"var(--bg)",color:"var(--t1)",fontSize:13.5,fontFamily:"var(--f)",outline:"none",transition:"border .2s",lineHeight:1.6,...sx});
 
+  const handleAuthSubmit=useCallback((e)=>{
+    e.preventDefault();
+    setAuthErr("");
+    if(authMode==="signup"){
+      if(!authName.trim()){setAuthErr("Name required");return;}
+      const res=signupUser(authName,authEmail,authPassword);
+      if(!res.ok){setAuthErr(res.msg);return;}
+      saveUser(res.user);
+      setUser(res.user);
+      setShowAuth(false);
+      setAuthEmail("");setAuthPassword("");setAuthName("");setAuthMode("login");
+    }else{
+      const res=loginUser(authEmail,authPassword);
+      if(!res.ok){setAuthErr(res.msg);return;}
+      saveUser(res.user);
+      setUser(res.user);
+      setShowAuth(false);
+      setAuthEmail("");setAuthPassword("");
+    }
+  },[authMode,authName,authEmail,authPassword]);
+
+  const handleLogout=useCallback(()=>{setUser(null);saveUser(null);setShowAuth(false);},[]);
+
   return <>
     <style>{`
       @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
@@ -465,22 +508,83 @@ function App(){
       body{background:#f8fafc}
       textarea:focus,input:focus{border-color:${ac}!important;box-shadow:0 0 0 3px ${ac}20}
     `}</style>
-    <div style={{minHeight:"100vh",background:"var(--bg)",color:"var(--t1)",fontFamily:"var(--f)",padding:"24px 14px 60px",maxWidth:760,margin:"0 auto"}}>
+    {/* STICKY NAV */}
+    <nav style={{position:"fixed",top:0,left:0,right:0,background:"var(--s1)",borderBottom:"1px solid var(--bd)",zIndex:1000,padding:"12px 14px"}}>
+      <div style={{maxWidth:760,margin:"0 auto",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <div style={{display:"flex",alignItems:"center",gap:8}}>
+          {I.bolt(20,ac)}
+          <span style={{fontWeight:700,fontSize:16,color:"var(--t1)"}}>Prompt Architect</span>
+        </div>
+        <div style={{display:"flex",alignItems:"center",gap:12}}>
+          {user?(
+            <div style={{display:"flex",alignItems:"center",gap:10}}>
+              <span style={{fontSize:13,color:"var(--t2)"}}>{user.name}</span>
+              <button onClick={handleLogout} style={{fontSize:12,padding:"6px 14px",border:"1px solid var(--bd)",background:"var(--bg)",borderRadius:7,cursor:"pointer",color:"var(--t2)",fontFamily:"var(--f)",transition:"all .2s"}}> Logout</button>
+            </div>
+          ):(
+            <>
+              <button onClick={()=>{setAuthMode("login");setShowAuth(true);setAuthErr("");}} style={{fontSize:12,padding:"6px 14px",border:"none",background:"transparent",color:"var(--t2)",cursor:"pointer",fontFamily:"var(--f)"}}>Log in</button>
+              <button onClick={()=>{setAuthMode("signup");setShowAuth(true);setAuthErr("");}} style={{fontSize:12,padding:"6px 14px",border:"none",background:ac,color:"#fff",borderRadius:7,cursor:"pointer",fontFamily:"var(--f)",fontWeight:600,transition:"all .2s"}}>Sign up</button>
+            </>
+          )}
+        </div>
+      </div>
+    </nav>
 
-      {/* HEADER */}
-      <header style={{textAlign:"center",marginBottom:30}}>
+    <div style={{minHeight:"100vh",background:"var(--bg)",color:"var(--t1)",fontFamily:"var(--f)",paddingTop:60,paddingBottom:60,paddingLeft:14,paddingRight:14,maxWidth:760,margin:"0 auto"}}>
+
+      {/* HERO SECTION */}
+      <section style={{textAlign:"center",marginBottom:50,paddingTop:20}}>
+        <div style={{display:"inline-block",background:ac+"12",border:"1px solid "+ac+"33",borderRadius:20,padding:"6px 14px",marginBottom:16}}>
+          <span style={{fontSize:11,fontWeight:700,color:ac,textTransform:"uppercase",letterSpacing:"1px"}}>✨ Smart Prompt Engineering</span>
+        </div>
+        <h1 style={{fontSize:36,fontWeight:800,margin:"0 0 16px",lineHeight:1.2,color:"var(--t1)"}}>Turn vague ideas into expert-level AI prompts</h1>
+        <p style={{fontSize:15,color:"var(--t2)",margin:"0 0 32px",lineHeight:1.6,maxWidth:620,marginLeft:"auto",marginRight:"auto"}}>Prompt Architect analyzes your goal and automatically injects audience targeting, reasoning strategies, and domain expertise — so your AI delivers better results, every time.</p>
+        <div style={{display:"flex",justifyContent:"center",gap:12,flexWrap:"wrap",marginBottom:40}}>
+          <button onClick={()=>setShowAuth(!showAuth)} style={{display:"flex",alignItems:"center",gap:6,padding:"12px 24px",background:ac,color:"#fff",border:"none",borderRadius:10,fontWeight:700,fontSize:14,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>Start for free →</button>
+          <a href="#tool" style={{display:"flex",alignItems:"center",gap:6,padding:"12px 24px",background:"var(--s1)",color:"var(--t1)",border:"1px solid var(--bd)",borderRadius:10,fontWeight:600,fontSize:14,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s",textDecoration:"none"}}>See how it works ↓</a>
+        </div>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(200px, 1fr))",gap:20,marginBottom:50}}>
+        {[{n:"1",t:"Describe your goal",d:"Any wording, any level of detail — we'll find what matters."},{n:"2",t:"Smart enhancement",d:"We inject audience, reasoning, and industry expertise."},{n:"3",t:"Copy & paste anywhere",d:"Use it in Claude, ChatGPT, Gemini, or any AI."}].map((s,i)=>(
+          <div key={i} style={{background:"var(--s1)",border:"1px solid var(--bd)",borderRadius:14,padding:20}}>
+            <div style={{width:40,height:40,borderRadius:10,background:ac+"18",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:18,color:ac,marginBottom:12}}>{s.n}</div>
+            <h3 style={{fontSize:15,fontWeight:700,margin:"0 0 8px",color:"var(--t1)"}}>{s.t}</h3>
+            <p style={{fontSize:13,color:"var(--t2)",margin:0,lineHeight:1.5}}>{s.d}</p>
+          </div>
+        ))}
+      </section>
+
+      {/* FEATURES */}
+      <section style={{background:"var(--s2)",borderRadius:14,padding:30,marginBottom:50}}>
+        <h2 style={{fontSize:18,fontWeight:700,textAlign:"center",margin:"0 0 24px",color:"var(--t1)"}}>Built for professionals</h2>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(180px, 1fr))",gap:20}}>
+          {[{i:"sparkle",t:"Smart Enhancement",d:"Detects vague input, auto-injects specificity"},{i:"target",t:"15 Industries",d:"Finance, tech, healthcare, legal, and more"},{i:"code",t:"5 AI Models",d:"Claude, ChatGPT, Gemini, Llama, Universal"}].map((f,j)=>(
+            <div key={j} style={{textAlign:"center"}}>
+              <div style={{display:"flex",justifyContent:"center",marginBottom:12}}>{I[f.i]?.(24,ac)}</div>
+              <h4 style={{fontSize:14,fontWeight:700,margin:"0 0 6px",color:"var(--t1)"}}>{f.t}</h4>
+              <p style={{fontSize:12,color:"var(--t3)",margin:0}}>{f.d}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* HEADER FOR TOOL */}
+      <header style={{textAlign:"center",marginBottom:30}} id="tool">
         <div style={{display:"inline-flex",alignItems:"center",gap:10,marginBottom:5}}>
           <div style={{width:34,height:34,borderRadius:9,background:ac+"18",display:"flex",alignItems:"center",justifyContent:"center"}}>{I.bolt(18,ac)}</div>
-          <h1 style={{fontSize:23,fontWeight:720,margin:0,letterSpacing:"-.7px"}}>Prompt Architect</h1>
+          <h2 style={{fontSize:23,fontWeight:720,margin:0,letterSpacing:"-.7px"}}>Build Your Prompt</h2>
         </div>
-        <p style={{color:"var(--t3)",fontSize:13,margin:"4px 0 18px",fontWeight:450}}>Smart AI prompt engineering \u2014 your input gets enhanced automatically</p>
+        <p style={{color:"var(--t3)",fontSize:13,margin:"4px 0 18px",fontWeight:450}}>No account needed for free trial. Create one to save your history.</p>
         <div style={{display:"flex",justifyContent:"center",gap:8,flexWrap:"wrap"}}>
           <div style={{display:"inline-flex",borderRadius:10,background:"var(--s1)",border:"1px solid var(--bd)",padding:3}}>
             {[["amateur","seedling","Simple"],["expert","microscope","Expert"]].map(([m,ic,lb])=>(
               <button key={m} onClick={()=>setMode(m)} style={{display:"flex",alignItems:"center",gap:6,padding:"8px 24px",border:"none",borderRadius:7.5,cursor:"pointer",background:mode===m?ac:"transparent",color:mode===m?"#fff":"var(--t3)",fontFamily:"var(--f)",fontSize:12.5,fontWeight:620,transition:"all .2s"}}>{I[ic](13,mode===m?"#fff":"var(--t3)")}{lb}</button>
             ))}
           </div>
-          {history.length>0&&(
+          {user&&history.length>0&&(
             <button onClick={()=>setShowHistory(!showHistory)} style={{display:"flex",alignItems:"center",gap:5,padding:"8px 14px",borderRadius:10,border:"1px solid var(--bd)",background:"var(--s1)",color:"var(--t2)",cursor:"pointer",fontSize:12,fontFamily:"var(--f)",fontWeight:500}}>
               {I.clock(13,"var(--t2)")} History ({history.length})
             </button>
@@ -645,6 +749,27 @@ function App(){
         <p style={{color:"var(--t3)",fontSize:10.5,margin:"4px 0 0",opacity:.6}}>No data leaves your browser. All prompt generation happens locally.</p>
       </footer>
     </div>
+
+    {/* AUTH MODAL */}
+    {showAuth&&(
+      <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,.5)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:2000,padding:20}} onClick={()=>setShowAuth(false)}>
+        <div style={{background:"var(--s1)",borderRadius:16,padding:32,maxWidth:360,width:"100%",boxShadow:"0 20px 60px rgba(0,0,0,.15)",animation:"slideDown .3s ease"}} onClick={(e)=>e.stopPropagation()}>
+          <h2 style={{fontSize:20,fontWeight:700,margin:"0 0 24px",color:"var(--t1)",textAlign:"center"}}>{authMode==="signup"?"Create your account":"Sign in to your account"}</h2>
+          <form onSubmit={handleAuthSubmit} style={{display:"flex",flexDirection:"column",gap:12}}>
+            {authMode==="signup"&&(
+              <input value={authName} onChange={(e)=>setAuthName(e.target.value)} placeholder="Your name" style={inp({fontSize:14,padding:14})} />
+            )}
+            <input value={authEmail} onChange={(e)=>setAuthEmail(e.target.value)} type="email" placeholder="Email address" style={inp({fontSize:14,padding:14})} />
+            <input value={authPassword} onChange={(e)=>setAuthPassword(e.target.value)} type="password" placeholder="Password" style={inp({fontSize:14,padding:14})} />
+            {authErr&&<div style={{padding:10,background:"#fee2e2",border:"1px solid #fecaca",borderRadius:8,fontSize:13,color:"#dc2626",fontFamily:"var(--f)"}}>{authErr}</div>}
+            <button type="submit" style={{padding:14,background:ac,color:"#fff",border:"none",borderRadius:8,fontSize:14,fontWeight:700,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s",marginTop:8}}>{authMode==="signup"?"Create account":"Sign in"}</button>
+          </form>
+          <div style={{marginTop:20,textAlign:"center",fontSize:13,color:"var(--t2)"}}>
+            {authMode==="signup"?(<>Already have an account? <button onClick={()=>{setAuthMode("login");setAuthErr("");}} style={{border:"none",background:"none",color:ac,cursor:"pointer",fontWeight:700,fontFamily:"var(--f)"}}>Sign in</button></>):(<>Don't have an account? <button onClick={()=>{setAuthMode("signup");setAuthErr("");}} style={{border:"none",background:"none",color:ac,cursor:"pointer",fontWeight:700,fontFamily:"var(--f)"}}>Sign up</button></>)}
+          </div>
+        </div>
+      </div>
+    )}
   </>;
 }
 
