@@ -106,7 +106,7 @@ const LANGS=["English","Spanish","French","German","Portuguese","Italian","Dutch
    ═══════════════════════════════════════════════════════ */
 const IND_CONTEXT={
   general:"",
-  finance:"You operate within the financial services industry. Use standard financial terminology (EBITDA, DCF, IRR, NPV, P/E, WACC, etc.). Reference recognized frameworks (GAAP/IFRS, Basel III, SEC guidelines). Be precise with numbers \u2014 always specify units, time periods, and currencies. Distinguish between audited figures and estimates. Flag any regulatory compliance considerations. Use industry-standard valuation and risk assessment methodologies.",
+  finance:"You operate within the financial services industry. Use standard financial terminology (EBITDA, DCF, IRR, NPV, P/E, WACC, etc.). Reference recognized frameworks (GAAP/IFRS, Basel III, SEC guidelines). Be precise with numbers  -  always specify units, time periods, and currencies. Distinguish between audited figures and estimates. Flag any regulatory compliance considerations. Use industry-standard valuation and risk assessment methodologies.",
   healthcare:"You operate within healthcare. Use proper medical terminology (ICD codes, clinical nomenclature) while remaining accessible to the stated audience. Reference evidence-based practices, clinical guidelines (WHO, NIH, CDC), and peer-reviewed research. Be meticulous with HIPAA/data privacy considerations. Always note that clinical decisions should involve qualified professionals. Distinguish between clinical evidence levels (meta-analyses vs. case studies).",
   legal:"You operate within the legal profession. Use precise legal terminology and cite relevant statutes, regulations, or case law where applicable. Note jurisdictional variations. Structure arguments with clear legal reasoning (IRAC: Issue, Rule, Application, Conclusion). Flag areas where legal counsel should be consulted. Distinguish between settled law, emerging precedent, and legal opinion.",
   marketing:"You operate in marketing and advertising. Use current marketing terminology (CAC, LTV, ROAS, conversion funnel, attribution). Reference data-driven strategies and current platform best practices. Consider brand voice consistency, audience segmentation, and channel-specific optimization. Include measurable KPIs for every recommendation. Reference current consumer behavior trends and competitive positioning.",
@@ -140,11 +140,11 @@ const METHODOLOGY={
   coding:["Analyze requirements and state any assumptions upfront","Write clean, idiomatic code following the language's official style guide","Include comprehensive inline comments explaining non-obvious decisions","Add proper error handling, input validation, and edge case coverage","Provide usage examples and integration guidance","Suggest testing strategies, note performance trade-offs and security considerations"],
   analysis:["Lead with an executive summary stating the key finding or recommendation","Define scope, methodology, data sources, assumptions, and limitations","Apply established frameworks appropriate to the domain","Support every claim with specific data points or cited reasoning","Address counterarguments, risks, and alternative interpretations","Present comparative analysis using structured formats","Conclude with prioritized, actionable recommendations and clear next steps","Distinguish between facts, estimates, and opinions throughout"],
   brainstorm:["Generate ideas across multiple categories without self-censoring","For each idea: clear title, 2-3 sentence description, why it could work","Organize by feasibility (low/med/high), impact (low/med/high), effort required","Include both safe/incremental and bold/unconventional ideas","Identify combinations or synergies between ideas","Highlight top 3 recommendations with detailed reasoning"],
-  summarize:["Open with a single-sentence overview of the core message","Organize key points by importance, not source order","Preserve critical nuances, caveats, and conditions","Use direct, concrete language \u2014 zero filler","Include any action items, deadlines, or decisions","Note what was intentionally omitted and why"],
-  translate:["Preserve meaning, tone, and intent \u2014 not just literal words","Adapt idioms to culturally equivalent expressions","Maintain consistent terminology for domain-specific terms","Flag ambiguous terms or untranslatable concepts","Preserve original formatting and structure"],
+  summarize:["Open with a single-sentence overview of the core message","Organize key points by importance, not source order","Preserve critical nuances, caveats, and conditions","Use direct, concrete language  -  zero filler","Include any action items, deadlines, or decisions","Note what was intentionally omitted and why"],
+  translate:["Preserve meaning, tone, and intent  -  not just literal words","Adapt idioms to culturally equivalent expressions","Maintain consistent terminology for domain-specific terms","Flag ambiguous terms or untranslatable concepts","Preserve original formatting and structure"],
   image:["Specify subject with precise vivid detail","Define artistic style explicitly","Include lighting direction and quality","Specify camera angle and lens if photographic","Add color palette and mood descriptors","Include negative prompts to exclude unwanted elements"],
   roleplay:["Establish persona background, expertise, and communication style","Define knowledge boundaries","Maintain consistent voice throughout","React authentically based on persona domain expertise"],
-  email:["Lead with a clear subject line that communicates purpose immediately","Put key ask or information first \u2014 don't bury it","Keep paragraphs short (2-3 sentences) for mobile readability","End with specific, time-bound call to action","Include relevant context needed to take action"],
+  email:["Lead with a clear subject line that communicates purpose immediately","Put key ask or information first  -  don't bury it","Keep paragraphs short (2-3 sentences) for mobile readability","End with specific, time-bound call to action","Include relevant context needed to take action"],
   learning:["Assess starting knowledge and build from there","Scaffold from simple to complex","Use 2-3 real-world analogies per major concept","Include understanding checks with practice questions","Address common misconceptions explicitly","Summarize and suggest next steps for deeper learning"]
 };
 
@@ -152,7 +152,7 @@ const QUALITY={
   writing:"Every paragraph must have a clear purpose. No filler. Every claim needs evidence. Match readability to the audience level.",
   coding:"Code must be syntactically correct, follow DRY/SOLID principles, handle edge cases, and be production-ready.",
   analysis:"Every conclusion must trace to evidence. Separate correlation from causation. State confidence levels. Quantify impact.",
-  brainstorm:"Ideas must be specific and actionable \u2014 not vague platitudes. Each should be distinct. Include at least one unconventional angle.",
+  brainstorm:"Ideas must be specific and actionable  -  not vague platitudes. Each should be distinct. Include at least one unconventional angle.",
   summarize:"Summary must stand alone. A reader who only reads it should understand all key points. Zero unnecessary words.",
   translate:"A native speaker should not detect it was translated. Preserve nuance, humor, and cultural context.",
   image:"Prompt should produce consistent, reproducible results. Zero ambiguity in composition and style.",
@@ -161,7 +161,7 @@ const QUALITY={
   learning:"Learner should be able to teach the concept to someone else after reading."
 };
 
-const TONE_INST={Professional:"Polished, business-appropriate language. Direct. Avoid slang. Project competence.",Casual:"Conversational \u2014 like explaining to a smart friend. Contractions OK. Still accurate.",Academic:"Precise scholarly language. Cite reasoning. Hedge when uncertain. Follow academic structure.",Creative:"Vivid, evocative. Metaphors, unexpected choices, varied rhythm. Prioritize engagement.",Friendly:"Warm, encouraging, inclusive. Use 'we/let's'. Reassure. Make reader feel supported.",Authoritative:"Confident, declarative statements. Back every assertion with evidence. Command of subject.",Empathetic:"Acknowledge perspective/emotions. Validate before solving. Gentle with difficult information."};
+const TONE_INST={Professional:"Polished, business-appropriate language. Direct. Avoid slang. Project competence.",Casual:"Conversational  -  like explaining to a smart friend. Contractions OK. Still accurate.",Academic:"Precise scholarly language. Cite reasoning. Hedge when uncertain. Follow academic structure.",Creative:"Vivid, evocative. Metaphors, unexpected choices, varied rhythm. Prioritize engagement.",Friendly:"Warm, encouraging, inclusive. Use 'we/let's'. Reassure. Make reader feel supported.",Authoritative:"Confident, declarative statements. Back every assertion with evidence. Command of subject.",Empathetic:"Acknowledge perspective/emotions. Validate before solving. Gentle with difficult information."};
 
 const STYLE_INST={formal:"Use formal register throughout. Complete sentences. No contractions. Structured paragraphs with topic sentences. Professional vocabulary.",conversational:"Write naturally as if speaking. Contractions encouraged. Short sentences mixed with longer ones. Rhetorical questions OK. Avoid stiff phrasing.",technical:"Precise technical vocabulary. Define terms on first use. Logical structure. Code examples where relevant. Cite specifications and documentation.",persuasive:"Lead with strongest argument. Use social proof, data, and emotional appeal strategically. Address objections proactively. Strong call to action.",narrative:"Tell a story. Use characters, scenes, tension, and resolution. Show don't tell. Vivid sensory details. Clear narrative arc.",instructional:"Step-by-step. Action verbs to start each instruction. Anticipate mistakes. Include tips and warnings. Test understanding at intervals.",analytical:"Data-driven. Present evidence before conclusions. Use frameworks and structured comparisons. Quantify wherever possible. Objective tone.",minimalist:"Maximum clarity, minimum words. Short sentences. No decoration. Every word must earn its place. White space between ideas."};
 
@@ -228,7 +228,7 @@ function getSmartEnhancements(topic,taskType,industry,output){
 
   // Vague or too short — add specificity guidance
   if(signals.vague||signals.short){
-    enhancements.push({type:"specificity",label:"Added specificity guidance",text:"Be specific and concrete. Where the request is broad, narrow the focus to the most high-impact aspects. Provide depth over breadth \u2014 a thorough treatment of fewer points is more valuable than a shallow overview of many."});
+    enhancements.push({type:"specificity",label:"Added specificity guidance",text:"Be specific and concrete. Where the request is broad, narrow the focus to the most high-impact aspects. Provide depth over breadth  -  a thorough treatment of fewer points is more valuable than a shallow overview of many."});
   }
 
   // Missing audience — smart infer from context
@@ -312,7 +312,7 @@ function buildPrompt(p){
   // TASK + SMART ENHANCEMENT
   const enhancements=getSmartEnhancements(topic,taskType,industry,output);
   const smartContext=enhancements.filter(e=>e.type==="specificity"||e.type==="scope").map(e=>e.text).join("\n\n");
-  const taskBlock=topic+(smartContext?"\n\n"+smartContext:"")+"\n\nYour response must be thorough, well-structured, and demonstrate expert-level depth. Deliver genuine professional value \u2014 not a surface-level overview.";
+  const taskBlock=topic+(smartContext?"\n\n"+smartContext:"")+"\n\nYour response must be thorough, well-structured, and demonstrate expert-level depth. Deliver genuine professional value  -  not a surface-level overview.";
   sec("task",taskBlock);
 
   // CONTEXT
@@ -322,8 +322,8 @@ function buildPrompt(p){
   if(audience)ctx.push("Target audience: "+audience);
   else if(audienceEnhancement)ctx.push(audienceEnhancement.text);
   else ctx.push("Target audience: Knowledgeable professionals who expect depth and precision");
-  ctx.push("Tone: "+tone+" \u2014 "+(TONE_INST[tone]||""));
-  ctx.push("Writing style: "+(STYLES[style]?.l||style)+" \u2014 "+(STYLE_INST[style]||""));
+  ctx.push("Tone: "+tone+"  -  "+(TONE_INST[tone]||""));
+  ctx.push("Writing style: "+(STYLES[style]?.l||style)+"  -  "+(STYLE_INST[style]||""));
   ctx.push("Length: "+(LEN_SUB[length]||length));
   ctx.push("Output format: "+fmtLabels);
   if(language&&language!=="English")ctx.push("Language: Respond entirely in "+language+". Use natural, native-quality "+language+" throughout.");
@@ -354,7 +354,7 @@ function buildPrompt(p){
     framework:"Structure your response around a recognized framework or model relevant to the domain. Name the framework explicitly, explain why it applies, and map your analysis to its components.",
     flowchart:"Include text-based decision trees or flowcharts (using arrows and branching) to illustrate processes, decisions, or workflows. Label each decision point and outcome clearly.",
     before_after:"Where applicable, use Before / After comparisons to illustrate transformations, improvements, or changes. Show concrete examples of the current state vs. the recommended state.",
-    pros_cons:"For any recommendation or option, include a structured Pros & Cons analysis. Be specific \u2014 generic pros/cons like 'saves time' need quantification or context.",
+    pros_cons:"For any recommendation or option, include a structured Pros & Cons analysis. Be specific  -  generic pros/cons like 'saves time' need quantification or context.",
     scorecard:"Evaluate options using a structured scorecard or rating matrix. Define clear criteria, use a consistent scale (e.g., 1-5 or Low/Med/High), and include weighted totals if appropriate.",
     annotated:"Include annotated examples that walk through real or realistic scenarios step by step, with inline commentary explaining why each element matters and what to watch for.",
     markdown:"Format the entire response as clean, valid Markdown ready for direct use in documentation, READMEs, or CMS platforms. Use proper heading hierarchy, code fences, links, and emphasis."
@@ -370,7 +370,7 @@ function buildPrompt(p){
   if(includes.length>0){
     const incInst=[];
     if(includes.includes("exec_summary"))incInst.push("Begin with an Executive Summary (3-5 sentences) stating the core findings or recommendations upfront");
-    if(includes.includes("examples"))incInst.push("Include at least 2-3 real-world examples that illustrate key points concretely \u2014 use named companies, real scenarios, or plausible case studies");
+    if(includes.includes("examples"))incInst.push("Include at least 2-3 real-world examples that illustrate key points concretely  -  use named companies, real scenarios, or plausible case studies");
     if(includes.includes("sources"))incInst.push("Cite sources for factual claims. Name specific reports, studies, publications, or datasets. Do not fabricate citations.");
     if(includes.includes("action_items"))incInst.push("End with a clear Action Items / Next Steps section: numbered, specific, with owners and timelines where applicable");
     if(includes.includes("risks"))incInst.push("Include a Risk Assessment section: identify top 3-5 risks, their likelihood (high/med/low), impact, and mitigation strategies");
@@ -389,9 +389,9 @@ function buildPrompt(p){
   }
 
   // TECHNIQUES (user-selected)
-  if(techniques.includes("cot"))sec("reasoning","Think through this step by step. Show your reasoning explicitly \u2014 walk through logic, evaluate alternatives, explain each conclusion.");
+  if(techniques.includes("cot"))sec("reasoning","Think through this step by step. Show your reasoning explicitly  -  walk through logic, evaluate alternatives, explain each conclusion.");
   if(techniques.includes("fewshot"))sec("examples_format",isXml?"Model your response after this pattern:\n\n<example>\n  <input>[Describe example input]</input>\n  <ideal_output>[Describe ideal output]</ideal_output>\n</example>\n\n(Replace with your own examples)":"Model your response after this pattern:\n\n**Example Input:** [Describe example input]\n**Ideal Output:** [Describe ideal output]\n\n*(Replace with your own examples)*");
-  if(techniques.includes("constraints"))sec("constraints","1. Never fabricate facts, statistics, or sources\n2. If uncertain, say so explicitly with confidence level\n3. Stay tightly focused \u2014 no tangential drift\n4. Distinguish between established facts, analysis, and speculation\n5. Flag potentially incorrect assumptions before proceeding");
+  if(techniques.includes("constraints"))sec("constraints","1. Never fabricate facts, statistics, or sources\n2. If uncertain, say so explicitly with confidence level\n3. Stay tightly focused  -  no tangential drift\n4. Distinguish between established facts, analysis, and speculation\n5. Flag potentially incorrect assumptions before proceeding");
   if(techniques.includes("selfcheck"))sec("self_verification","Before submitting, verify:\n- Does it fully address every aspect of the task?\n- Is structure clear and scannable?\n- Are all claims supported?\n- Is tone consistent and audience-appropriate?\n- No unnecessary repetition or filler?\nRevise any section that fails these checks.");
   if(techniques.includes("compare"))sec("comparative_approach","Present each option with clear label and description. Evaluate on same criteria. Use structured comparison for 3+ options. State recommendation with reasoning. Note circumstances favoring alternatives.");
   if(techniques.includes("iterative"))sec("refinement","After initial draft: re-read as target audience, identify gaps or weak arguments, provide improved version, note what changed and why.");
@@ -404,7 +404,7 @@ function buildPrompt(p){
   if(special)sec("special_requests_and_constraints",special);
 
   // ANTI-PATTERNS
-  sec("avoid","- Do not open with filler phrases like \"Sure!\" or \"Great question!\" \u2014 begin directly with substance\n- Do not use vague hedging like \"it depends\" without explaining what it depends on specifically\n- Do not pad with generic background the audience already knows\n- Do not end with empty clich\u00e9s \u2014 close with actionable specifics\n- Do not repeat the same point in different words to inflate length");
+  sec("avoid","- Do not open with filler phrases like \"Sure!\" or \"Great question!\"  -  begin directly with substance\n- Do not use vague hedging like \"it depends\" without explaining what it depends on specifically\n- Do not pad with generic background the audience already knows\n- Do not end with empty clich\u00e9s  -  close with actionable specifics\n- Do not repeat the same point in different words to inflate length");
 
   return lines.join("\n\n");
 }
@@ -631,7 +631,7 @@ function App(){
       <div style={{background:"var(--s1)",borderRadius:16,border:"1px solid var(--bd)",padding:"26px 20px",marginBottom:20}}>
 
         {/* TOPIC */}
-        <Step ico="pen" title="Describe your goal" sub="Be specific \u2014 but don't worry about being perfect. Smart enhancement fills the gaps.">
+        <Step ico="pen" title="Describe your goal" sub="Be specific  -  but don't worry about being perfect. Smart enhancement fills the gaps.">
           <div style={{display:"flex",gap:8,marginBottom:12,alignItems:"flex-start"}}>
             <textarea value={topic} onChange={e=>{setTopic(e.target.value);setShow(false);}} placeholder="e.g. Build a DCF valuation tutorial for finance students who understand basic accounting but are new to valuation models. Include a worked example using Apple's 2024 financials..." rows={3} style={{...inp({resize:"vertical"}),flex:1}} />
             {topic.trim()&&(
@@ -713,7 +713,7 @@ function App(){
           <Wrap>{LENGTHS.map(l=><Chip key={l} active={len===l} accent={ac} onClick={()=>setLen(l)} sx={{flexDirection:"column",alignItems:"flex-start",gap:0,padding:"8px 14px"}}><span>{l}</span><span style={{fontSize:10.5,color:"var(--t3)",fontWeight:400}}>{LEN_SUB[l]}</span></Chip>)}</Wrap>
         </Step>
 
-        <Step ico="layout" title="Response format" sub="Select one or more \u2014 they combine in the prompt">
+        <Step ico="layout" title="Response format" sub="Select one or more  -  they combine in the prompt">
           <Wrap>{Object.entries(FMTS).map(([k,v])=><Chip key={k} active={fmt.includes(k)} accent={ac} onClick={()=>tf(k)}>{I[v.i]?.(12,fmt.includes(k)?ac:"var(--t3)")}{v.l}</Chip>)}</Wrap>
         </Step>
 
@@ -775,6 +775,9 @@ function App(){
             <span style={{display:"flex",alignItems:"center",gap:3}}>{I.file(10,"var(--t3)")} {OUTPUTS[output].l}</span>
             {language!=="English"&&<span style={{display:"flex",alignItems:"center",gap:3}}>{I.lang(10,"var(--t3)")} {language}</span>}
           </div>
+          <div style={{padding:"16px 20px",background:"var(--bg)",borderTop:"1px solid var(--bd)",fontSize:12,color:"var(--t3)",lineHeight:1.6}}>
+            <p style={{margin:0}}>This prompt has been enhanced with smart audience targeting, reasoning strategies, and domain expertise based on your inputs. Copy it to Claude, ChatGPT, Gemini, or any AI model and paste it directly. The AI will understand the context and deliver better results than a generic prompt.</p>
+          </div>
           {!user&&promptGenerated&&(
             <div style={{padding:"20px",background:"var(--s2)",borderTop:"1px solid var(--bd)",textAlign:"center"}}>
               <p style={{margin:"0 0 12px",fontSize:13,color:"var(--t2)",fontWeight:500}}>Save your prompt history and unlock advanced features</p>
@@ -786,7 +789,7 @@ function App(){
 
       {/* FOOTER */}
       <footer style={{textAlign:"center",marginTop:40,paddingTop:20,borderTop:"1px solid var(--bd)"}}>
-        <p style={{color:"var(--t3)",fontSize:11.5,margin:0}}>Prompt Architect \u2014 Smart AI prompt engineering</p>
+        <p style={{color:"var(--t3)",fontSize:11.5,margin:0}}>Prompt Architect  -  Smart AI prompt engineering</p>
         <p style={{color:"var(--t3)",fontSize:10.5,margin:"4px 0 0",opacity:.6}}>No data leaves your browser. All prompt generation happens locally.</p>
       </footer>
     </div>
