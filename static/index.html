@@ -75,12 +75,34 @@ const I={
   wand:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8 19 13M17.8 6.2 19 5M3 21l9-9M12.2 6.2 11 5"/></svg>,
 };
 
-const MM=({id,size=22})=>{const s=size;if(id==="claude")return <svg width={s} height={s} viewBox="0 0 32 32"><path d="M21 10.5l-6.5 11.3c-.4.7-1.4.7-1.8 0L6.2 10.5c-.4-.7.1-1.5.9-1.5h13c.8 0 1.3.8.9 1.5z" fill="#D97706"/><path d="M25 10.5l-3 5.2c-.4.7.1 1.5.9 1.5.5 0 .9-.3 1.1-.7l3-5.2c.4-.7-.1-1.5-.9-1.5-.5 0-.9.3-1.1.7z" fill="#D97706" opacity=".55"/></svg>;if(id==="chatgpt")return <svg width={s} height={s} viewBox="0 0 32 32"><path d="M16 6C10.48 6 6 10.48 6 16s4.48 10 10 10 10-4.48 10-10S21.52 6 16 6zm0 2.5a7.5 7.5 0 110 15 7.5 7.5 0 010-15z" fill="#10A37F"/><path d="M16 11v5.5l3.5 2" stroke="#10A37F" strokeWidth="2.2" strokeLinecap="round" fill="none"/></svg>;if(id==="gemini")return <svg width={s} height={s} viewBox="0 0 32 32"><path d="M16 5c0 6.5-5 11.5-11 11.5C11 16.5 16 21.5 16 28c0-6.5 5-11.5 11-11.5C21 16.5 16 11.5 16 5z" fill="#4285F4"/></svg>;if(id==="llama")return <svg width={s} height={s} viewBox="0 0 32 32"><rect x="6" y="6" width="20" height="20" rx="6" fill="none" stroke="#8B5CF6" strokeWidth="2.2"/><circle cx="12" cy="14.5" r="2" fill="#8B5CF6"/><circle cx="20" cy="14.5" r="2" fill="#8B5CF6"/><path d="M12 20c2 1.5 6 1.5 8 0" stroke="#8B5CF6" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>;return <svg width={s} height={s} viewBox="0 0 32 32"><circle cx="16" cy="16" r="9" fill="none" stroke="#64748B" strokeWidth="2" strokeDasharray="4 2.5"/><circle cx="16" cy="16" r="3.5" fill="#64748B"/></svg>;};
+const MM=({id,size=22})=>{const s=size;const c=MODELS[id]?.col||"#64748B";
+  if(id==="claude")return <svg width={s} height={s} viewBox="0 0 32 32"><path d="M21 10.5l-6.5 11.3c-.4.7-1.4.7-1.8 0L6.2 10.5c-.4-.7.1-1.5.9-1.5h13c.8 0 1.3.8.9 1.5z" fill="#D97706"/><path d="M25 10.5l-3 5.2c-.4.7.1 1.5.9 1.5.5 0 .9-.3 1.1-.7l3-5.2c.4-.7-.1-1.5-.9-1.5-.5 0-.9.3-1.1.7z" fill="#D97706" opacity=".55"/></svg>;
+  if(id==="chatgpt")return <svg width={s} height={s} viewBox="0 0 32 32"><path d="M16 6C10.48 6 6 10.48 6 16s4.48 10 10 10 10-4.48 10-10S21.52 6 16 6zm0 2.5a7.5 7.5 0 110 15 7.5 7.5 0 010-15z" fill="#10A37F"/><path d="M16 11v5.5l3.5 2" stroke="#10A37F" strokeWidth="2.2" strokeLinecap="round" fill="none"/></svg>;
+  if(id==="gpt4o")return <svg width={s} height={s} viewBox="0 0 32 32"><circle cx="16" cy="16" r="10" fill="none" stroke="#0EA5E9" strokeWidth="2"/><path d="M11 16h10M16 11v10" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round"/><circle cx="16" cy="16" r="3" fill="#0EA5E9"/></svg>;
+  if(id==="gemini")return <svg width={s} height={s} viewBox="0 0 32 32"><path d="M16 5c0 6.5-5 11.5-11 11.5C11 16.5 16 21.5 16 28c0-6.5 5-11.5 11-11.5C21 16.5 16 11.5 16 5z" fill="#4285F4"/></svg>;
+  if(id==="grok")return <svg width={s} height={s} viewBox="0 0 32 32"><path d="M8 8l16 16M24 8l-8 8" stroke="#F97316" strokeWidth="2.5" strokeLinecap="round"/></svg>;
+  if(id==="mistral")return <svg width={s} height={s} viewBox="0 0 32 32"><rect x="6" y="7" width="6" height="6" rx="1" fill="#FF6F00"/><rect x="13" y="7" width="6" height="6" rx="1" fill="#FF6F00"/><rect x="20" y="7" width="6" height="6" rx="1" fill="#FF6F00"/><rect x="6" y="19" width="6" height="6" rx="1" fill="#FF6F00"/><rect x="13" y="13" width="6" height="6" rx="1" fill="#FF6F00" opacity=".6"/><rect x="20" y="19" width="6" height="6" rx="1" fill="#FF6F00"/></svg>;
+  if(id==="llama")return <svg width={s} height={s} viewBox="0 0 32 32"><rect x="6" y="6" width="20" height="20" rx="6" fill="none" stroke="#8B5CF6" strokeWidth="2.2"/><circle cx="12" cy="14.5" r="2" fill="#8B5CF6"/><circle cx="20" cy="14.5" r="2" fill="#8B5CF6"/><path d="M12 20c2 1.5 6 1.5 8 0" stroke="#8B5CF6" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>;
+  if(id==="perplexity")return <svg width={s} height={s} viewBox="0 0 32 32"><circle cx="16" cy="16" r="10" fill="none" stroke="#22D3EE" strokeWidth="2"/><path d="M16 8v16M10 12l6 4 6-4M10 20l6-4 6 4" stroke="#22D3EE" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>;
+  if(id==="copilot")return <svg width={s} height={s} viewBox="0 0 32 32"><path d="M10 24V14a6 6 0 0112 0v10" stroke="#6366F1" strokeWidth="2.2" fill="none" strokeLinecap="round"/><circle cx="13" cy="18" r="2" fill="#6366F1"/><circle cx="19" cy="18" r="2" fill="#6366F1"/></svg>;
+  return <svg width={s} height={s} viewBox="0 0 32 32"><circle cx="16" cy="16" r="9" fill="none" stroke="#64748B" strokeWidth="2" strokeDasharray="4 2.5"/><circle cx="16" cy="16" r="3.5" fill="#64748B"/></svg>;
+};
 
 /* ═══════════════════════════════════════════════════════
    DATA — Models, Tasks, Industries, Outputs, etc.
    ═══════════════════════════════════════════════════════ */
-const MODELS={claude:{name:"Claude",col:"#0891B2",tips:"XML tags, docs at top, detailed context"},chatgpt:{name:"ChatGPT",col:"#10A37F",tips:"Markdown headers, strict schemas, instructions top & bottom"},gemini:{name:"Gemini",col:"#4285F4",tips:"PTCF framework, formatting at top, great multimodal"},llama:{name:"Llama / OSS",col:"#8B5CF6",tips:"Concise & explicit, system prompts for roles"},general:{name:"Universal",col:"#64748B",tips:"Cross-model best practices"}};
+const MODELS={
+  claude:{name:"Claude",col:"#0891B2",tips:"XML tags for structure, documents at top, detailed context windows, thinking blocks supported",fmt:"xml"},
+  chatgpt:{name:"ChatGPT",col:"#10A37F",tips:"Markdown headers, strict JSON schemas, system + user message separation, chain-of-thought in steps",fmt:"md"},
+  gpt4o:{name:"GPT-4o",col:"#0EA5E9",tips:"Multimodal native, structured outputs with JSON mode, temperature-sensitive — be explicit about creativity vs precision",fmt:"md"},
+  gemini:{name:"Gemini",col:"#4285F4",tips:"PTCF framework (Persona-Task-Context-Format), bold section headers, strong at multimodal and long context",fmt:"bold"},
+  grok:{name:"Grok",col:"#F97316",tips:"Direct and conversational, handles real-time context, system prompts for personality — concise instructions perform best",fmt:"md"},
+  mistral:{name:"Mistral",col:"#FF6F00",tips:"Instruction-tuned format, system/user/assistant roles, strong at structured reasoning — keep prompts focused and precise",fmt:"md"},
+  llama:{name:"Llama",col:"#8B5CF6",tips:"System prompt for role assignment, explicit constraints, shorter prompts with clear delimiters, supports tool use",fmt:"md"},
+  perplexity:{name:"Perplexity",col:"#22D3EE",tips:"Search-augmented generation — ask specific questions, request source citations, great for research and fact-checking",fmt:"md"},
+  copilot:{name:"Copilot",col:"#6366F1",tips:"Code-context aware, inline comment style, specify language/framework explicitly, file-level context helps",fmt:"md"},
+  general:{name:"Universal",col:"#64748B",tips:"Cross-model best practices — clear structure, explicit constraints, works with any AI model",fmt:"md"}
+};
 
 const TASKS={writing:{l:"Writing",i:"pen"},coding:{l:"Coding",i:"code"},analysis:{l:"Analysis",i:"chart"},brainstorm:{l:"Brainstorm",i:"lightbulb"},summarize:{l:"Summarize",i:"fileText"},translate:{l:"Translate",i:"globe"},image:{l:"Image Gen",i:"palette"},roleplay:{l:"Role / Persona",i:"theater"},email:{l:"Email / Comms",i:"mail"},learning:{l:"Learning",i:"book"},strategy:{l:"Strategy",i:"target"},debug:{l:"Debug / Troubleshoot",i:"microscope"},review:{l:"Review / Critique",i:"checkList"},decision:{l:"Decision Framework",i:"sliders"},persuade:{l:"Persuade / Negotiate",i:"bolt"}};
 
@@ -485,10 +507,10 @@ function getSmartEnhancements(topic,taskType,industry,output){
    ═══════════════════════════════════════════════════════ */
 function buildPrompt(p){
   const {topic,taskType,model,tone,length,format,techniques,audience,extra,special,mode,industry,output,style,includes,language,fileOutput,selectedFirm,selectedRole}=p;
-  const isXml=model==="claude";const isExp=mode==="expert";const lines=[];
+  const mfmt=MODELS[model]?.fmt||"md";const isXml=mfmt==="xml";const isExp=mode==="expert";const lines=[];
   const sec=(tag,content)=>{
-    if(isXml)lines.push("<"+tag+">\n"+content+"\n</"+tag+">");
-    else if(model==="gemini")lines.push("**"+tag.toUpperCase().replace(/_/g," ")+"**\n"+content);
+    if(mfmt==="xml")lines.push("<"+tag+">\n"+content+"\n</"+tag+">");
+    else if(mfmt==="bold")lines.push("**"+tag.toUpperCase().replace(/_/g," ")+"**\n"+content);
     else lines.push("## "+tag.charAt(0).toUpperCase()+tag.replace(/_/g," ").slice(1)+"\n"+content);
   };
 
@@ -1056,7 +1078,7 @@ function App(){
   const ref=useRef(null);
   const isExp=mode==="expert";
   const ac=MODELS[model].col;
-  const acRgb={"#0891B2":"8,145,178","#D97706":"217,119,6","#10A37F":"16,163,127","#4285F4":"66,133,244","#8B5CF6":"139,92,246","#64748B":"100,116,139"}[ac];
+  const acRgb={"#0891B2":"8,145,178","#D97706":"217,119,6","#10A37F":"16,163,127","#0EA5E9":"14,165,233","#4285F4":"66,133,244","#F97316":"249,115,22","#FF6F00":"255,111,0","#8B5CF6":"139,92,246","#22D3EE":"34,211,238","#6366F1":"99,102,241","#64748B":"100,116,139"}[ac];
 
   const prompt=buildPrompt({topic,taskType:task,model,tone,length:len,format:fmt,techniques:techs,audience:aud,extra,special,mode,industry,output,style,includes,language,fileOutput,selectedFirm,selectedRole});
   const enhancements=useMemo(()=>topic.trim()?getSmartEnhancements(topic,task,industry,output):[], [topic,task,industry,output]);
