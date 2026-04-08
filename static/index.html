@@ -896,33 +896,26 @@ function App(){
 
           {/* EXAMPLE PROMPTS */}
           {!topic.trim()&&(
-            <div style={{marginTop:12}}>
-              <button onClick={()=>setShowExamples(!showExamples)} style={{display:"flex",alignItems:"center",gap:6,padding:"8px 14px",borderRadius:8,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",cursor:"pointer",fontSize:12,fontFamily:"var(--f)",fontWeight:600,transition:"all .15s",width:"100%",justifyContent:"center"}}>
-                {I.lightbulb(13,"var(--t2)")} {showExamples?"Hide examples":"Browse example prompts by industry"}
-                <span style={{fontSize:10,transition:"transform .2s",transform:showExamples?"rotate(180deg)":"rotate(0deg)",marginLeft:2}}>&#9660;</span>
-              </button>
-              {showExamples&&(
-                <div style={{marginTop:10,animation:"fadeIn .2s ease"}}>
-                  <div style={{display:"flex",gap:6,marginBottom:12,flexWrap:"wrap"}}>
-                    {[...new Set(EXAMPLES.map(e=>e.sector))].map((sector,i)=>(
-                      <button key={i} onClick={()=>setExampleSector(exampleSector===sector?"":sector)} style={{padding:"5px 10px",borderRadius:6,border:"1.5px solid "+(exampleSector===sector?ac:"var(--bd)"),background:exampleSector===sector?ac+"14":"var(--s2)",color:exampleSector===sector?ac:"var(--t2)",cursor:"pointer",fontSize:10.5,fontFamily:"var(--f)",fontWeight:600,transition:"all .15s"}}>{sector}</button>
-                    ))}
-                  </div>
-                  {exampleSector&&(
-                  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:8,animation:"fadeIn .2s ease"}}>
-                    {EXAMPLES.filter(ex=>ex.sector===exampleSector).map((ex,i)=>(
-                        <button key={i} onClick={()=>{loadExample(ex);setExampleSector("");setShowExamples(false);}} style={{padding:"10px 12px",borderRadius:9,border:"1px solid var(--bd)",background:"var(--s1)",color:"var(--t1)",cursor:"pointer",fontFamily:"var(--f)",transition:"all .15s",textAlign:"left",display:"flex",flexDirection:"column",gap:4}}>
-                          <span style={{fontSize:12,fontWeight:620,lineHeight:1.3}}>{ex.label}</span>
-                          <span style={{fontSize:10.5,color:"var(--t3)",lineHeight:1.4,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{ex.topic.substring(0,90)}...</span>
-                          <div style={{display:"flex",gap:4,marginTop:2}}>
-                            <span style={{fontSize:9.5,padding:"2px 6px",borderRadius:4,background:ac+"10",color:ac,fontWeight:550}}>{TASKS[ex.task]?.l}</span>
-                            <span style={{fontSize:9.5,padding:"2px 6px",borderRadius:4,background:"var(--s2)",color:"var(--t3)",fontWeight:500}}>{MODELS[ex.model]?.name}</span>
-                          </div>
-                        </button>
-                      ))}
-                  </div>
-                  )}
-                </div>
+            <div style={{marginTop:14}}>
+              <div style={{fontSize:11.5,color:"var(--t3)",marginBottom:8,fontWeight:600}}>Try an example by sector:</div>
+              <div style={{display:"flex",gap:6,marginBottom:12,flexWrap:"wrap"}}>
+                {[...new Set(EXAMPLES.map(e=>e.sector))].map((sector,i)=>(
+                  <button key={i} onClick={()=>setExampleSector(exampleSector===sector?"":sector)} style={{padding:"5px 10px",borderRadius:6,border:"1.5px solid "+(exampleSector===sector?ac:"var(--bd)"),background:exampleSector===sector?ac+"14":"var(--s2)",color:exampleSector===sector?ac:"var(--t2)",cursor:"pointer",fontSize:10.5,fontFamily:"var(--f)",fontWeight:600,transition:"all .15s"}}>{sector}</button>
+                ))}
+              </div>
+              {exampleSector&&(
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:8,animation:"fadeIn .2s ease"}}>
+                {EXAMPLES.filter(ex=>ex.sector===exampleSector).map((ex,i)=>(
+                  <button key={i} onClick={()=>{loadExample(ex);setExampleSector("");}} style={{padding:"10px 12px",borderRadius:9,border:"1px solid var(--bd)",background:"var(--s1)",color:"var(--t1)",cursor:"pointer",fontFamily:"var(--f)",transition:"all .15s",textAlign:"left",display:"flex",flexDirection:"column",gap:4}}>
+                    <span style={{fontSize:12,fontWeight:620,lineHeight:1.3}}>{ex.label}</span>
+                    <span style={{fontSize:10.5,color:"var(--t3)",lineHeight:1.4,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{ex.topic.substring(0,90)}...</span>
+                    <div style={{display:"flex",gap:4,marginTop:2}}>
+                      <span style={{fontSize:9.5,padding:"2px 6px",borderRadius:4,background:ac+"10",color:ac,fontWeight:550}}>{TASKS[ex.task]?.l}</span>
+                      <span style={{fontSize:9.5,padding:"2px 6px",borderRadius:4,background:"var(--s2)",color:"var(--t3)",fontWeight:500}}>{MODELS[ex.model]?.name}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
               )}
             </div>
           )}
