@@ -1035,6 +1035,8 @@ function App(){
   const [showHistory,setShowHistory]=useState(false);
   const [user,setUser]=useState(null);
   const [authLoading,setAuthLoading]=useState(true);
+  const [usage,setUsage]=useState({simple_used:0,expert_used:0,is_paid:false,subscription_status:"free"});
+  const [showPaywall,setShowPaywall]=useState(false);
   const [showAuth,setShowAuth]=useState(false);
   const [authMode,setAuthMode]=useState("login");
   const [authEmail,setAuthEmail]=useState("");
@@ -1055,6 +1057,12 @@ function App(){
   const prompt=buildPrompt({topic,taskType:task,model,tone,length:len,format:fmt,techniques:techs,audience:aud,extra,special,mode,industry,output,style,includes,language,fileOutput,selectedFirm,selectedRole});
   const enhancements=useMemo(()=>topic.trim()?getSmartEnhancements(topic,task,industry,output):[], [topic,task,industry,output]);
 
+  // Load usage status from Supabase
+  const refreshUsage=useCallback(async()=>{
+    const {data,error}=await supabase.rpc("get_usage_status");
+    if(!error&&data&&!data.error)setUsage(data);
+  },[]);
+
   // Initialize Supabase auth session and listen for changes
   useEffect(()=>{
     supabase.auth.getSession().then(({data:{session}})=>{
@@ -1062,6 +1070,7 @@ function App(){
         const u=session.user;
         setUser({name:u.user_metadata?.name||u.email?.split("@")[0]||"User",email:u.email});
         loadHistoryFromDB().then(h=>setHistory(h));
+        supabase.rpc("get_usage_status").then(({data})=>{if(data&&!data.error)setUsage(data);});
       }
       setAuthLoading(false);
     });
@@ -1070,23 +1079,43 @@ function App(){
         const u=session.user;
         setUser({name:u.user_metadata?.name||u.email?.split("@")[0]||"User",email:u.email});
         loadHistoryFromDB().then(h=>setHistory(h));
+        supabase.rpc("get_usage_status").then(({data})=>{if(data&&!data.error)setUsage(data);});
       }else if(event==="SIGNED_OUT"){
         setUser(null);
         setHistory([]);
+        setUsage({simple_used:0,expert_used:0,is_paid:false,subscription_status:"free"});
       }
     });
     return ()=>subscription.unsubscribe();
   },[]);
 
+  // FREE LIMITS: 2 simple prompts, 1 expert prompt
+  const FREE_SIMPLE=2;
+  const FREE_EXPERT=1;
+  const canGenerate=usage.is_paid||usage.subscription_status==="active"||(isExp?usage.expert_used<FREE_EXPERT:usage.simple_used<FREE_SIMPLE);
+  const remainingSimple=Math.max(0,FREE_SIMPLE-usage.simple_used);
+  const remainingExpert=Math.max(0,FREE_EXPERT-usage.expert_used);
+
   const go=useCallback(()=>{
+    // Must have account
+    if(!user){setAuthMode("signup");setShowAuth(true);setAuthErr("");return;}
+    // Check paywall
+    if(!usage.is_paid&&usage.subscription_status!=="active"){
+      if(isExp&&usage.expert_used>=FREE_EXPERT){setShowPaywall(true);return;}
+      if(!isExp&&usage.simple_used>=FREE_SIMPLE){setShowPaywall(true);return;}
+    }
     setShow(true);
     setPromptGenerated(true);
+    // Increment usage in DB
+    supabase.rpc("increment_prompt_count",{mode:isExp?"expert":"simple"}).then(({data})=>{
+      if(data)setUsage(data);
+    });
     if(user){
       const entry={topic,task,industry,output,model,fileOutput,promptText:prompt};
       saveHistoryToDB(entry).then(()=>loadHistoryFromDB().then(h=>setHistory(h)));
     }
     setTimeout(()=>ref.current?.scrollIntoView({behavior:"smooth",block:"start"}),120);
-  },[topic,task,industry,output,model,fileOutput,prompt,user]);
+  },[topic,task,industry,output,model,fileOutput,prompt,user,isExp,usage]);
 
   const cp=useCallback(()=>{try{navigator.clipboard.writeText(prompt).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2200);});}catch(e){const ta=document.createElement("textarea");ta.value=prompt;ta.style.cssText="position:fixed;left:-9999px;top:-9999px";document.body.appendChild(ta);ta.focus();ta.select();document.execCommand("copy");document.body.removeChild(ta);setCopied(true);setTimeout(()=>setCopied(false),2200);}},[prompt]);
 
@@ -1423,8 +1452,15 @@ function App(){
         </Step>
 
         {/* GENERATE */}
-        <div style={{display:"flex",justifyContent:"center",paddingTop:8}}>
-          <button onClick={go} disabled={!topic.trim()} style={{display:"flex",alignItems:"center",gap:8,padding:"12px 38px",borderRadius:10,border:"none",background:topic.trim()?ac:"rgba(255,255,255,.04)",color:topic.trim()?"#fff":"var(--t3)",fontSize:14,fontWeight:660,fontFamily:"var(--f)",cursor:topic.trim()?"pointer":"not-allowed",transition:"all .2s",boxShadow:topic.trim()?"0 6px 28px "+ac+"35":"none"}}>{I.sparkle(15,topic.trim()?"#fff":"var(--t3)")} Generate Prompt</button>
+        <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:10,paddingTop:8}}>
+          <button onClick={go} disabled={!topic.trim()} style={{display:"flex",alignItems:"center",gap:8,padding:"12px 38px",borderRadius:10,border:"none",background:topic.trim()?(canGenerate?ac:"#94a3b8"):"rgba(255,255,255,.04)",color:topic.trim()?"#fff":"var(--t3)",fontSize:14,fontWeight:660,fontFamily:"var(--f)",cursor:topic.trim()?"pointer":"not-allowed",transition:"all .2s",boxShadow:topic.trim()&&canGenerate?"0 6px 28px "+ac+"35":"none"}}>{I.sparkle(15,topic.trim()?"#fff":"var(--t3)")} {canGenerate?"Generate Prompt":"Upgrade to Generate"}</button>
+          {user&&!usage.is_paid&&usage.subscription_status!=="active"&&(
+            <div style={{fontSize:11,color:"var(--t3)",display:"flex",gap:12}}>
+              <span>Simple: {remainingSimple}/{FREE_SIMPLE} free left</span>
+              <span>Expert: {remainingExpert}/{FREE_EXPERT} free left</span>
+            </div>
+          )}
+          {!user&&<div style={{fontSize:11,color:"var(--t3)"}}>Create a free account to start generating</div>}
         </div>
       </div>
 
@@ -1505,6 +1541,59 @@ function App(){
           <div style={{display:"flex",gap:10}}>
             <button onClick={()=>setShowResetConfirm(false)} style={{flex:1,padding:"11px 16px",borderRadius:8,border:"1px solid var(--bd)",background:"var(--s1)",color:"var(--t2)",fontSize:13,fontWeight:600,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>Cancel</button>
             <button onClick={resetAll} style={{flex:1,padding:"11px 16px",borderRadius:8,border:"none",background:"#dc2626",color:"#fff",fontSize:13,fontWeight:700,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>Clear & start new</button>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* PAYWALL / PRICING MODAL */}
+    {showPaywall&&(
+      <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,.6)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:2000,padding:20}} onClick={()=>setShowPaywall(false)}>
+        <div style={{background:"var(--s1)",borderRadius:16,padding:0,maxWidth:480,width:"100%",boxShadow:"0 20px 60px rgba(0,0,0,.2)",animation:"slideDown .3s ease",overflow:"hidden"}} onClick={(e)=>e.stopPropagation()}>
+          {/* Header */}
+          <div style={{background:"linear-gradient(135deg, #1B2A4A 0%, #0891B2 100%)",padding:"28px 28px 24px",color:"#fff"}}>
+            <h2 style={{fontSize:22,fontWeight:700,margin:"0 0 8px"}}>Upgrade to Prompt Architect Pro</h2>
+            <p style={{fontSize:13,margin:0,opacity:.85,lineHeight:1.5}}>You've used all your free prompts. Unlock unlimited access to keep building expert-level prompts.</p>
+          </div>
+          {/* Usage summary */}
+          <div style={{padding:"20px 28px",borderBottom:"1px solid var(--bd)"}}>
+            <div style={{display:"flex",gap:16}}>
+              <div style={{flex:1,padding:"12px 14px",borderRadius:8,background:"var(--s2)",textAlign:"center"}}>
+                <div style={{fontSize:22,fontWeight:700,color:"var(--t1)"}}>{usage.simple_used}/{FREE_SIMPLE}</div>
+                <div style={{fontSize:11,color:"var(--t3)",marginTop:2}}>Simple prompts used</div>
+              </div>
+              <div style={{flex:1,padding:"12px 14px",borderRadius:8,background:"var(--s2)",textAlign:"center"}}>
+                <div style={{fontSize:22,fontWeight:700,color:"var(--t1)"}}>{usage.expert_used}/{FREE_EXPERT}</div>
+                <div style={{fontSize:11,color:"var(--t3)",marginTop:2}}>Expert prompts used</div>
+              </div>
+            </div>
+          </div>
+          {/* Pricing options */}
+          <div style={{padding:"20px 28px"}}>
+            <div style={{display:"flex",gap:12,marginBottom:20}}>
+              {/* Monthly */}
+              <div style={{flex:1,padding:"16px",borderRadius:10,border:"2px solid var(--bd)",textAlign:"center",cursor:"pointer",transition:"all .15s"}}>
+                <div style={{fontSize:11,color:"var(--t3)",fontWeight:600,marginBottom:4}}>MONTHLY</div>
+                <div style={{fontSize:28,fontWeight:800,color:"var(--t1)"}}><span style={{fontSize:16,fontWeight:500}}>$</span>9<span style={{fontSize:14,fontWeight:400,color:"var(--t3)"}}>/mo</span></div>
+                <div style={{fontSize:11,color:"var(--t3)",marginTop:4}}>Cancel anytime</div>
+              </div>
+              {/* Annual */}
+              <div style={{flex:1,padding:"16px",borderRadius:10,border:"2px solid "+ac,background:ac+"08",textAlign:"center",position:"relative",cursor:"pointer",transition:"all .15s"}}>
+                <div style={{position:"absolute",top:-10,left:"50%",transform:"translateX(-50%)",background:ac,color:"#fff",fontSize:10,fontWeight:700,padding:"2px 10px",borderRadius:10}}>SAVE 33%</div>
+                <div style={{fontSize:11,color:ac,fontWeight:600,marginBottom:4}}>ANNUAL</div>
+                <div style={{fontSize:28,fontWeight:800,color:"var(--t1)"}}><span style={{fontSize:16,fontWeight:500}}>$</span>6<span style={{fontSize:14,fontWeight:400,color:"var(--t3)"}}>/mo</span></div>
+                <div style={{fontSize:11,color:"var(--t3)",marginTop:4}}>$72 billed yearly</div>
+              </div>
+            </div>
+            {/* Features */}
+            <div style={{marginBottom:20}}>
+              {["Unlimited prompts (Simple + Expert)","All 15 industries with firm & role selection","All 15 advanced thinking techniques","Priority support & feature requests","Prompt history saved forever"].map((f,i)=>(
+                <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 0",fontSize:12.5,color:"var(--t2)"}}>{I.check(14,"#10B981")}{f}</div>
+              ))}
+            </div>
+            {/* CTA */}
+            <button onClick={()=>{/* Stripe checkout will go here */alert("Stripe checkout coming soon! For now, contact us for early access.");}} style={{width:"100%",padding:14,borderRadius:10,border:"none",background:ac,color:"#fff",fontSize:14,fontWeight:700,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s",boxShadow:"0 4px 20px "+ac+"35"}}>Upgrade Now</button>
+            <button onClick={()=>setShowPaywall(false)} style={{width:"100%",padding:10,borderRadius:8,border:"none",background:"transparent",color:"var(--t3)",fontSize:12,fontFamily:"var(--f)",cursor:"pointer",marginTop:8}}>Maybe later</button>
           </div>
         </div>
       </div>
