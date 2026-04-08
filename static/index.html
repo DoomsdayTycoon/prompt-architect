@@ -22,7 +22,7 @@ const { useState, useRef, useCallback, useEffect, useMemo } = React;
    AUTH & USER STATE MANAGEMENT
    ═══════════════════════════════════════════════════════ */
 const loadUser=()=>{try{const u=localStorage.getItem("pa_user");return u?JSON.parse(u):null;}catch(e){return null;}};
-const saveUser=(u)=>{localStorage.setItem("pa_user",JSON.stringify(u));};
+const saveUser=(u)=>{if(u===null)localStorage.removeItem("pa_user");else localStorage.setItem("pa_user",JSON.stringify(u));};
 const getStoredUsers=()=>{try{const u=localStorage.getItem("pa_users");return u?JSON.parse(u):[];}catch(e){return [];}};
 const saveUsers=(users)=>{localStorage.setItem("pa_users",JSON.stringify(users));};
 const validateEmail=(e)=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
@@ -468,6 +468,8 @@ function App(){
   const [authErr,setAuthErr]=useState("");
   const [promptGenerated,setPromptGenerated]=useState(false);
   const [exampleSector,setExampleSector]=useState("All");
+  const [isListening,setIsListening]=useState(false);
+  const recognitionRef=useRef(null);
   const ref=useRef(null);
   const isExp=mode==="expert";
   const ac=MODELS[model].col;
@@ -528,6 +530,34 @@ function App(){
 
   const handleLogout=useCallback(()=>{setUser(null);saveUser(null);setShowAuth(false);},[]);
 
+  const toggleVoice=useCallback(()=>{
+    if(!recognitionRef.current){
+      const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+      if(!SpeechRecognition){alert("Voice input not supported in this browser");return;}
+      const recognition=new SpeechRecognition();
+      recognition.continuous=false;
+      recognition.interimResults=true;
+      recognition.lang="en-US";
+      recognition.onresult=(event)=>{
+        let transcript="";
+        for(let i=event.resultIndex;i<event.results.length;i++){
+          transcript+=event.results[i][0].transcript;
+        }
+        setTopic(prev=>prev+(!prev.trim()?transcript:" "+transcript));
+      };
+      recognition.onerror=(event)=>{console.error("Speech recognition error",event.error);setIsListening(false);};
+      recognition.onend=()=>setIsListening(false);
+      recognitionRef.current=recognition;
+    }
+    if(isListening){
+      recognitionRef.current.stop();
+      setIsListening(false);
+    }else{
+      recognitionRef.current.start();
+      setIsListening(true);
+    }
+  },[isListening]);
+
   return <>
     <style>{`
       @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
@@ -539,6 +569,8 @@ function App(){
       @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
       body{background:#f8fafc}
       textarea:focus,input:focus{border-color:${ac}!important;box-shadow:0 0 0 3px ${ac}20}
+      .two-col-layout{display:grid;grid-template-columns:1fr;gap:30px;margin-bottom:40px;align-items:start}
+      @media (min-width:1024px){.two-col-layout{grid-template-columns:1fr 280px}}
     `}</style>
     {/* STICKY NAV */}
     <nav style={{position:"fixed",top:0,left:0,right:0,background:"var(--s1)",borderBottom:"1px solid var(--bd)",zIndex:1000,padding:"12px 14px"}}>
@@ -572,7 +604,7 @@ function App(){
       </section>
 
       {/* TWO-COLUMN LAYOUT */}
-      <div style={{display:"grid",gridTemplateColumns:"1fr 280px",gap:30,marginBottom:40,alignItems:"start"}}>
+      <div className="two-col-layout">
         {/* MAIN TOOL AREA */}
         <div id="tool">
           <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:20}}>
@@ -634,9 +666,12 @@ function App(){
         <Step ico="pen" title="Describe your goal" sub="Be specific  -  but don't worry about being perfect. Smart enhancement fills the gaps.">
           <div style={{display:"flex",gap:8,marginBottom:12,alignItems:"flex-start"}}>
             <textarea value={topic} onChange={e=>{setTopic(e.target.value);setShow(false);}} placeholder="e.g. Build a DCF valuation tutorial for finance students who understand basic accounting but are new to valuation models. Include a worked example using Apple's 2024 financials..." rows={3} style={{...inp({resize:"vertical"}),flex:1}} />
-            {topic.trim()&&(
-              <button onClick={()=>{setTopic("");setShow(false);}} style={{padding:"10px 12px",borderRadius:7,border:"1px solid #fca5a5",background:"#fee2e2",color:"#dc2626",cursor:"pointer",fontSize:11.5,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",alignSelf:"flex-start",whiteSpace:"nowrap"}}>{I.trash(12,"#dc2626")} Clear</button>
-            )}
+            <div style={{display:"flex",flexDirection:"column",gap:8,alignSelf:"flex-start"}}>
+              <button onClick={toggleVoice} style={{padding:"10px 12px",borderRadius:7,border:"1px solid "+(isListening?"#e11d48":"var(--bd)"),background:isListening?"#ffe4e9":"var(--s2)",color:isListening?"#be123c":"var(--t2)",cursor:"pointer",fontSize:11.5,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",whiteSpace:"nowrap"}}>{isListening?"🎙 Listening":"🎤 Voice"}</button>
+              {topic.trim()&&(
+                <button onClick={()=>{setTopic("");setShow(false);}} style={{padding:"10px 12px",borderRadius:7,border:"1px solid #fca5a5",background:"#fee2e2",color:"#dc2626",cursor:"pointer",fontSize:11.5,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",whiteSpace:"nowrap"}}>{I.trash(12,"#dc2626")} Clear</button>
+              )}
+            </div>
           </div>
 
           {/* EXAMPLE PROMPTS */}
