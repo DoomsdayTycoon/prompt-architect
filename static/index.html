@@ -1037,6 +1037,8 @@ function App(){
   const [authLoading,setAuthLoading]=useState(true);
   const [usage,setUsage]=useState({simple_used:0,expert_used:0,is_paid:false,subscription_status:"free"});
   const [showPaywall,setShowPaywall]=useState(false);
+  const [paywallPlan,setPaywallPlan]=useState("annual");
+  const [checkoutLoading,setCheckoutLoading]=useState(false);
   const [showAuth,setShowAuth]=useState(false);
   const [authMode,setAuthMode]=useState("login");
   const [authEmail,setAuthEmail]=useState("");
@@ -1087,6 +1089,22 @@ function App(){
       }
     });
     return ()=>subscription.unsubscribe();
+  },[]);
+
+  // Handle return from Stripe checkout
+  useEffect(()=>{
+    const params=new URLSearchParams(window.location.search);
+    if(params.get("payment")==="success"){
+      // Refresh usage after successful payment (webhook may take a moment)
+      const poll=setInterval(()=>{
+        supabase.rpc("get_usage_status").then(({data})=>{
+          if(data&&data.is_paid){setUsage(data);clearInterval(poll);}
+        });
+      },2000);
+      setTimeout(()=>clearInterval(poll),30000);
+      // Clean URL
+      window.history.replaceState({},"",window.location.pathname);
+    }
   },[]);
 
   // FREE LIMITS: 2 simple prompts, 1 expert prompt
@@ -1157,6 +1175,23 @@ function App(){
   },[authMode,authName,authEmail,authPassword]);
 
   const handleLogout=useCallback(async()=>{await supabase.auth.signOut();setUser(null);setHistory([]);setShowAuth(false);},[]);
+
+  const handleCheckout=useCallback(async()=>{
+    if(!user)return;
+    setCheckoutLoading(true);
+    try{
+      const {data:{session}}=await supabase.auth.getSession();
+      const res=await fetch("/api/checkout",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({plan:paywallPlan,email:user.email,userId:session?.user?.id})
+      });
+      const data=await res.json();
+      if(data.url){window.location.href=data.url;}
+      else{alert(data.error||"Something went wrong. Please try again.");}
+    }catch(err){alert("Failed to start checkout. Please try again.");}
+    setCheckoutLoading(false);
+  },[user,paywallPlan]);
 
   const toggleVoice=useCallback(()=>{
     if(!recognitionRef.current){
@@ -1572,15 +1607,15 @@ function App(){
           <div style={{padding:"20px 28px"}}>
             <div style={{display:"flex",gap:12,marginBottom:20}}>
               {/* Monthly */}
-              <div style={{flex:1,padding:"16px",borderRadius:10,border:"2px solid var(--bd)",textAlign:"center",cursor:"pointer",transition:"all .15s"}}>
-                <div style={{fontSize:11,color:"var(--t3)",fontWeight:600,marginBottom:4}}>MONTHLY</div>
+              <div onClick={()=>setPaywallPlan("monthly")} style={{flex:1,padding:"16px",borderRadius:10,border:"2px solid "+(paywallPlan==="monthly"?ac:"var(--bd)"),background:paywallPlan==="monthly"?ac+"08":"var(--s1)",textAlign:"center",cursor:"pointer",transition:"all .15s"}}>
+                <div style={{fontSize:11,color:paywallPlan==="monthly"?ac:"var(--t3)",fontWeight:600,marginBottom:4}}>MONTHLY</div>
                 <div style={{fontSize:28,fontWeight:800,color:"var(--t1)"}}><span style={{fontSize:16,fontWeight:500}}>$</span>9<span style={{fontSize:14,fontWeight:400,color:"var(--t3)"}}>/mo</span></div>
                 <div style={{fontSize:11,color:"var(--t3)",marginTop:4}}>Cancel anytime</div>
               </div>
               {/* Annual */}
-              <div style={{flex:1,padding:"16px",borderRadius:10,border:"2px solid "+ac,background:ac+"08",textAlign:"center",position:"relative",cursor:"pointer",transition:"all .15s"}}>
+              <div onClick={()=>setPaywallPlan("annual")} style={{flex:1,padding:"16px",borderRadius:10,border:"2px solid "+(paywallPlan==="annual"?ac:"var(--bd)"),background:paywallPlan==="annual"?ac+"08":"var(--s1)",textAlign:"center",position:"relative",cursor:"pointer",transition:"all .15s"}}>
                 <div style={{position:"absolute",top:-10,left:"50%",transform:"translateX(-50%)",background:ac,color:"#fff",fontSize:10,fontWeight:700,padding:"2px 10px",borderRadius:10}}>SAVE 33%</div>
-                <div style={{fontSize:11,color:ac,fontWeight:600,marginBottom:4}}>ANNUAL</div>
+                <div style={{fontSize:11,color:paywallPlan==="annual"?ac:"var(--t3)",fontWeight:600,marginBottom:4}}>ANNUAL</div>
                 <div style={{fontSize:28,fontWeight:800,color:"var(--t1)"}}><span style={{fontSize:16,fontWeight:500}}>$</span>6<span style={{fontSize:14,fontWeight:400,color:"var(--t3)"}}>/mo</span></div>
                 <div style={{fontSize:11,color:"var(--t3)",marginTop:4}}>$72 billed yearly</div>
               </div>
@@ -1592,7 +1627,7 @@ function App(){
               ))}
             </div>
             {/* CTA */}
-            <button onClick={()=>{/* Stripe checkout will go here */alert("Stripe checkout coming soon! For now, contact us for early access.");}} style={{width:"100%",padding:14,borderRadius:10,border:"none",background:ac,color:"#fff",fontSize:14,fontWeight:700,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s",boxShadow:"0 4px 20px "+ac+"35"}}>Upgrade Now</button>
+            <button disabled={checkoutLoading} onClick={handleCheckout} style={{width:"100%",padding:14,borderRadius:10,border:"none",background:checkoutLoading?ac+"80":ac,color:"#fff",fontSize:14,fontWeight:700,fontFamily:"var(--f)",cursor:checkoutLoading?"not-allowed":"pointer",transition:"all .2s",boxShadow:"0 4px 20px "+ac+"35"}}>{checkoutLoading?"Redirecting to checkout...":"Upgrade Now"}</button>
             <button onClick={()=>setShowPaywall(false)} style={{width:"100%",padding:10,borderRadius:8,border:"none",background:"transparent",color:"var(--t3)",fontSize:12,fontFamily:"var(--f)",cursor:"pointer",marginTop:8}}>Maybe later</button>
           </div>
         </div>
