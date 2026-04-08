@@ -327,7 +327,7 @@ const TONE_INST={Professional:"Polished, business-appropriate language. Direct. 
 
 const STYLE_INST={formal:"Use formal register throughout. Complete sentences. No contractions. Structured paragraphs with topic sentences. Professional vocabulary.",conversational:"Write naturally as if speaking. Contractions encouraged. Short sentences mixed with longer ones. Rhetorical questions OK. Avoid stiff phrasing.",technical:"Precise technical vocabulary. Define terms on first use. Logical structure. Code examples where relevant. Cite specifications and documentation.",persuasive:"Lead with strongest argument. Use social proof, data, and emotional appeal strategically. Address objections proactively. Strong call to action.",narrative:"Tell a story. Use characters, scenes, tension, and resolution. Show don't tell. Vivid sensory details. Clear narrative arc.",instructional:"Step-by-step. Action verbs to start each instruction. Anticipate mistakes. Include tips and warnings. Test understanding at intervals.",analytical:"Data-driven. Present evidence before conclusions. Use frameworks and structured comparisons. Quantify wherever possible. Objective tone.",minimalist:"Maximum clarity, minimum words. Short sentences. No decoration. Every word must earn its place. White space between ideas."};
 
-const OUTPUT_INST={document:"Structure as a professional document with title, sections, and clear hierarchy. Include table of contents for longer pieces.",email:"Format as a ready-to-send email with subject line, greeting, body, and sign-off. Optimize for mobile reading.",code:"Present as clean, runnable code with comments, imports, and usage examples. Specify language and dependencies.",presentation:"Structure as slide-ready content: title slide, key sections (3-5 bullets max per slide), speaker notes for each slide.",spreadsheet:"Organize as tabular data with clear headers, formulas/calculations noted, and summary rows. Specify column types.",social:"Format for the target platform's constraints (character limits, hashtag conventions). Include hook, body, CTA.",blog:"Include headline, meta description, introduction, subheaded sections, conclusion, and suggested tags/categories.",proposal:"Executive summary, problem statement, proposed solution, timeline, budget/pricing, team, and terms.",brief:"One-page format: objective, background, key findings, recommendations. Use bullet points for scannability.",docs:"Technical documentation format: overview, prerequisites, step-by-step guide, API reference if applicable, troubleshooting.",creative:"Focus on narrative quality, voice, and emotional impact. Follow genre conventions while finding a fresh angle.",checklist:"Numbered or checkbox-style steps. Group by phase/category. Include responsible party and deadline columns if relevant."};
+const OUTPUT_INST={document:"Structure as a professional document with title, sections, and clear hierarchy. Include table of contents for longer pieces.",email:"Format as a ready-to-send email with subject line, greeting, body, and sign-off. Optimize for mobile reading.",code:"Present as clean, runnable code with comments, imports, and usage examples. Specify language and dependencies.",presentation:"Structure as slide-ready content: title slide, key sections (3-5 bullets max per slide), speaker notes for each slide.",spreadsheet:"Structure as a multi-tab professional workbook. Each tab has a single analytical purpose. Include title blocks, clearly labeled sections, formula-driven calculations (never hardcoded values), and summary rows. Use consistent number formatting, input cell highlighting, and conditional formatting for status indicators. Design for auditability  -  every number must trace to a source or formula.",social:"Format for the target platform's constraints (character limits, hashtag conventions). Include hook, body, CTA.",blog:"Include headline, meta description, introduction, subheaded sections, conclusion, and suggested tags/categories.",proposal:"Executive summary, problem statement, proposed solution, timeline, budget/pricing, team, and terms.",brief:"One-page format: objective, background, key findings, recommendations. Use bullet points for scannability.",docs:"Technical documentation format: overview, prerequisites, step-by-step guide, API reference if applicable, troubleshooting.",creative:"Focus on narrative quality, voice, and emotional impact. Follow genre conventions while finding a fresh angle.",checklist:"Numbered or checkbox-style steps. Group by phase/category. Include responsible party and deadline columns if relevant."};
 
 /* ═══════════════════════════════════════════════════════
    EXAMPLE PROMPTS — Creative, sector-specific inspiration
@@ -565,7 +565,50 @@ function buildPrompt(p){
   const FILE_INST={
     pdf:"Structure the response as a polished, print-ready document. Use clear page-break-friendly sections, professional headers, numbered pages logic, and formatting that translates cleanly to PDF export. Include a title page section with title, date, and author placeholder.",
     word:"Structure as a professional Word document with proper heading hierarchy (Heading 1, 2, 3), table of contents ready formatting, page numbers, and consistent paragraph styles. Use tables and bullet lists that render cleanly in Word/DOCX.",
-    excel:"Present data in clearly defined tabular structures with named columns, consistent data types, and formulas noted where applicable. Organize across logical sheet/tab groupings. Include summary rows and conditional formatting suggestions.",
+    excel:`Design as a professional investment-bank-grade Excel workbook (Goldman Sachs / Morgan Stanley style). Follow these strict formatting and structural standards:
+
+WORKBOOK STRUCTURE:
+- Organize across clearly named tabs (e.g., "1. Exec Summary", "2. Revenue Analysis", "3. Valuation", "4. Sensitivity", "5. KPIs")
+- First tab must be an executive summary with key findings, thesis, and navigation to other tabs
+- Each tab serves one analytical purpose  -  never mix unrelated analyses on the same sheet
+
+CELL & LAYOUT FORMATTING:
+- Row 1-3: Title block with company name, report title, date, classification, and analyst placeholder
+- Use alternating row shading (light gray / white) for readability
+- Header rows: bold white text on dark navy/black background (#1B2A4A or similar)
+- Sub-headers: bold text on medium gray background
+- All data cells: consistent font (Calibri 10pt or Arial 10pt), right-aligned numbers, left-aligned text
+- Number formatting: use commas for thousands, 1 decimal for percentages, 2 decimals for ratios
+- Currency cells must include $ symbol and consistent decimal places
+- Negative values in parentheses and red font, e.g., ($31.2M)
+- Input/assumption cells: highlighted with yellow or light blue background to distinguish from calculated cells
+- Column widths: uniform and generous enough to show all data without truncation
+
+FORMULAS & CALCULATIONS:
+- Show all formulas explicitly  -  never hardcode values that should be calculated
+- Use named ranges for key assumptions so sensitivity analysis works
+- Include formula audit notes (e.g., "=C12*D12  // Revenue = Units x Price")
+- Build formula chains that allow scenario toggling (Bull / Base / Bear)
+- Include error handling where appropriate (IFERROR wrappers)
+
+ANALYTICAL COMPONENTS:
+- Waterfall analysis for sequential changes (QoQ, YoY)
+- Sensitivity tables with two-variable data tables where applicable
+- Decision trees or scoring matrices using conditional formatting
+- Risk assessment matrices with likelihood/impact scoring
+- KPI tracking with baseline, current, target, and status indicators (use conditional formatting: green/yellow/red)
+
+CHARTS & VISUALS (describe for each):
+- Specify chart type (waterfall, bar, line, scatter, combo dual-axis)
+- Define axis labels, data series, and color coding
+- Include chart title stating the analytical conclusion (not just the topic)
+
+PROFESSIONAL STANDARDS:
+- Include a sources/assumptions tab documenting all data sources and key assumptions
+- Add print area settings and page break suggestions
+- Freeze panes on header rows
+- Include data validation dropdowns for scenario selectors
+- Every number must trace to a source or formula  -  zero unexplained hardcodes`,
     ppt:"Structure as presentation slides: one key insight per slide. Use Assertion-Evidence format (title states conclusion, body provides proof). Max 5 bullets per slide. Include speaker notes with talking points. Suggest visual aids for each slide.",
     markdown:"Use valid Markdown throughout: proper heading hierarchy (# ## ###), code fences with language tags, links, emphasis, blockquotes, and horizontal rules for section breaks. Ready for direct use in GitHub, Notion, or any Markdown renderer.",
     html:"Structure as semantic HTML with proper heading tags, paragraph elements, lists, tables, and code blocks. Include suggestions for CSS classes. Ensure accessibility (alt text, ARIA labels). Ready for direct web publishing.",
