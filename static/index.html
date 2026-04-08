@@ -104,6 +104,139 @@ const TECHS={cot:{l:"Chain of Thought",i:"brain"},fewshot:{l:"Few-Shot Examples"
 const LANGS=["English","Spanish","French","German","Portuguese","Italian","Dutch","Norwegian","Swedish","Danish","Chinese","Japanese","Korean","Arabic","Hindi","Russian","Polish","Turkish"];
 
 /* ═══════════════════════════════════════════════════════
+   SECTOR FIRMS & ROLES — Expert mode company/role selection
+   Format: Industry > Firm > Role
+   ═══════════════════════════════════════════════════════ */
+const SECTOR_FIRMS={
+  finance:{
+    firms:{
+      goldman:{name:"Goldman Sachs",roles:["Investment Banking Analyst","Equity Research Associate","Quantitative Strategist","Risk Manager","Private Wealth Advisor"]},
+      jpmorgan:{name:"JP Morgan",roles:["M&A Analyst","Credit Risk Analyst","Asset Management Associate","Payments Strategist","Chief Investment Officer"]},
+      blackrock:{name:"BlackRock",roles:["Portfolio Manager","ETF Strategist","ESG Analyst","Factor Research Analyst","Multi-Asset Strategist"]},
+      morganstanley:{name:"Morgan Stanley",roles:["Equity Analyst","Fixed Income Trader","Wealth Management Director","Capital Markets Associate","Institutional Sales"]},
+      citadel:{name:"Citadel / Hedge Fund",roles:["Quantitative Researcher","Portfolio Manager","Risk Analyst","Macro Strategist","Systematic Trader"]}
+    }
+  },
+  tech:{
+    firms:{
+      google:{name:"Google / Alphabet",roles:["Staff Software Engineer","Product Manager","ML Research Scientist","Site Reliability Engineer","UX Lead"]},
+      apple:{name:"Apple",roles:["Senior iOS Engineer","Hardware Product Manager","Privacy Engineer","Design Lead","Platform Architect"]},
+      microsoft:{name:"Microsoft",roles:["Cloud Solutions Architect","Principal Engineer","AI Product Manager","DevOps Lead","Enterprise Strategist"]},
+      meta:{name:"Meta / Facebook",roles:["Infrastructure Engineer","Growth Product Manager","AI Research Scientist","Ads Platform Lead","VR/AR Strategist"]},
+      amazon:{name:"Amazon / AWS",roles:["Principal Engineer","AWS Solutions Architect","Supply Chain Analyst","Marketplace Strategist","Data Scientist"]}
+    }
+  },
+  healthcare:{
+    firms:{
+      mckinsey_health:{name:"McKinsey Health",roles:["Healthcare Consultant","Pharma Strategy Lead","Hospital Operations Analyst","Digital Health Advisor","Pricing & Market Access"]},
+      pfizer:{name:"Pfizer",roles:["Clinical Research Director","Regulatory Affairs Manager","Medical Science Liaison","Drug Safety Officer","Commercial Strategy Lead"]},
+      unitedhealth:{name:"UnitedHealth Group",roles:["Population Health Analyst","Benefits Strategist","Provider Relations Director","Claims Analytics Lead","Value-Based Care Designer"]},
+      jnj:{name:"Johnson & Johnson",roles:["Medical Device Product Manager","Clinical Operations Lead","R&D Portfolio Manager","Quality Assurance Director","Global Marketing Manager"]},
+      mayo:{name:"Mayo Clinic",roles:["Clinical Researcher","Department Chair","Quality Improvement Lead","Patient Experience Director","Health Informatics Specialist"]}
+    }
+  },
+  legal:{
+    firms:{
+      sullivan:{name:"Sullivan & Cromwell",roles:["M&A Associate","Securities Litigator","Capital Markets Partner","Regulatory Compliance Counsel","Restructuring Advisor"]},
+      skadden:{name:"Skadden Arps",roles:["Corporate Associate","Antitrust Counsel","Tax Planning Partner","FCPA Investigator","IPO Specialist"]},
+      kirkland:{name:"Kirkland & Ellis",roles:["Private Equity Counsel","Restructuring Partner","IP Litigator","Fund Formation Associate","Trial Attorney"]},
+      wachtell:{name:"Wachtell Lipton",roles:["M&A Partner","Corporate Governance Advisor","Hostile Defense Strategist","Executive Compensation Counsel","Activism Response Lead"]},
+      latham:{name:"Latham & Watkins",roles:["Finance Associate","Environmental Counsel","Tech Transactions Partner","Healthcare Regulatory","Project Finance Lead"]}
+    }
+  },
+  marketing:{
+    firms:{
+      wpp:{name:"WPP / Ogilvy",roles:["Creative Director","Brand Strategist","Media Planner","Digital Performance Lead","Consumer Insights Analyst"]},
+      mckinsey_mktg:{name:"McKinsey Marketing",roles:["Growth Strategy Consultant","Customer Analytics Lead","Brand Equity Advisor","Pricing Strategist","Go-to-Market Designer"]},
+      hubspot:{name:"HubSpot",roles:["Inbound Marketing Strategist","Content Marketing Lead","Marketing Automation Specialist","CRM Strategist","Growth Marketer"]},
+      nike_mktg:{name:"Nike Marketing",roles:["Brand Campaign Director","Sports Marketing Manager","Digital Experience Lead","Influencer Strategy","Consumer Engagement Director"]},
+      google_ads:{name:"Google Ads",roles:["Performance Marketing Lead","Search Strategy Analyst","Display & Video Planner","Analytics Consultant","Attribution Specialist"]}
+    }
+  },
+  consulting:{
+    firms:{
+      mckinsey:{name:"McKinsey & Company",roles:["Engagement Manager","Associate Partner","Implementation Lead","Digital Transformation Advisor","Operations Consultant"]},
+      bcg:{name:"Boston Consulting Group",roles:["Project Leader","Principal","Strategy Consultant","Digital Ventures Lead","Pricing Expert"]},
+      bain:{name:"Bain & Company",roles:["Case Team Leader","Results Delivery Lead","Private Equity Advisor","Customer Strategy Consultant","Performance Improvement Expert"]},
+      deloitte:{name:"Deloitte",roles:["Managing Director","Strategy & Analytics Lead","M&A Transaction Advisor","Risk Advisory Partner","Human Capital Consultant"]},
+      accenture:{name:"Accenture",roles:["Technology Strategy Lead","Cloud Transformation Director","Industry X Lead","Change Management Partner","AI & Analytics Consultant"]}
+    }
+  },
+  education:{
+    firms:{
+      harvard:{name:"Harvard University",roles:["Professor","Research Fellow","Curriculum Designer","Department Chair","Teaching Innovation Lead"]},
+      coursera:{name:"Coursera / EdTech",roles:["Learning Designer","Content Strategist","Assessment Specialist","Platform Product Manager","Learner Success Lead"]},
+      mckinsey_edu:{name:"McKinsey Education",roles:["Education Consultant","Policy Advisor","EdTech Strategist","Workforce Development Lead","Digital Learning Expert"]},
+      pearson:{name:"Pearson",roles:["Editorial Director","Assessment Designer","Digital Learning Architect","Higher Ed Strategist","Content Development Lead"]},
+      mit:{name:"MIT",roles:["Research Scientist","Lab Director","Open Learning Designer","Innovation Fellow","Technical Instructor"]}
+    }
+  },
+  ecommerce:{
+    firms:{
+      amazon_ec:{name:"Amazon",roles:["Category Manager","Marketplace Strategist","Supply Chain Analyst","Advertising Specialist","Customer Experience Lead"]},
+      shopify:{name:"Shopify",roles:["Merchant Success Lead","Platform Architect","Payments Strategist","App Ecosystem Manager","Growth Advisor"]},
+      alibaba:{name:"Alibaba Group",roles:["Cross-Border Trade Specialist","Logistics Optimization Lead","Merchant Solutions Architect","Data Commerce Analyst","Global Expansion Strategist"]},
+      nike_ec:{name:"Nike Direct",roles:["DTC Strategy Lead","Digital Merchandiser","CRM & Loyalty Manager","Omnichannel Director","Personalization Engineer"]},
+      zalando:{name:"Zalando",roles:["Fashion Tech Lead","Marketplace Operations Manager","Sustainability Strategist","Fulfillment Optimization Lead","Partner Commerce Director"]}
+    }
+  },
+  realestate:{
+    firms:{
+      cbre:{name:"CBRE Group",roles:["Investment Sales Broker","Valuation Analyst","Capital Markets Advisor","Property Manager","Research Director"]},
+      brookfield:{name:"Brookfield Asset Mgmt",roles:["Acquisitions Associate","Asset Manager","Development Director","Fund Strategist","Portfolio Analyst"]},
+      blackstone_re:{name:"Blackstone Real Estate",roles:["Senior Associate","Portfolio Operations","Debt Origination Lead","Value-Add Strategist","Investor Relations"]},
+      jll:{name:"JLL",roles:["Tenant Rep Broker","Corporate Solutions Lead","Sustainability Advisor","Technology Consultant","Workplace Strategist"]},
+      prologis:{name:"Prologis",roles:["Logistics Real Estate Analyst","Development Manager","Leasing Director","ESG Lead","Capital Deployment Strategist"]}
+    }
+  },
+  media:{
+    firms:{
+      netflix:{name:"Netflix",roles:["Content Strategist","Programming Director","Data Science Lead","International Expansion Manager","Creator Relations"]},
+      disney:{name:"Disney / ESPN",roles:["Franchise Strategy Lead","Streaming Product Manager","IP Licensing Director","Creative Development Executive","Audience Insights Analyst"]},
+      nytimes:{name:"New York Times",roles:["Digital Strategy Editor","Subscription Growth Lead","Investigative Reporter","Audience Development Director","Product Innovation Manager"]},
+      spotify:{name:"Spotify",roles:["Podcast Strategy Lead","Playlist Curator","Ad Platform Strategist","Creator Marketplace Manager","Audio ML Engineer"]},
+      google_media:{name:"YouTube / Google Media",roles:["Creator Economy Analyst","Ad Revenue Strategist","Content Policy Lead","Platform Growth Manager","Shorts Strategy Lead"]}
+    }
+  },
+  hr:{
+    firms:{
+      mckinsey_org:{name:"McKinsey Org Practice",roles:["Organizational Design Consultant","Talent Strategy Lead","Change Management Advisor","Leadership Development Expert","Culture Transformation Lead"]},
+      workday:{name:"Workday",roles:["HCM Solution Architect","People Analytics Lead","Benefits Strategy Consultant","Talent Acquisition Technologist","Workforce Planning Analyst"]},
+      mercer:{name:"Mercer",roles:["Total Rewards Consultant","Executive Compensation Advisor","Workforce Strategy Lead","M&A HR Due Diligence","Health & Benefits Actuary"]},
+      linkedin_hr:{name:"LinkedIn Talent",roles:["Talent Insights Analyst","Employer Brand Strategist","Recruiting Innovation Lead","Skills Intelligence Manager","Labor Market Economist"]},
+      google_hr:{name:"Google People Ops",roles:["People Analytics Lead","Culture & Engagement Manager","Diversity & Inclusion Strategist","Organizational Effectiveness Lead","Compensation Analyst"]}
+    }
+  },
+  manufacturing:{
+    firms:{
+      toyota:{name:"Toyota (TPS)",roles:["Lean Manufacturing Expert","Quality Engineer","Production System Lead","Supply Chain Optimizer","Continuous Improvement Manager"]},
+      siemens:{name:"Siemens",roles:["Digital Twin Engineer","Factory Automation Lead","Industry 4.0 Strategist","Process Optimization Analyst","Smart Manufacturing Consultant"]},
+      ge:{name:"GE / General Electric",roles:["Industrial IoT Architect","Six Sigma Black Belt","Asset Performance Manager","Predictive Maintenance Lead","Supply Chain Director"]},
+      tesla_mfg:{name:"Tesla Manufacturing",roles:["Gigafactory Engineer","Battery Production Lead","Automation Specialist","Manufacturing Process Designer","Vertical Integration Strategist"]},
+      bosch:{name:"Bosch",roles:["Connected Industry Lead","Quality Systems Manager","R&D Project Manager","Sensor Technology Specialist","Production Excellence Coach"]}
+    }
+  },
+  government:{
+    firms:{
+      mckinsey_gov:{name:"McKinsey Public Sector",roles:["Public Sector Consultant","Digital Government Advisor","Defense Strategy Analyst","Health Policy Expert","Infrastructure Planning Lead"]},
+      deloitte_gov:{name:"Deloitte Government",roles:["Federal Strategy Consultant","Cybersecurity Advisor","Program Management Lead","Policy Analytics Specialist","Grant Management Expert"]},
+      world_bank:{name:"World Bank",roles:["Development Economist","Infrastructure Finance Specialist","Governance Advisor","Climate Policy Analyst","Social Protection Expert"]},
+      un:{name:"United Nations",roles:["Policy Analyst","Sustainable Development Advisor","Humanitarian Coordinator","Data & Statistics Officer","Peacekeeping Strategist"]},
+      rand:{name:"RAND Corporation",roles:["Defense Analyst","Policy Researcher","National Security Strategist","Health Policy Researcher","Education Policy Analyst"]}
+    }
+  },
+  research:{
+    firms:{
+      deepmind:{name:"DeepMind / Google AI",roles:["Research Scientist","ML Engineer","Safety Researcher","Principal Investigator","Research Program Manager"]},
+      mit_research:{name:"MIT Labs",roles:["Principal Investigator","Postdoctoral Researcher","Lab Director","Research Engineer","Technology Transfer Lead"]},
+      nature:{name:"Nature / Academic Publishing",roles:["Senior Editor","Peer Review Coordinator","Research Integrity Officer","Data Science Editor","Open Access Strategist"]},
+      nih:{name:"NIH / National Institutes",roles:["Program Director","Grant Review Officer","Clinical Trial Manager","Biostatistician","Translational Research Lead"]},
+      bell_labs:{name:"Bell Labs / Industrial R&D",roles:["Distinguished Researcher","Innovation Director","Applied Physics Lead","Systems Research Manager","Patent Strategy Advisor"]}
+    }
+  }
+};
+
+/* ═══════════════════════════════════════════════════════
    DEEP KNOWLEDGE — Industry, Role, Methodology, Quality
    ═══════════════════════════════════════════════════════ */
 const IND_CONTEXT={
@@ -188,33 +321,54 @@ const OUTPUT_INST={document:"Structure as a professional document with title, se
    EXAMPLE PROMPTS — Creative, sector-specific inspiration
    ═══════════════════════════════════════════════════════ */
 const EXAMPLES=[
-  // FINANCE
-  {sector:"Finance",label:"Valuation Deep Dive",topic:"Build a financial model comparing DCF valuations for a sustainable energy startup across bull/base/bear scenarios. Include sensitivities on capex, electricity prices, and battery cost learning curves.",task:"analysis",industry:"finance",output:"spreadsheet",model:"claude"},
-  {sector:"Finance",label:"Market Strategy Shift",topic:"Write an investment thesis for why commercial real estate faces structural headwinds post-2024 and which subsectors remain defensible. Assume the reader is a skeptical portfolio manager.",task:"writing",industry:"finance",output:"document",model:"general"},
+  // FINANCE (5)
+  {sector:"Finance",label:"DCF Valuation Model",topic:"Build a financial model comparing DCF valuations for a sustainable energy startup across bull/base/bear scenarios. Include sensitivities on capex, electricity prices, and battery cost learning curves. Target audience: equity research analysts.",task:"analysis",industry:"finance",output:"spreadsheet",model:"claude"},
+  {sector:"Finance",label:"Short Seller Thesis",topic:"Write a short seller research report on a high-multiple SaaS company showing signs of revenue quality deterioration. Analyze deferred revenue trends, customer churn signals, and insider selling patterns. Present as a hedge fund investment memo.",task:"writing",industry:"finance",output:"document",model:"claude"},
+  {sector:"Finance",label:"Sector Rotation Strategy",topic:"Analyze which equity sectors are best positioned for a late-cycle environment with persistent inflation. Compare energy, financials, healthcare, and utilities using relative valuation, earnings momentum, and macro sensitivity. Include specific ETF and stock picks.",task:"strategy",industry:"finance",output:"document",model:"general"},
+  {sector:"Finance",label:"Earnings Call Analysis",topic:"Summarize and analyze the key takeaways from a major bank's Q4 earnings call. Focus on NII guidance, credit quality trends, capital return plans, and management tone vs. prior quarters. Highlight what the market might be missing.",task:"summarize",industry:"finance",output:"document",model:"chatgpt"},
+  {sector:"Finance",label:"Risk Factor Decomposition",topic:"Build a multi-factor risk model for a Nordic equity portfolio. Decompose returns into market beta, size, value, momentum, and quality factors. Identify which factor exposures are intentional vs. accidental and recommend rebalancing actions.",task:"analysis",industry:"finance",output:"spreadsheet",model:"claude"},
 
-  // TECH
+  // TECH (5)
   {sector:"Tech",label:"System Architecture",topic:"Design a distributed task queue system that handles 10M daily jobs, with priorities, retries, and guaranteed-once execution. Explain trade-offs between Redis-based and database-backed queues.",task:"coding",industry:"tech",output:"document",model:"claude"},
-  {sector:"Tech",label:"Product Roadmap",topic:"Propose a 6-month AI product roadmap for a B2B SaaS company: what early features unlock the most user value while being technically achievable? Include go-to-market angles.",task:"brainstorm",industry:"tech",output:"proposal",model:"chatgpt"},
+  {sector:"Tech",label:"AI Product Roadmap",topic:"Propose a 6-month AI product roadmap for a B2B SaaS company: what early features unlock the most user value while being technically achievable? Include go-to-market angles and pricing strategy.",task:"strategy",industry:"tech",output:"proposal",model:"chatgpt"},
+  {sector:"Tech",label:"Technical Due Diligence",topic:"Conduct a technical due diligence assessment for acquiring a 50-person startup. Evaluate their codebase quality, infrastructure scalability, technical debt, team capabilities, and integration complexity. What are the dealbreakers?",task:"review",industry:"tech",output:"document",model:"claude"},
+  {sector:"Tech",label:"API Rate Limiter",topic:"Implement a distributed rate limiter using Redis that supports sliding window, token bucket, and fixed window algorithms. Must handle 100K requests/sec across multiple nodes. Include monitoring and graceful degradation.",task:"coding",industry:"tech",output:"code",model:"claude"},
+  {sector:"Tech",label:"Cloud Cost Optimization",topic:"Analyze a company spending $2M/year on AWS. Identify the top 10 cost optimization opportunities across compute, storage, data transfer, and reserved capacity. Quantify expected savings for each recommendation.",task:"analysis",industry:"tech",output:"spreadsheet",model:"general"},
 
-  // MARKETING
-  {sector:"Marketing",label:"Brand Positioning",topic:"Develop a positioning strategy for a D2C coffee brand competing against established players like Nespresso. What's the emotional hook that makes this worth paying premium prices for?",task:"writing",industry:"marketing",output:"proposal",model:"chatgpt"},
-  {sector:"Marketing",label:"Campaign Ideation",topic:"Brainstorm 5 unconventional product launch tactics for an app that helps people reduce screen time. The more creative/unexpected, the better—assume a $50K marketing budget.",task:"brainstorm",industry:"marketing",output:"document",model:"general"},
+  // MARKETING (5)
+  {sector:"Marketing",label:"Brand Positioning",topic:"Develop a positioning strategy for a D2C coffee brand competing against Nespresso and Blue Bottle. What's the emotional hook that justifies premium pricing? Include brand voice guidelines and messaging hierarchy.",task:"writing",industry:"marketing",output:"proposal",model:"chatgpt"},
+  {sector:"Marketing",label:"Product Launch Tactics",topic:"Brainstorm 10 unconventional product launch tactics for a fintech app targeting Gen Z investors. Budget: $50K. The more creative and viral-worthy the better. Include expected CAC and reach estimates.",task:"brainstorm",industry:"marketing",output:"document",model:"general"},
+  {sector:"Marketing",label:"Attribution Model",topic:"Design a multi-touch attribution model for an e-commerce company running paid search, social, email, and influencer campaigns. Compare last-click, linear, time-decay, and data-driven approaches. Recommend the best fit.",task:"analysis",industry:"marketing",output:"document",model:"claude"},
+  {sector:"Marketing",label:"Content Strategy",topic:"Create a 90-day content marketing strategy for a B2B cybersecurity company targeting CISOs. Include content pillars, distribution channels, SEO keywords, and conversion funnel mapping. Define KPIs for each stage.",task:"strategy",industry:"marketing",output:"document",model:"chatgpt"},
+  {sector:"Marketing",label:"Competitive Teardown",topic:"Conduct a competitive marketing teardown of the top 3 stock trading apps (Robinhood, Webull, eToro). Analyze their positioning, messaging, ad creative, social presence, and app store optimization. What gaps can a new entrant exploit?",task:"analysis",industry:"marketing",output:"document",model:"claude"},
 
-  // LEGAL
-  {sector:"Legal",label:"Compliance Memo",topic:"Analyze what EU AI Act compliance means for a US-based company providing computer vision APIs to insurance companies in Europe. What changes are needed?",task:"analysis",industry:"legal",output:"document",model:"general"},
-  {sector:"Legal",label:"Contract Strategy",topic:"Outline a contract negotiation strategy for acquiring a competitor: what key terms protect us if post-close integration fails? Assume regulatory approval is already done.",task:"writing",industry:"legal",output:"document",model:"claude"},
+  // LEGAL (5)
+  {sector:"Legal",label:"EU AI Act Compliance",topic:"Analyze what EU AI Act compliance means for a US-based company providing computer vision APIs to insurance companies in Europe. What changes are needed to product, documentation, and governance?",task:"analysis",industry:"legal",output:"document",model:"general"},
+  {sector:"Legal",label:"M&A Contract Strategy",topic:"Outline a contract negotiation strategy for acquiring a competitor. What key terms protect the buyer if post-close integration fails? Cover earn-outs, reps & warranties, indemnification caps, and MAC clauses.",task:"writing",industry:"legal",output:"document",model:"claude"},
+  {sector:"Legal",label:"IP Due Diligence",topic:"Create an IP due diligence checklist for a tech acquisition. Cover patents, trade secrets, open-source license compliance, employee invention assignments, and third-party IP risks. Flag the top 5 dealbreaker scenarios.",task:"review",industry:"legal",output:"checklist",model:"claude"},
+  {sector:"Legal",label:"SEC Filing Analysis",topic:"Analyze the risk factors section of a major tech company's 10-K filing. Identify which risks are boilerplate vs. company-specific, which have materialized in the past year, and what new risks are conspicuously absent.",task:"analysis",industry:"legal",output:"document",model:"general"},
+  {sector:"Legal",label:"Regulatory Strategy",topic:"Develop a regulatory strategy for a crypto exchange seeking licensing in the US, EU, and Singapore. Compare regulatory frameworks, compliance costs, timeline, and strategic sequencing. Which jurisdiction first and why?",task:"strategy",industry:"legal",output:"proposal",model:"claude"},
 
-  // HEALTHCARE
-  {sector:"Healthcare",label:"Clinical Evidence",topic:"Summarize the clinical trial data and real-world outcomes for GLP-1 receptor agonists in managing type 2 diabetes. What are the gaps in evidence?",task:"summarize",industry:"healthcare",output:"document",model:"general"},
-  {sector:"Healthcare",label:"Care Pathway Design",topic:"Design a patient education program for post-operative cardiac surgery recovery. Include timeline, key milestones, warning signs, and how to re-engage patients who aren't following recommendations.",task:"writing",industry:"healthcare",output:"document",model:"claude"},
+  // HEALTHCARE (5)
+  {sector:"Healthcare",label:"Clinical Trial Summary",topic:"Summarize the clinical trial data and real-world outcomes for GLP-1 receptor agonists in managing type 2 diabetes and obesity. Compare efficacy, safety profiles, and cost-effectiveness of semaglutide vs. tirzepatide.",task:"summarize",industry:"healthcare",output:"document",model:"general"},
+  {sector:"Healthcare",label:"Hospital Ops Optimization",topic:"Design a patient flow optimization strategy for an emergency department experiencing 4+ hour wait times. Use lean methodology and queuing theory. Include staffing models, triage improvements, and technology recommendations.",task:"strategy",industry:"healthcare",output:"document",model:"claude"},
+  {sector:"Healthcare",label:"Pharma Market Access",topic:"Build a market access strategy for launching a novel gene therapy priced at $2.1M per treatment. Address payer negotiations, outcomes-based contracting, patient access programs, and the health economics argument.",task:"strategy",industry:"healthcare",output:"proposal",model:"claude"},
+  {sector:"Healthcare",label:"Digital Health ROI",topic:"Evaluate the ROI of implementing an AI-powered clinical decision support system across a 500-bed hospital network. Quantify impact on diagnostic accuracy, length of stay, readmission rates, and physician burnout.",task:"analysis",industry:"healthcare",output:"spreadsheet",model:"chatgpt"},
+  {sector:"Healthcare",label:"Biotech Pipeline Review",topic:"Review and rank a mid-cap biotech company's drug pipeline by probability-adjusted NPV. Consider phase of development, competitive landscape, patent cliff timing, and potential partnership value for each asset.",task:"review",industry:"healthcare",output:"document",model:"claude"},
 
-  // EDUCATION
-  {sector:"Education",label:"Curriculum Design",topic:"Create a semester-long course outline for teaching business strategy using real case studies. How do we move beyond theory and develop students' ability to actually diagnose & solve problems?",task:"learning",industry:"education",output:"document",model:"claude"},
-  {sector:"Education",label:"Learning Outcomes",topic:"Design a lesson teaching statistical thinking to non-technical managers. They need to understand p-values, confidence intervals, and sample size—without heavy math.",task:"learning",industry:"education",output:"document",model:"chatgpt"},
+  // EDUCATION (5)
+  {sector:"Education",label:"Business Strategy Course",topic:"Create a semester-long course outline for teaching business strategy using real case studies from Netflix, Tesla, and LVMH. Move beyond theory to develop students' ability to diagnose competitive dynamics and make real decisions.",task:"learning",industry:"education",output:"document",model:"claude"},
+  {sector:"Education",label:"Statistical Thinking",topic:"Design a lesson teaching statistical thinking to non-technical managers. They need to understand p-values, confidence intervals, sample size, and A/B testing without heavy math. Use business examples throughout.",task:"learning",industry:"education",output:"document",model:"chatgpt"},
+  {sector:"Education",label:"Financial Literacy Program",topic:"Design a 4-week financial literacy program for college seniors entering the workforce. Cover budgeting, investing basics, 401k optimization, tax planning, and avoiding common financial mistakes. Make it engaging, not preachy.",task:"learning",industry:"education",output:"document",model:"general"},
+  {sector:"Education",label:"Case Method Workshop",topic:"Create a teaching guide for running Harvard-style case discussions in a graduate business program. Include how to write cold-call questions, manage airtime, handle wrong answers gracefully, and synthesize toward key takeaways.",task:"writing",industry:"education",output:"document",model:"claude"},
+  {sector:"Education",label:"Executive Education Design",topic:"Design a 3-day executive education program on AI strategy for C-suite leaders. They need to make investment decisions about AI without understanding the technical details. Focus on frameworks, not code.",task:"strategy",industry:"education",output:"proposal",model:"chatgpt"},
 
-  // CONSULTING
-  {sector:"Consulting",label:"Market Entry Analysis",topic:"Develop a market entry strategy for a European SaaS company targeting the US mid-market. What are the go-to-market differences? Pricing? Sales model?",task:"analysis",industry:"consulting",output:"document",model:"claude"},
-  {sector:"Consulting",label:"Organizational Design",topic:"Propose a new org structure for a 200-person tech company scaling from 0 to $50M ARR. How do we avoid bureaucracy while maintaining coordination?",task:"writing",industry:"consulting",output:"proposal",model:"general"},
+  // CONSULTING (5)
+  {sector:"Consulting",label:"Market Entry Strategy",topic:"Develop a market entry strategy for a European SaaS company targeting the US mid-market. Address go-to-market differences, pricing localization, sales model (PLG vs. enterprise), and competitive positioning against US incumbents.",task:"strategy",industry:"consulting",output:"document",model:"claude"},
+  {sector:"Consulting",label:"Org Design at Scale",topic:"Propose a new org structure for a 200-person tech company scaling from $10M to $50M ARR. How do we avoid bureaucracy while maintaining coordination? Address reporting lines, decision rights, and meeting cadence.",task:"writing",industry:"consulting",output:"proposal",model:"general"},
+  {sector:"Consulting",label:"Cost Transformation",topic:"Design a cost transformation program targeting 15% OpEx reduction for a mid-market manufacturer without cutting headcount. Identify quick wins (0-3 months), structural changes (3-12 months), and strategic shifts (12+ months).",task:"strategy",industry:"consulting",output:"presentation",model:"claude"},
+  {sector:"Consulting",label:"Due Diligence Report",topic:"Conduct a commercial due diligence assessment for a PE firm acquiring a B2B software company. Evaluate market size, competitive moat, customer concentration, churn dynamics, and pricing power. Flag the top risks.",task:"analysis",industry:"consulting",output:"document",model:"claude"},
+  {sector:"Consulting",label:"Digital Transformation",topic:"Create a digital transformation roadmap for a traditional insurance company. Prioritize initiatives by impact and feasibility. Address legacy system migration, customer experience, data strategy, and change management.",task:"strategy",industry:"consulting",output:"proposal",model:"chatgpt"},
 ];
 
 /* ═══════════════════════════════════════════════════════
@@ -317,7 +471,7 @@ function getSmartEnhancements(topic,taskType,industry,output){
    PROMPT BUILD ENGINE
    ═══════════════════════════════════════════════════════ */
 function buildPrompt(p){
-  const {topic,taskType,model,tone,length,format,techniques,audience,extra,special,mode,industry,output,style,includes,language,fileOutput}=p;
+  const {topic,taskType,model,tone,length,format,techniques,audience,extra,special,mode,industry,output,style,includes,language,fileOutput,selectedFirm,selectedRole}=p;
   const isXml=model==="claude";const isExp=mode==="expert";const lines=[];
   const sec=(tag,content)=>{
     if(isXml)lines.push("<"+tag+">\n"+content+"\n</"+tag+">");
@@ -330,6 +484,14 @@ function buildPrompt(p){
 
   // INDUSTRY CONTEXT
   if(industry!=="general"&&IND_CONTEXT[industry])sec("domain_expertise",IND_CONTEXT[industry]);
+
+  // FIRM & ROLE CONTEXT
+  if(selectedFirm&&SECTOR_FIRMS[industry]?.firms[selectedFirm]){
+    const firmData=SECTOR_FIRMS[industry].firms[selectedFirm];
+    let firmCtx="Adopt the working style, analytical frameworks, and communication standards of "+firmData.name+". Mirror their methodology, rigor, and deliverable quality.";
+    if(selectedRole){firmCtx+="\n\nYou are operating in the role of a "+selectedRole+" at "+firmData.name+". Apply the specific expertise, priorities, and perspective this role demands. Frame your analysis and recommendations as this professional would.";}
+    sec("firm_context",firmCtx);
+  }
 
   // TASK + SMART ENHANCEMENT
   const enhancements=getSmartEnhancements(topic,taskType,industry,output);
@@ -500,6 +662,8 @@ function App(){
   const [special,setSpecial]=useState("");
   const [language,setLanguage]=useState("English");
   const [fileOutput,setFileOutput]=useState("pdf");
+  const [selectedFirm,setSelectedFirm]=useState("");
+  const [selectedRole,setSelectedRole]=useState("");
   const [copied,setCopied]=useState(false);
   const [show,setShow]=useState(false);
   const [history,setHistory]=useState(()=>loadHistory());
@@ -514,13 +678,14 @@ function App(){
   const [promptGenerated,setPromptGenerated]=useState(false);
   const [exampleSector,setExampleSector]=useState("All");
   const [isListening,setIsListening]=useState(false);
+  const [showResetConfirm,setShowResetConfirm]=useState(false);
   const recognitionRef=useRef(null);
   const ref=useRef(null);
   const isExp=mode==="expert";
   const ac=MODELS[model].col;
   const acRgb={"#0891B2":"8,145,178","#D97706":"217,119,6","#10A37F":"16,163,127","#4285F4":"66,133,244","#8B5CF6":"139,92,246","#64748B":"100,116,139"}[ac];
 
-  const prompt=buildPrompt({topic,taskType:task,model,tone,length:len,format:fmt,techniques:techs,audience:aud,extra,special,mode,industry,output,style,includes,language,fileOutput});
+  const prompt=buildPrompt({topic,taskType:task,model,tone,length:len,format:fmt,techniques:techs,audience:aud,extra,special,mode,industry,output,style,includes,language,fileOutput,selectedFirm,selectedRole});
   const enhancements=useMemo(()=>topic.trim()?getSmartEnhancements(topic,task,industry,output):[], [topic,task,industry,output]);
 
   const go=useCallback(()=>{
@@ -540,7 +705,7 @@ function App(){
 
   const exportTxt=useCallback(()=>{const blob=new Blob([prompt],{type:"text/plain"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="prompt-"+(task)+"-"+Date.now()+".txt";a.click();URL.revokeObjectURL(url);},[prompt,task]);
 
-  const loadExample=useCallback((ex)=>{setTopic(ex.topic);setTask(ex.task);setIndustry(ex.industry);setOutput(ex.output);setModel(ex.model);setShow(false);},[]);
+  const loadExample=useCallback((ex)=>{setTopic(ex.topic);setTask(ex.task);setIndustry(ex.industry);setOutput(ex.output);setModel(ex.model);setSelectedFirm("");setSelectedRole("");setShow(false);},[]);
 
   const loadFromHistory=useCallback((h)=>{setTopic(h.topic);setTask(h.task);setIndustry(h.industry);setOutput(h.output);setModel(h.model);setShowHistory(false);setShow(false);},[]);
 
@@ -602,6 +767,15 @@ function App(){
       setIsListening(true);
     }
   },[isListening]);
+
+  const resetAll=useCallback(()=>{
+    setTopic("");setTask("writing");setIndustry("general");setOutput("document");setModel("claude");
+    setStyle("formal");setTone("Professional");setLen("Medium");setFmt(["prose","headers"]);
+    setIncludes([]);setTechs([]);setAud("");setExtra("");setSpecial("");setLanguage("English");
+    setFileOutput("pdf");setSelectedFirm("");setSelectedRole("");
+    setShow(false);setShowResetConfirm(false);setPromptGenerated(false);
+    window.scrollTo({top:0,behavior:"smooth"});
+  },[]);
 
   return <>
     <style>{`
@@ -722,17 +896,22 @@ function App(){
           {/* EXAMPLE PROMPTS */}
           {!topic.trim()&&(
             <div style={{marginTop:12}}>
-              <div style={{fontSize:11,color:"var(--t3)",marginBottom:8,fontWeight:600,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                <span>Try an example by industry:</span>
-              </div>
-              <div style={{display:"flex",gap:6,marginBottom:12,flexWrap:"wrap"}}>
+              <div style={{fontSize:11.5,color:"var(--t3)",marginBottom:10,fontWeight:600}}>Try an example by industry:</div>
+              <div style={{display:"flex",gap:6,marginBottom:14,flexWrap:"wrap"}}>
                 {["All",...new Set(EXAMPLES.map(e=>e.sector))].map((sector,i)=>(
-                  <button key={i} onClick={()=>setExampleSector(sector)} style={{padding:"6px 12px",borderRadius:7,border:"1px solid var(--bd)",background:exampleSector===sector?ac:"var(--s2)",color:exampleSector===sector?"#fff":"var(--t2)",cursor:"pointer",fontSize:11,fontFamily:"var(--f)",fontWeight:600,transition:"all .15s"}}>{sector}</button>
+                  <button key={i} onClick={()=>setExampleSector(sector)} style={{padding:"6px 12px",borderRadius:7,border:"1.5px solid "+(exampleSector===sector?ac:"var(--bd)"),background:exampleSector===sector?ac+"14":"var(--s2)",color:exampleSector===sector?ac:"var(--t2)",cursor:"pointer",fontSize:11,fontFamily:"var(--f)",fontWeight:600,transition:"all .15s"}}>{sector}</button>
                 ))}
               </div>
-              <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:8}}>
                 {EXAMPLES.filter(ex=>exampleSector==="All"||ex.sector===exampleSector).map((ex,i)=>(
-                  <button key={i} onClick={()=>{loadExample(ex);setExampleSector("All");}} style={{padding:"6px 12px",borderRadius:7,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",cursor:"pointer",fontSize:11.5,fontFamily:"var(--f)",fontWeight:500,transition:"all .15s"}}>{ex.label}</button>
+                  <button key={i} onClick={()=>{loadExample(ex);setExampleSector("All");}} style={{padding:"10px 12px",borderRadius:9,border:"1px solid var(--bd)",background:"var(--s1)",color:"var(--t1)",cursor:"pointer",fontFamily:"var(--f)",transition:"all .15s",textAlign:"left",display:"flex",flexDirection:"column",gap:4}}>
+                    <span style={{fontSize:12,fontWeight:620,lineHeight:1.3}}>{ex.label}</span>
+                    <span style={{fontSize:10.5,color:"var(--t3)",lineHeight:1.4,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{ex.topic.substring(0,90)}...</span>
+                    <div style={{display:"flex",gap:4,marginTop:2}}>
+                      <span style={{fontSize:9.5,padding:"2px 6px",borderRadius:4,background:ac+"10",color:ac,fontWeight:550}}>{TASKS[ex.task]?.l}</span>
+                      <span style={{fontSize:9.5,padding:"2px 6px",borderRadius:4,background:"var(--s2)",color:"var(--t3)",fontWeight:500}}>{MODELS[ex.model]?.name}</span>
+                    </div>
+                  </button>
                 ))}
               </div>
             </div>
@@ -760,7 +939,30 @@ function App(){
         </Step>
 
         <Step ico="building" title="Industry / Sector" sub="Injects domain-specific terminology, frameworks, and compliance requirements">
-          <Wrap>{Object.entries(INDUSTRIES).map(([k,v])=><Chip key={k} active={industry===k} accent={ac} onClick={()=>setIndustry(k)}>{I[v.i]?.(12,industry===k?ac:"var(--t3)")}{v.l}</Chip>)}</Wrap>
+          <Wrap>{Object.entries(INDUSTRIES).map(([k,v])=><Chip key={k} active={industry===k} accent={ac} onClick={()=>{setIndustry(k);setSelectedFirm("");setSelectedRole("");}}>{I[v.i]?.(12,industry===k?ac:"var(--t3)")}{v.l}</Chip>)}</Wrap>
+          {isExp&&industry!=="general"&&SECTOR_FIRMS[industry]&&(
+            <div style={{marginTop:14,padding:"14px 16px",borderRadius:10,background:ac+"08",border:"1px solid "+ac+"18",animation:"fadeIn .2s ease"}}>
+              <div style={{fontSize:11.5,fontWeight:640,color:ac,marginBottom:10,display:"flex",alignItems:"center",gap:6}}>{I.building(13,ac)} Firm & Role Style</div>
+              <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:selectedFirm?10:0}}>
+                {Object.entries(SECTOR_FIRMS[industry].firms).map(([k,v])=>(
+                  <button key={k} onClick={()=>{setSelectedFirm(selectedFirm===k?"":k);setSelectedRole("");}} style={{padding:"6px 12px",borderRadius:7,border:"1.5px solid "+(selectedFirm===k?ac:"var(--bd)"),background:selectedFirm===k?ac+"14":"var(--s1)",color:selectedFirm===k?ac:"var(--t2)",cursor:"pointer",fontSize:11.5,fontFamily:"var(--f)",fontWeight:selectedFirm===k?620:450,transition:"all .15s"}}>{v.name}</button>
+                ))}
+              </div>
+              {selectedFirm&&SECTOR_FIRMS[industry].firms[selectedFirm]&&(
+                <div style={{animation:"fadeIn .2s ease"}}>
+                  <div style={{fontSize:10.5,color:"var(--t3)",marginBottom:6,fontWeight:550}}>Role at {SECTOR_FIRMS[industry].firms[selectedFirm].name}:</div>
+                  <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
+                    {SECTOR_FIRMS[industry].firms[selectedFirm].roles.map((role,i)=>(
+                      <button key={i} onClick={()=>setSelectedRole(selectedRole===role?"":role)} style={{padding:"5px 10px",borderRadius:6,border:"1px solid "+(selectedRole===role?ac:"var(--bd)"),background:selectedRole===role?ac+"14":"var(--s1)",color:selectedRole===role?ac:"var(--t2)",cursor:"pointer",fontSize:11,fontFamily:"var(--f)",fontWeight:selectedRole===role?600:400,transition:"all .15s"}}>{role}</button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {selectedFirm&&selectedRole&&(
+                <div style={{marginTop:10,fontSize:11,color:ac,fontWeight:550,display:"flex",alignItems:"center",gap:4}}>{I.check(11,ac)} {INDUSTRIES[industry].l} &rarr; {SECTOR_FIRMS[industry].firms[selectedFirm].name} &rarr; {selectedRole}</div>
+              )}
+            </div>
+          )}
         </Step>
 
         {/* OUTPUT TYPE */}
@@ -849,6 +1051,7 @@ function App(){
             <div style={{display:"flex",gap:6}}>
               <button onClick={exportTxt} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 12px",borderRadius:7,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{I.download(12,"var(--t2)")} .txt</button>
               <button onClick={cp} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 14px",borderRadius:7,border:"none",background:copied?"#10A37F":ac,color:"#fff",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{copied?I.check(12,"#fff"):I.copy(12,"#fff")}{copied?"Copied":"Copy"}</button>
+              <button onClick={()=>setShowResetConfirm(true)} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 12px",borderRadius:7,border:"1px solid #fca5a5",background:"#fff5f5",color:"#dc2626",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{I.plus(12,"#dc2626")} New</button>
             </div>
           </div>
           <pre style={{padding:"20px 22px",margin:0,whiteSpace:"pre-wrap",wordWrap:"break-word",fontSize:12,lineHeight:1.8,fontFamily:"var(--m)",color:"var(--t2)",background:"var(--bg)",maxHeight:600,overflow:"auto"}}>{prompt}</pre>
@@ -896,6 +1099,21 @@ function App(){
           </form>
           <div style={{marginTop:20,textAlign:"center",fontSize:13,color:"var(--t2)"}}>
             {authMode==="signup"?(<>Already have an account? <button onClick={()=>{setAuthMode("login");setAuthErr("");}} style={{border:"none",background:"none",color:ac,cursor:"pointer",fontWeight:700,fontFamily:"var(--f)"}}>Sign in</button></>):(<>Don't have an account? <button onClick={()=>{setAuthMode("signup");setAuthErr("");}} style={{border:"none",background:"none",color:ac,cursor:"pointer",fontWeight:700,fontFamily:"var(--f)"}}>Sign up</button></>)}
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* RESET CONFIRMATION MODAL */}
+    {showResetConfirm&&(
+      <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,.5)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:2000,padding:20}} onClick={()=>setShowResetConfirm(false)}>
+        <div style={{background:"var(--s1)",borderRadius:14,padding:28,maxWidth:340,width:"100%",boxShadow:"0 20px 60px rgba(0,0,0,.15)",animation:"slideDown .2s ease",textAlign:"center"}} onClick={(e)=>e.stopPropagation()}>
+          <div style={{width:44,height:44,borderRadius:12,background:"#fee2e2",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px"}}>{I.trash(20,"#dc2626")}</div>
+          <h3 style={{fontSize:17,fontWeight:700,margin:"0 0 8px",color:"var(--t1)"}}>Start a new prompt?</h3>
+          <p style={{fontSize:13,color:"var(--t2)",margin:"0 0 22px",lineHeight:1.5}}>This will clear your current prompt and all settings. Make sure you've copied it first.</p>
+          <div style={{display:"flex",gap:10}}>
+            <button onClick={()=>setShowResetConfirm(false)} style={{flex:1,padding:"11px 16px",borderRadius:8,border:"1px solid var(--bd)",background:"var(--s1)",color:"var(--t2)",fontSize:13,fontWeight:600,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>Cancel</button>
+            <button onClick={resetAll} style={{flex:1,padding:"11px 16px",borderRadius:8,border:"none",background:"#dc2626",color:"#fff",fontSize:13,fontWeight:700,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>Clear & start new</button>
           </div>
         </div>
       </div>
