@@ -1033,7 +1033,7 @@ async function clearHistoryFromDB(){
 /* ═══════════════════════════════════════════════════════
    UI COMPONENTS
    ═══════════════════════════════════════════════════════ */
-const Chip=({active,onClick,children,accent,sx})=><button onClick={onClick} style={{display:"flex",alignItems:"center",gap:6,padding:"8px 14px",borderRadius:8,border:"1.5px solid "+(active?accent||"var(--ac)":"var(--bd)"),background:active?(accent||"var(--ac)")+"14":"var(--s2)",color:active?accent||"var(--ac)":"var(--t2)",cursor:"pointer",fontSize:12.5,fontWeight:active?600:450,fontFamily:"var(--f)",transition:"all .15s",whiteSpace:"nowrap",...sx}}>{children}</button>;
+const Chip=({active,onClick,children,accent,sx})=><button onClick={onClick} style={{display:"flex",alignItems:"center",gap:5,padding:"7px 12px",borderRadius:8,border:"1.5px solid "+(active?accent||"var(--ac)":"var(--bd)"),background:active?(accent||"var(--ac)")+"14":"var(--s2)",color:active?accent||"var(--ac)":"var(--t2)",cursor:"pointer",fontSize:"clamp(11px,2.8vw,12.5px)",fontWeight:active?600:450,fontFamily:"var(--f)",transition:"all .15s",whiteSpace:"nowrap",...sx}}>{children}</button>;
 
 const Step=({ico,title,sub,children,collapsed,onToggle})=>(
   <div style={{marginBottom:26}}>
@@ -1047,7 +1047,7 @@ const Step=({ico,title,sub,children,collapsed,onToggle})=>(
   </div>
 );
 
-const Wrap=({children})=><div style={{display:"flex",flexWrap:"wrap",gap:6}}>{children}</div>;
+const Wrap=({children})=><div style={{display:"flex",flexWrap:"wrap",gap:"clamp(4px,1vw,6px)"}}>{children}</div>;
 
 /* ═══════════════════════════════════════════════════════
    MAIN APP
@@ -1324,7 +1324,18 @@ function App(){
       body{background:#f8fafc;overflow-x:hidden}
       textarea:focus,input:focus{border-color:${ac}!important;box-shadow:0 0 0 3px ${ac}20}
       .main-grid{display:grid;grid-template-columns:1fr;gap:32px;align-items:start}
-      @media(max-width:640px){.hero-grid{grid-template-columns:1fr!important}.hero-art{display:none!important}.chip-wrap{gap:5px!important}.chip-wrap button{font-size:11px!important;padding:6px 10px!important}}
+      @media(max-width:640px){
+        .hero-grid{grid-template-columns:1fr!important}
+        .hero-art{display:none!important}
+        .chip-wrap{gap:5px!important}
+        .chip-wrap button{font-size:11px!important;padding:6px 10px!important}
+        .mobile-stack{flex-direction:column!important}
+        .mobile-full{min-width:100%!important}
+      }
+      @media(max-width:480px){
+        nav>div{padding:0 4px!important}
+        nav span{font-size:14px!important}
+      }
       .profile-dd{position:absolute;top:100%;right:0;margin-top:8px;background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:6px;min-width:200px;box-shadow:0 10px 40px rgba(0,0,0,.12);animation:slideDown .15s ease;z-index:1001}
       .profile-dd button{display:flex;align-items:center;gap:10px;width:100%;padding:10px 14px;border:none;background:transparent;color:var(--t2);font-size:13px;font-family:var(--f);cursor:pointer;border-radius:8px;transition:background .15s}
       .profile-dd button:hover{background:var(--s2)}
@@ -1380,7 +1391,7 @@ function App(){
     <div style={{minHeight:"100vh",background:"var(--bg)",color:"var(--t1)",fontFamily:"var(--f)",paddingTop:56}}>
 
       {/* COMPACT HERO + HOW IT WORKS — all one seamless section */}
-      <section style={{background:"linear-gradient(180deg, #f0f9ff 0%, var(--bg) 100%)",padding:"32px 24px 0",position:"relative",overflow:"hidden"}}>
+      <section style={{background:"linear-gradient(180deg, #f0f9ff 0%, var(--bg) 100%)",padding:"clamp(20px,4vw,32px) clamp(12px,3vw,24px) 0",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:-100,right:-80,width:350,height:350,borderRadius:"50%",background:`radial-gradient(circle, ${ac}06 0%, transparent 70%)`,pointerEvents:"none"}}/>
         <div style={{maxWidth:1200,margin:"0 auto"}}>
           {/* Hero copy — transformation-led */}
@@ -1414,7 +1425,7 @@ function App(){
       </section>
 
       {/* MAIN CONTENT */}
-      <div style={{maxWidth:1200,margin:"0 auto",padding:"28px 24px 60px"}}>
+      <div style={{maxWidth:1200,margin:"0 auto",padding:"clamp(16px,4vw,28px) clamp(12px,3vw,24px) 60px"}}>
 
       {/* TOOL HEADER + MODE SWITCH */}
       <div id="tool" style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:16,marginBottom:24}}>
@@ -1433,7 +1444,7 @@ function App(){
       </div>
 
       {/* MODE SWITCH + HINT */}
-      <div style={{display:"flex",gap:8,marginBottom:20,flexWrap:"wrap"}}>
+      <div className="mobile-stack" style={{display:"flex",gap:8,marginBottom:20,flexWrap:"wrap"}}>
         {[["amateur","seedling","Simple","15 task types, 15 industries, 10 AI models, smart enhancement"],["expert","microscope","Expert","All of Simple + firm expertise, 15 reasoning techniques, file output"]].map(([m,ic,lb,desc])=>(
           <div key={m} onClick={()=>setMode(m)} style={{flex:1,minWidth:200,padding:"10px 14px",borderRadius:9,border:mode===m?"1.5px solid "+ac:"1px solid var(--bd)",background:mode===m?ac+"05":"var(--s1)",cursor:"pointer",transition:"all .15s"}}>
             <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3}}>
@@ -1463,7 +1474,7 @@ function App(){
       )}
 
       {/* FORM */}
-      <div style={{background:"var(--s1)",borderRadius:16,border:"1px solid var(--bd)",padding:"32px 28px",marginBottom:24,boxShadow:"0 1px 4px rgba(0,0,0,.04)"}}>
+      <div style={{background:"var(--s1)",borderRadius:16,border:"1px solid var(--bd)",padding:"clamp(16px,4vw,32px) clamp(14px,3.5vw,28px)",marginBottom:24,boxShadow:"0 1px 4px rgba(0,0,0,.04)"}}>
 
         {/* TOPIC */}
         <Step ico="pen" title="Describe your goal" sub="Be specific  -  but don't worry about being perfect. Smart enhancement fills the gaps.">
@@ -1606,15 +1617,15 @@ function App(){
         </Step>}
 
         {isExp&&<Step ico="users" title="Target audience" sub="Override smart audience detection with a specific audience">
-          <input value={aud} onChange={e=>setAud(e.target.value)} placeholder="Leave blank for smart detection, or specify: e.g. Finance students, mid-level managers, senior developers..." style={inp()} />
+          <input value={aud} onChange={e=>setAud(e.target.value)} placeholder="e.g. Finance students, senior developers" style={inp()} />
         </Step>}
 
         {isExp&&<Step ico="plus" title="Additional instructions" sub="Added verbatim as a final section">
-          <textarea value={extra} onChange={e=>setExtra(e.target.value)} placeholder="e.g. Use Apple's 2024 10-K as the worked example, include sensitivity analysis..." rows={2} style={inp({resize:"vertical"})} />
+          <textarea value={extra} onChange={e=>setExtra(e.target.value)} placeholder="e.g. Include a worked example with real data" rows={2} style={inp({resize:"vertical"})} />
         </Step>}
 
         <Step ico="info" title="Special requests (optional)" sub="Format, style, or content constraints">
-          <textarea value={special} onChange={e=>setSpecial(e.target.value)} placeholder="e.g. No emojis, use bullet points instead of paragraphs, make it casual and humorous, include code comments in German..." rows={2} style={inp({resize:"vertical"})} />
+          <textarea value={special} onChange={e=>setSpecial(e.target.value)} placeholder="e.g. Use bullet points, keep it under 500 words" rows={2} style={inp({resize:"vertical"})} />
         </Step>
 
         {/* GENERATE */}
@@ -1695,8 +1706,8 @@ function App(){
             </svg>
             <span style={{fontSize:14,fontWeight:600,color:"var(--t1)"}}>Prompt Architect</span>
           </div>
-          <div style={{display:"flex",gap:24,alignItems:"center",flexWrap:"wrap"}}>
-            <span style={{fontSize:12,color:"var(--t3)"}}>Prompt generation runs entirely in your browser. Your data stays private.</span>
+          <div style={{display:"flex",gap:"clamp(12px,3vw,24px)",alignItems:"center",flexWrap:"wrap"}}>
+            <span style={{fontSize:"clamp(10px,2.5vw,12px)",color:"var(--t3)"}}>Prompt generation runs entirely in your browser. Your data stays private.</span>
             <a href="https://github.com/DoomsdayTycoon/prompt-architect" target="_blank" rel="noopener" style={{fontSize:12,color:"var(--t3)",textDecoration:"none",display:"flex",alignItems:"center",gap:5,transition:"color .15s"}}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
               GitHub
