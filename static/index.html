@@ -15,20 +15,19 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.4/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script type="text/babel">
 const { useState, useRef, useCallback, useEffect, useMemo } = React;
 
 /* ═══════════════════════════════════════════════════════
-   AUTH & USER STATE MANAGEMENT
+   SUPABASE CLIENT & AUTH
    ═══════════════════════════════════════════════════════ */
-const loadUser=()=>{try{const u=localStorage.getItem("pa_user");return u?JSON.parse(u):null;}catch(e){return null;}};
-const saveUser=(u)=>{if(u===null)localStorage.removeItem("pa_user");else localStorage.setItem("pa_user",JSON.stringify(u));};
-const getStoredUsers=()=>{try{const u=localStorage.getItem("pa_users");return u?JSON.parse(u):[];}catch(e){return [];}};
-const saveUsers=(users)=>{localStorage.setItem("pa_users",JSON.stringify(users));};
+const SUPABASE_URL="https://whfdtdcplkneviumgrkz.supabase.co";
+const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndoZmR0ZGNwbGtuZXZpdW1ncmt6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2Mzk0MzQsImV4cCI6MjA5MTIxNTQzNH0.xmk6ZPvxt9dmezmDESMI8w6AmL3zErcjWb0T7iNHQAE";
+const supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+
 const validateEmail=(e)=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 const validatePassword=(p)=>p.length>=6;
-const signupUser=(name,email,password)=>{if(!validateEmail(email))return {ok:false,msg:"Invalid email"};if(!validatePassword(password))return {ok:false,msg:"Password must be 6+ chars"};const users=getStoredUsers();if(users.find(u=>u.email===email))return {ok:false,msg:"Email already registered"};const newUser={name,email,password};users.push(newUser);saveUsers(users);return {ok:true,user:{name,email}};};
-const loginUser=(email,password)=>{const users=getStoredUsers();const user=users.find(u=>u.email===email&&u.password===password);return user?{ok:true,user:{name:user.name,email:user.email}}:{ok:false,msg:"Invalid email or password"};};
 
 
 /* ═══════════════════════════════════════════════════════
@@ -631,11 +630,27 @@ function buildPrompt(p){
 }
 
 /* ═══════════════════════════════════════════════════════
-   HISTORY — localStorage persistence
+   HISTORY — Supabase persistence
    ═══════════════════════════════════════════════════════ */
-const HISTORY_KEY="promptarchitect_history";
-function loadHistory(){try{return JSON.parse(localStorage.getItem(HISTORY_KEY))||[];}catch(e){return[];}}
-function saveHistory(h){try{localStorage.setItem(HISTORY_KEY,JSON.stringify(h.slice(0,20)));}catch(e){}}
+async function loadHistoryFromDB(){
+  const {data:{user}}=await supabase.auth.getUser();
+  if(!user)return [];
+  const {data,error}=await supabase.from("prompt_history").select("*").eq("user_id",user.id).order("created_at",{ascending:false}).limit(20);
+  if(error){console.error("History load error:",error);return [];}
+  return (data||[]).map(r=>({id:r.id,topic:r.topic,task:r.task,industry:r.industry,output:r.output,model:r.model,fileOutput:r.file_output,timestamp:new Date(r.created_at).getTime()}));
+}
+async function saveHistoryToDB(entry){
+  const {data:{user}}=await supabase.auth.getUser();
+  if(!user)return;
+  const {error}=await supabase.from("prompt_history").insert({user_id:user.id,topic:entry.topic,task:entry.task,industry:entry.industry,output:entry.output,model:entry.model,file_output:entry.fileOutput||"pdf",prompt_text:entry.promptText||null});
+  if(error)console.error("History save error:",error);
+}
+async function clearHistoryFromDB(){
+  const {data:{user}}=await supabase.auth.getUser();
+  if(!user)return;
+  const {error}=await supabase.from("prompt_history").delete().eq("user_id",user.id);
+  if(error)console.error("History clear error:",error);
+}
 
 /* ═══════════════════════════════════════════════════════
    UI COMPONENTS
@@ -681,9 +696,10 @@ function App(){
   const [selectedRole,setSelectedRole]=useState("");
   const [copied,setCopied]=useState(false);
   const [show,setShow]=useState(false);
-  const [history,setHistory]=useState(()=>loadHistory());
+  const [history,setHistory]=useState([]);
   const [showHistory,setShowHistory]=useState(false);
-  const [user,setUser]=useState(()=>loadUser());
+  const [user,setUser]=useState(null);
+  const [authLoading,setAuthLoading]=useState(true);
   const [showAuth,setShowAuth]=useState(false);
   const [authMode,setAuthMode]=useState("login");
   const [authEmail,setAuthEmail]=useState("");
@@ -704,18 +720,38 @@ function App(){
   const prompt=buildPrompt({topic,taskType:task,model,tone,length:len,format:fmt,techniques:techs,audience:aud,extra,special,mode,industry,output,style,includes,language,fileOutput,selectedFirm,selectedRole});
   const enhancements=useMemo(()=>topic.trim()?getSmartEnhancements(topic,task,industry,output):[], [topic,task,industry,output]);
 
+  // Initialize Supabase auth session and listen for changes
+  useEffect(()=>{
+    supabase.auth.getSession().then(({data:{session}})=>{
+      if(session?.user){
+        const u=session.user;
+        setUser({name:u.user_metadata?.name||u.email?.split("@")[0]||"User",email:u.email});
+        loadHistoryFromDB().then(h=>setHistory(h));
+      }
+      setAuthLoading(false);
+    });
+    const {data:{subscription}}=supabase.auth.onAuthStateChange((event,session)=>{
+      if(event==="SIGNED_IN"&&session?.user){
+        const u=session.user;
+        setUser({name:u.user_metadata?.name||u.email?.split("@")[0]||"User",email:u.email});
+        loadHistoryFromDB().then(h=>setHistory(h));
+      }else if(event==="SIGNED_OUT"){
+        setUser(null);
+        setHistory([]);
+      }
+    });
+    return ()=>subscription.unsubscribe();
+  },[]);
+
   const go=useCallback(()=>{
     setShow(true);
     setPromptGenerated(true);
-    // Save to history only if user logged in
     if(user){
-      const entry={topic,task,industry,output,model,timestamp:Date.now()};
-      const newHist=[entry,...history.filter(h=>h.topic!==topic)].slice(0,20);
-      setHistory(newHist);
-      saveHistory(newHist);
+      const entry={topic,task,industry,output,model,fileOutput,promptText:prompt};
+      saveHistoryToDB(entry).then(()=>loadHistoryFromDB().then(h=>setHistory(h)));
     }
     setTimeout(()=>ref.current?.scrollIntoView({behavior:"smooth",block:"start"}),120);
-  },[topic,task,industry,output,model,history,user]);
+  },[topic,task,industry,output,model,fileOutput,prompt,user]);
 
   const cp=useCallback(()=>{try{navigator.clipboard.writeText(prompt).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2200);});}catch(e){const ta=document.createElement("textarea");ta.value=prompt;ta.style.cssText="position:fixed;left:-9999px;top:-9999px";document.body.appendChild(ta);ta.focus();ta.select();document.execCommand("copy");document.body.removeChild(ta);setCopied(true);setTimeout(()=>setCopied(false),2200);}},[prompt]);
 
@@ -725,7 +761,7 @@ function App(){
 
   const loadFromHistory=useCallback((h)=>{setTopic(h.topic);setTask(h.task);setIndustry(h.industry);setOutput(h.output);setModel(h.model);setShowHistory(false);setShow(false);},[]);
 
-  const clearHistory=useCallback(()=>{setHistory([]);saveHistory([]);setShowHistory(false);},[]);
+  const clearHistory=useCallback(()=>{clearHistoryFromDB();setHistory([]);setShowHistory(false);},[]);
 
   const ti=useCallback(v=>setIncludes(p=>p.includes(v)?p.filter(x=>x!==v):[...p,v]),[]);
   const tf=useCallback(v=>setFmt(p=>p.includes(v)?p.filter(x=>x!==v):[...p,v]),[]);
@@ -733,28 +769,30 @@ function App(){
 
   const inp=(sx={})=>({width:"100%",padding:12,borderRadius:9,border:"1.5px solid var(--bd)",background:"var(--bg)",color:"var(--t1)",fontSize:13.5,fontFamily:"var(--f)",outline:"none",transition:"border .2s",lineHeight:1.6,...sx});
 
-  const handleAuthSubmit=useCallback((e)=>{
+  const [authSubmitting,setAuthSubmitting]=useState(false);
+  const handleAuthSubmit=useCallback(async(e)=>{
     e.preventDefault();
     setAuthErr("");
-    if(authMode==="signup"){
-      if(!authName.trim()){setAuthErr("Name required");return;}
-      const res=signupUser(authName,authEmail,authPassword);
-      if(!res.ok){setAuthErr(res.msg);return;}
-      saveUser(res.user);
-      setUser(res.user);
-      setShowAuth(false);
-      setAuthEmail("");setAuthPassword("");setAuthName("");setAuthMode("login");
-    }else{
-      const res=loginUser(authEmail,authPassword);
-      if(!res.ok){setAuthErr(res.msg);return;}
-      saveUser(res.user);
-      setUser(res.user);
-      setShowAuth(false);
-      setAuthEmail("");setAuthPassword("");
-    }
+    setAuthSubmitting(true);
+    try{
+      if(authMode==="signup"){
+        if(!authName.trim()){setAuthErr("Name required");setAuthSubmitting(false);return;}
+        if(!validateEmail(authEmail)){setAuthErr("Invalid email");setAuthSubmitting(false);return;}
+        if(!validatePassword(authPassword)){setAuthErr("Password must be 6+ characters");setAuthSubmitting(false);return;}
+        const {data,error}=await supabase.auth.signUp({email:authEmail,password:authPassword,options:{data:{name:authName}}});
+        if(error){setAuthErr(error.message);setAuthSubmitting(false);return;}
+        if(data.user&&!data.session){setAuthErr("Check your email for a confirmation link");setAuthSubmitting(false);return;}
+        setShowAuth(false);setAuthEmail("");setAuthPassword("");setAuthName("");
+      }else{
+        const {data,error}=await supabase.auth.signInWithPassword({email:authEmail,password:authPassword});
+        if(error){setAuthErr(error.message);setAuthSubmitting(false);return;}
+        setShowAuth(false);setAuthEmail("");setAuthPassword("");
+      }
+    }catch(err){setAuthErr("Something went wrong. Please try again.");}
+    setAuthSubmitting(false);
   },[authMode,authName,authEmail,authPassword]);
 
-  const handleLogout=useCallback(()=>{setUser(null);saveUser(null);setShowAuth(false);},[]);
+  const handleLogout=useCallback(async()=>{await supabase.auth.signOut();setUser(null);setHistory([]);setShowAuth(false);},[]);
 
   const toggleVoice=useCallback(()=>{
     if(!recognitionRef.current){
@@ -1113,7 +1151,7 @@ function App(){
             <input value={authEmail} onChange={(e)=>setAuthEmail(e.target.value)} type="email" placeholder="Email address" style={inp({fontSize:14,padding:14})} />
             <input value={authPassword} onChange={(e)=>setAuthPassword(e.target.value)} type="password" placeholder="Password" style={inp({fontSize:14,padding:14})} />
             {authErr&&<div style={{padding:10,background:"#fee2e2",border:"1px solid #fecaca",borderRadius:8,fontSize:13,color:"#dc2626",fontFamily:"var(--f)"}}>{authErr}</div>}
-            <button type="submit" style={{padding:14,background:ac,color:"#fff",border:"none",borderRadius:8,fontSize:14,fontWeight:700,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s",marginTop:8}}>{authMode==="signup"?"Create account":"Sign in"}</button>
+            <button type="submit" disabled={authSubmitting} style={{padding:14,background:authSubmitting?ac+"80":ac,color:"#fff",border:"none",borderRadius:8,fontSize:14,fontWeight:700,fontFamily:"var(--f)",cursor:authSubmitting?"not-allowed":"pointer",transition:"all .2s",marginTop:8}}>{authSubmitting?"Please wait...":(authMode==="signup"?"Create account":"Sign in")}</button>
           </form>
           <div style={{marginTop:20,textAlign:"center",fontSize:13,color:"var(--t2)"}}>
             {authMode==="signup"?(<>Already have an account? <button onClick={()=>{setAuthMode("login");setAuthErr("");}} style={{border:"none",background:"none",color:ac,cursor:"pointer",fontWeight:700,fontFamily:"var(--f)"}}>Sign in</button></>):(<>Don't have an account? <button onClick={()=>{setAuthMode("signup");setAuthErr("");}} style={{border:"none",background:"none",color:ac,cursor:"pointer",fontWeight:700,fontFamily:"var(--f)"}}>Sign up</button></>)}
