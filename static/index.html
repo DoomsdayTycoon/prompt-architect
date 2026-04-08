@@ -34,7 +34,7 @@ const loginUser=(email,password)=>{const users=getStoredUsers();const user=users
 /* ═══════════════════════════════════════════════════════
    ICONS
    ═══════════════════════════════════════════════════════ */
-const LOGO=(s=24,c="currentColor")=><svg width={s} height={s} viewBox="0 0 32 32" fill="none" stroke={c} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 12L16 4L24 12"/><path d="M8 12L16 20L24 12"/><path d="M12 8L12 16M20 8L20 16"/><rect x="6" y="10" width="20" height="2" fill={c}/></svg>;
+const LOGO=(s=24,c="currentColor")=><svg width={s} height={s} viewBox="0 0 32 32" fill="none"><rect x="4" y="4" width="24" height="24" rx="6" stroke={c} strokeWidth="1.8"/><path d="M10 12h12M10 16h8M10 20h10" stroke={c} strokeWidth="1.8" strokeLinecap="round"/><path d="M22 22l4 4" stroke={c} strokeWidth="2" strokeLinecap="round"/></svg>;
 
 const I={
   bolt:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
@@ -92,8 +92,10 @@ const STYLES={formal:{l:"Formal",i:"target"},conversational:{l:"Conversational",
 
 const TONES=[{v:"Professional",i:"target"},{v:"Casual",i:"speaker"},{v:"Academic",i:"book"},{v:"Creative",i:"palette"},{v:"Friendly",i:"seedling"},{v:"Authoritative",i:"bolt"},{v:"Empathetic",i:"users"}];
 const LENGTHS=["Brief","Medium","Detailed","Comprehensive"];
-const LEN_SUB={Brief:"200\u2013400 words",Medium:"500\u2013900 words",Detailed:"1000\u20131800 words",Comprehensive:"2000+ words"};
-const FMTS={prose:{l:"Prose paragraphs",i:"pen"},bullets:{l:"Bullet points",i:"checkList"},numbered:{l:"Numbered steps",i:"ruler"},table:{l:"Tables / Matrices",i:"layout"},qa:{l:"Q&A format",i:"users"},json:{l:"JSON / Structured",i:"code"},codeblock:{l:"Code blocks",i:"code"},headers:{l:"Sectioned with headers",i:"layers"},tldr:{l:"TL;DR + Detail",i:"fileText"},framework:{l:"Framework / Model",i:"brain"},flowchart:{l:"Flowchart / Decision tree",i:"sliders"},before_after:{l:"Before \u2192 After",i:"bolt"},pros_cons:{l:"Pros & Cons",i:"target"},scorecard:{l:"Scorecard / Rating",i:"chart"},annotated:{l:"Annotated examples",i:"lightbulb"},markdown:{l:"Markdown ready",i:"hash"}};
+const LEN_SUB={Brief:"200-400 words",Medium:"500-900 words",Detailed:"1000-1800 words",Comprehensive:"2000+ words"};
+const FMTS={prose:{l:"Prose paragraphs",i:"pen"},bullets:{l:"Bullet points",i:"checkList"},numbered:{l:"Numbered steps",i:"ruler"},table:{l:"Tables / Matrices",i:"layout"},qa:{l:"Q&A format",i:"users"},headers:{l:"Sectioned with headers",i:"layers"},tldr:{l:"TL;DR + Detail",i:"fileText"},framework:{l:"Framework / Model",i:"brain"},flowchart:{l:"Flowchart / Decision tree",i:"sliders"},before_after:{l:"Before / After",i:"bolt"},pros_cons:{l:"Pros & Cons",i:"target"},scorecard:{l:"Scorecard / Rating",i:"chart"},annotated:{l:"Annotated examples",i:"lightbulb"}};
+
+const FILE_OUTPUTS={pdf:{l:"PDF Document",i:"fileText"},word:{l:"Word / DOCX",i:"file"},excel:{l:"Excel / Spreadsheet",i:"chart"},ppt:{l:"PowerPoint / Slides",i:"layout"},markdown:{l:"Markdown (.md)",i:"hash"},html:{l:"HTML Page",i:"code"},json:{l:"JSON / Structured Data",i:"code"},csv:{l:"CSV / Data File",i:"chart"},plaintext:{l:"Plain Text",i:"fileText"},codeFile:{l:"Code File",i:"code"}};
 
 const INCLUDES={exec_summary:{l:"Executive Summary",i:"fileText"},examples:{l:"Real-World Examples",i:"lightbulb"},sources:{l:"Source Citations",i:"book"},action_items:{l:"Action Items / Next Steps",i:"checkList"},risks:{l:"Risk Assessment",i:"target"},comparison:{l:"Comparison Table",i:"layout"},timeline:{l:"Timeline / Milestones",i:"ruler"},metrics:{l:"KPIs / Metrics",i:"chart"},glossary:{l:"Glossary / Definitions",i:"book"},visuals:{l:"Visual Descriptions",i:"palette"}};
 
@@ -136,7 +138,7 @@ const ROLE_DEEP={
 };
 
 const METHODOLOGY={
-  writing:["Open with a compelling hook that immediately captures reader attention","Structure with a clear narrative arc: setup \u2192 development \u2192 resolution","Support every claim with concrete examples, data points, or anecdotes","Vary sentence length and structure for rhythm and readability","Use precise transitions that create logical flow between sections","Close with a memorable conclusion reinforcing the core message with a clear call-to-action"],
+  writing:["Open with a compelling hook that immediately captures reader attention","Structure with a clear narrative arc: setup  >  development  >  resolution","Support every claim with concrete examples, data points, or anecdotes","Vary sentence length and structure for rhythm and readability","Use precise transitions that create logical flow between sections","Close with a memorable conclusion reinforcing the core message with a clear call-to-action"],
   coding:["Analyze requirements and state any assumptions upfront","Write clean, idiomatic code following the language's official style guide","Include comprehensive inline comments explaining non-obvious decisions","Add proper error handling, input validation, and edge case coverage","Provide usage examples and integration guidance","Suggest testing strategies, note performance trade-offs and security considerations"],
   analysis:["Lead with an executive summary stating the key finding or recommendation","Define scope, methodology, data sources, assumptions, and limitations","Apply established frameworks appropriate to the domain","Support every claim with specific data points or cited reasoning","Address counterarguments, risks, and alternative interpretations","Present comparative analysis using structured formats","Conclude with prioritized, actionable recommendations and clear next steps","Distinguish between facts, estimates, and opinions throughout"],
   brainstorm:["Generate ideas across multiple categories without self-censoring","For each idea: clear title, 2-3 sentence description, why it could work","Organize by feasibility (low/med/high), impact (low/med/high), effort required","Include both safe/incremental and bold/unconventional ideas","Identify combinations or synergies between ideas","Highlight top 3 recommendations with detailed reasoning"],
@@ -295,7 +297,7 @@ function getSmartEnhancements(topic,taskType,industry,output){
    PROMPT BUILD ENGINE
    ═══════════════════════════════════════════════════════ */
 function buildPrompt(p){
-  const {topic,taskType,model,tone,length,format,techniques,audience,extra,special,mode,industry,output,style,includes,language}=p;
+  const {topic,taskType,model,tone,length,format,techniques,audience,extra,special,mode,industry,output,style,includes,language,fileOutput}=p;
   const isXml=model==="claude";const isExp=mode==="expert";const lines=[];
   const sec=(tag,content)=>{
     if(isXml)lines.push("<"+tag+">\n"+content+"\n</"+tag+">");
@@ -347,24 +349,38 @@ function buildPrompt(p){
     numbered:"Present key sequences as clearly numbered steps. Start each step with a bold action verb. Include brief explanations under each step when needed.",
     table:"Organize comparative or multi-variable information into well-labeled tables with clear column headers. Add a narrative summary before and after each table highlighting key takeaways.",
     qa:"Structure appropriate sections as specific questions followed by thorough answers. Order from foundational to advanced. Make each Q&A pair self-contained.",
-    json:"Where structured data is appropriate, return valid JSON with descriptive camelCase key names. Include a description field for each major section.",
-    codeblock:"Present any technical content as clean, well-commented code blocks. Specify the language. Include imports, type annotations, error handling, and usage examples.",
     headers:"Use a clear hierarchy of section headers (H2 for major sections, H3 for subsections). Every section should be scannable independently. Include a table of contents for longer responses.",
     tldr:"Begin with a TL;DR section (3-5 sentences capturing the absolute essence), then follow with the full detailed response. The TL;DR must be useful on its own.",
     framework:"Structure your response around a recognized framework or model relevant to the domain. Name the framework explicitly, explain why it applies, and map your analysis to its components.",
     flowchart:"Include text-based decision trees or flowcharts (using arrows and branching) to illustrate processes, decisions, or workflows. Label each decision point and outcome clearly.",
     before_after:"Where applicable, use Before / After comparisons to illustrate transformations, improvements, or changes. Show concrete examples of the current state vs. the recommended state.",
-    pros_cons:"For any recommendation or option, include a structured Pros & Cons analysis. Be specific  -  generic pros/cons like 'saves time' need quantification or context.",
+    pros_cons:"For any recommendation or option, include a structured Pros & Cons analysis. Be specific and quantify where possible.",
     scorecard:"Evaluate options using a structured scorecard or rating matrix. Define clear criteria, use a consistent scale (e.g., 1-5 or Low/Med/High), and include weighted totals if appropriate.",
-    annotated:"Include annotated examples that walk through real or realistic scenarios step by step, with inline commentary explaining why each element matters and what to watch for.",
-    markdown:"Format the entire response as clean, valid Markdown ready for direct use in documentation, READMEs, or CMS platforms. Use proper heading hierarchy, code fences, links, and emphasis."
+    annotated:"Include annotated examples that walk through real or realistic scenarios step by step, with inline commentary explaining why each element matters and what to watch for."
   };
   const fmtL=[];
   if(fmtArr.length===0)fmtL.push("Use the most appropriate format for the content.");
   else fmtL.push("Combine these formatting approaches throughout your response as appropriate:\n\n"+fmtArr.map((f,i)=>(i+1)+". **"+(FMTS[f]?.l||f)+"**: "+(FMT_INST[f]||"")).join("\n"));
-  const lenG={Brief:"~200\u2013400 words. Only highest-impact information.",Medium:"~500\u2013900 words. Cover all major aspects with supporting detail.",Detailed:"~1000\u20131800 words. Thorough explanations, examples, and nuance.",Comprehensive:"~2000+ words. Exhaustive reference-grade. Every dimension with depth, examples, evidence."};
+  const lenG={Brief:"~200-400 words. Only highest-impact information.",Medium:"~500-900 words. Cover all major aspects with supporting detail.",Detailed:"~1000-1800 words. Thorough explanations, examples, and nuance.",Comprehensive:"~2000+ words. Exhaustive reference-grade. Every dimension with depth, examples, evidence."};
   fmtL.push(lenG[length]||lenG.Medium);
   sec("formatting",fmtL.join("\n\n"));
+
+  // FILE OUTPUT FORMAT
+  const FILE_INST={
+    pdf:"Structure the response as a polished, print-ready document. Use clear page-break-friendly sections, professional headers, numbered pages logic, and formatting that translates cleanly to PDF export. Include a title page section with title, date, and author placeholder.",
+    word:"Structure as a professional Word document with proper heading hierarchy (Heading 1, 2, 3), table of contents ready formatting, page numbers, and consistent paragraph styles. Use tables and bullet lists that render cleanly in Word/DOCX.",
+    excel:"Present data in clearly defined tabular structures with named columns, consistent data types, and formulas noted where applicable. Organize across logical sheet/tab groupings. Include summary rows and conditional formatting suggestions.",
+    ppt:"Structure as presentation slides: one key insight per slide. Use Assertion-Evidence format (title states conclusion, body provides proof). Max 5 bullets per slide. Include speaker notes with talking points. Suggest visual aids for each slide.",
+    markdown:"Use valid Markdown throughout: proper heading hierarchy (# ## ###), code fences with language tags, links, emphasis, blockquotes, and horizontal rules for section breaks. Ready for direct use in GitHub, Notion, or any Markdown renderer.",
+    html:"Structure as semantic HTML with proper heading tags, paragraph elements, lists, tables, and code blocks. Include suggestions for CSS classes. Ensure accessibility (alt text, ARIA labels). Ready for direct web publishing.",
+    json:"Return valid, well-structured JSON. Use descriptive camelCase keys. Nest logically. Include a metadata object with type, version, and timestamp fields. Add inline comments as description fields.",
+    csv:"Present data as clean comma-separated values. Include a header row with descriptive column names. Use consistent data types per column. Note any encoding or delimiter considerations.",
+    plaintext:"Use clean, readable plain text with clear section breaks (===), indentation for hierarchy, and consistent spacing. No special formatting characters. Optimized for terminal, email, or plain text editors.",
+    codeFile:"Present as a complete, runnable code file with proper imports, type annotations, docstrings, error handling, and usage examples. Specify the filename and language at the top. Follow language-specific style guides."
+  };
+  if(fileOutput&&FILE_INST[fileOutput]){
+    sec("file_output_format","Target file format: "+(FILE_OUTPUTS[fileOutput]?.l||fileOutput)+".\n\n"+FILE_INST[fileOutput]);
+  }
 
   // INCLUDES
   if(includes.length>0){
@@ -404,7 +420,7 @@ function buildPrompt(p){
   if(special)sec("special_requests_and_constraints",special);
 
   // ANTI-PATTERNS
-  sec("avoid","- Do not open with filler phrases like \"Sure!\" or \"Great question!\"  -  begin directly with substance\n- Do not use vague hedging like \"it depends\" without explaining what it depends on specifically\n- Do not pad with generic background the audience already knows\n- Do not end with empty clich\u00e9s  -  close with actionable specifics\n- Do not repeat the same point in different words to inflate length");
+  sec("avoid","- Do not open with filler phrases like \"Sure!\" or \"Great question!\"  -  begin directly with substance\n- Do not use vague hedging like \"it depends\" without explaining what it depends on specifically\n- Do not pad with generic background the audience already knows\n- Do not end with empty cliches  -  close with actionable specifics\n- Do not repeat the same point in different words to inflate length");
 
   return lines.join("\n\n");
 }
@@ -455,6 +471,7 @@ function App(){
   const [extra,setExtra]=useState("");
   const [special,setSpecial]=useState("");
   const [language,setLanguage]=useState("English");
+  const [fileOutput,setFileOutput]=useState("pdf");
   const [copied,setCopied]=useState(false);
   const [show,setShow]=useState(false);
   const [history,setHistory]=useState(()=>loadHistory());
@@ -475,7 +492,7 @@ function App(){
   const ac=MODELS[model].col;
   const acRgb={"#0891B2":"8,145,178","#D97706":"217,119,6","#10A37F":"16,163,127","#4285F4":"66,133,244","#8B5CF6":"139,92,246","#64748B":"100,116,139"}[ac];
 
-  const prompt=buildPrompt({topic,taskType:task,model,tone,length:len,format:fmt,techniques:techs,audience:aud,extra,special,mode,industry,output,style,includes,language});
+  const prompt=buildPrompt({topic,taskType:task,model,tone,length:len,format:fmt,techniques:techs,audience:aud,extra,special,mode,industry,output,style,includes,language,fileOutput});
   const enhancements=useMemo(()=>topic.trim()?getSmartEnhancements(topic,task,industry,output):[], [topic,task,industry,output]);
 
   const go=useCallback(()=>{
@@ -667,7 +684,7 @@ function App(){
           <div style={{display:"flex",gap:8,marginBottom:12,alignItems:"flex-start"}}>
             <textarea value={topic} onChange={e=>{setTopic(e.target.value);setShow(false);}} placeholder="e.g. Build a DCF valuation tutorial for finance students who understand basic accounting but are new to valuation models. Include a worked example using Apple's 2024 financials..." rows={3} style={{...inp({resize:"vertical"}),flex:1}} />
             <div style={{display:"flex",flexDirection:"column",gap:8,alignSelf:"flex-start"}}>
-              <button onClick={toggleVoice} style={{padding:"10px 12px",borderRadius:7,border:"1px solid "+(isListening?"#e11d48":"var(--bd)"),background:isListening?"#ffe4e9":"var(--s2)",color:isListening?"#be123c":"var(--t2)",cursor:"pointer",fontSize:11.5,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",whiteSpace:"nowrap"}}>{isListening?"🎙 Listening":"🎤 Voice"}</button>
+              <button onClick={toggleVoice} style={{padding:"10px 12px",borderRadius:7,border:"1px solid "+(isListening?"#e11d48":"var(--bd)"),background:isListening?"#ffe4e9":"var(--s2)",color:isListening?"#be123c":"var(--t2)",cursor:"pointer",fontSize:11.5,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:5}}>{I.speaker(12,isListening?"#be123c":"var(--t2)")}{isListening?"Stop":"Voice"}</button>
               {topic.trim()&&(
                 <button onClick={()=>{setTopic("");setShow(false);}} style={{padding:"10px 12px",borderRadius:7,border:"1px solid #fca5a5",background:"#fee2e2",color:"#dc2626",cursor:"pointer",fontSize:11.5,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",whiteSpace:"nowrap"}}>{I.trash(12,"#dc2626")} Clear</button>
               )}
@@ -721,6 +738,11 @@ function App(){
         {/* OUTPUT TYPE */}
         <Step ico="file" title="Output type" sub="What deliverable format should the AI produce?">
           <Wrap>{Object.entries(OUTPUTS).map(([k,v])=><Chip key={k} active={output===k} accent={ac} onClick={()=>setOutput(k)}>{I[v.i]?.(12,output===k?ac:"var(--t3)")}{v.l}</Chip>)}</Wrap>
+        </Step>
+
+        {/* FILE OUTPUT */}
+        <Step ico="download" title="File output" sub="What file type should the AI format the response for?">
+          <Wrap>{Object.entries(FILE_OUTPUTS).map(([k,v])=><Chip key={k} active={fileOutput===k} accent={ac} onClick={()=>setFileOutput(k)}>{I[v.i]?.(12,fileOutput===k?ac:"var(--t3)")}{v.l}</Chip>)}</Wrap>
         </Step>
 
         {/* AI MODEL */}
@@ -808,6 +830,7 @@ function App(){
             <span style={{display:"flex",alignItems:"center",gap:3}}>{I[TASKS[task].i]?.(10,"var(--t3)")} {TASKS[task].l}</span>
             <span style={{display:"flex",alignItems:"center",gap:3}}>{I.target(10,"var(--t3)")} {tone}</span>
             <span style={{display:"flex",alignItems:"center",gap:3}}>{I.file(10,"var(--t3)")} {OUTPUTS[output].l}</span>
+            <span style={{display:"flex",alignItems:"center",gap:3}}>{I.download(10,"var(--t3)")} {FILE_OUTPUTS[fileOutput]?.l||"PDF"}</span>
             {language!=="English"&&<span style={{display:"flex",alignItems:"center",gap:3}}>{I.lang(10,"var(--t3)")} {language}</span>}
           </div>
           <div style={{padding:"16px 20px",background:"var(--bg)",borderTop:"1px solid var(--bd)",fontSize:12,color:"var(--t3)",lineHeight:1.6}}>
