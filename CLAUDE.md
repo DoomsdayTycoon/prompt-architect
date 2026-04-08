@@ -3,7 +3,7 @@
 ## What this is
 A professional AI prompt generator web app. Users describe a goal, configure options (task type, industry, model, tone, etc.), and the tool generates an expert-level structured prompt they can paste into Claude, ChatGPT, Gemini, or any AI.
 
-**Live:** Deployed on Vercel via GitHub (DoomsdayTycoon/prompt-architect)
+**Live:** https://www.proarch.tech (Vercel, GitHub: DoomsdayTycoon/prompt-architect)
 **Stack:** Single-file React 18 app (Babel standalone, no build step), Flask dev server
 
 ## Architecture
@@ -50,28 +50,26 @@ Everything lives here — React components, CSS, data constants, prompt engine, 
 - **Model-specific prompt formatting** (XML tags for Claude, markdown for ChatGPT, bold for Gemini)
 - **New Prompt button** with confirmation dialog
 
-## Auth & Database (IN PROGRESS — migrating to Supabase)
-
-### Current state: localStorage (broken, needs replacement)
-- Accounts stored in browser only, not persistent across devices
-- No real security
-
-### Target state: Supabase
+## Auth & Database (Supabase — LIVE)
 - **Project:** Prompt-architect (eu-west-1, Ireland)
 - **URL:** https://whfdtdcplkneviumgrkz.supabase.co
-- **Credentials:** Stored in `.env`, NEVER in source code
-- **Tables needed:**
-  - `profiles` — user display name, linked to auth.users
-  - `prompt_history` — saved prompts per user, RLS-protected
-- **RLS policies:** Users can only read/write their own rows
-- **Auth:** Supabase Auth (email/password), handles hashing, tokens, sessions
+- **Auth:** Supabase Auth (email/password), JWT sessions
+- **Tables:** `profiles` (with payment fields), `prompt_history` — both RLS-protected
+- **RPC functions:** `increment_prompt_count(mode)`, `get_usage_status()`
+- **Credentials:** `.env` file (NEVER committed), also set in Vercel dashboard
 
-### Environment variables for Vercel
-After Supabase integration, set these in Vercel dashboard (Settings > Environment Variables):
-- `SUPABASE_URL`
-- `SUPABASE_ANON_KEY`
+## Payments (Stripe — LIVE)
+- **Stripe mode:** Test (sandbox)
+- **Plans:** Monthly $9/mo, Annual $6/mo ($72/yr)
+- **Flow:** Paywall modal > /api/checkout (serverless) > Stripe Checkout > /api/webhook > Supabase update
+- **Free tier:** 2 simple prompts + 1 expert prompt before paywall
+- **Serverless functions:** `api/checkout.js`, `api/webhook.js`
+- **Webhook events:** checkout.session.completed, customer.subscription.updated, customer.subscription.deleted
 
-Note: For a static frontend site, the anon key is embedded in the client JS (this is safe — RLS policies enforce access control, not the key).
+## Domain
+- **Primary:** https://www.proarch.tech (Namecheap DNS > Vercel)
+- **Vercel subdomain:** prompt-architect-ashen-one.vercel.app
+- **DNS:** A record @ > 216.198.79.1, CNAME www > vercel-dns
 
 ## Development
 ```bash
@@ -88,4 +86,4 @@ git push origin main  # Vercel auto-deploys
 - No build tools — everything stays in one HTML file
 - Keep it professional, portfolio-quality
 - Firm/Role selector is Expert mode only
-- Payment system coming soon — auth must work flawlessly
+- Payment system is live (Stripe test mode) — never expose secret keys

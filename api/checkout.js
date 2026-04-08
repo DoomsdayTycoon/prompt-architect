@@ -34,8 +34,8 @@ module.exports = async (req, res) => {
           quantity: 1,
         },
       ],
-      success_url: `${process.env.SITE_URL || 'https://prompt-architect.vercel.app'}?payment=success`,
-      cancel_url: `${process.env.SITE_URL || 'https://prompt-architect.vercel.app'}?payment=cancelled`,
+      success_url: `${process.env.SITE_URL || 'https://www.proarch.tech'}?payment=success`,
+      cancel_url: `${process.env.SITE_URL || 'https://www.proarch.tech'}?payment=cancelled`,
       subscription_data: {
         metadata: {
           supabase_user_id: userId,
