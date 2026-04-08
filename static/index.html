@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prompt Architect</title>
+<title>Prompt Architect — AI Prompt Engineering</title>
 <meta name="description" content="Professional AI Prompt Generator — Smart prompt engineering for Claude, ChatGPT, Gemini, and open-source models">
 <meta property="og:title" content="Prompt Architect">
-<meta property="og:description" content="Professional-grade AI prompt generator with smart enhancement">
-<link rel="icon" href="/favicon.ico">
+<meta property="og:description" content="Turn vague ideas into expert-level AI prompts with smart enhancement">
+<meta property="og:image" content="https://www.proarch.tech/og-image.png">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%230891B2'/%3E%3Cstop offset='100%25' stop-color='%232563EB'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='url(%23g)'/%3E%3Cpath d='M8 10h16M8 16h11M8 22h13' stroke='white' stroke-width='2.2' stroke-linecap='round'/%3E%3Ccircle cx='24' cy='22' r='3.5' fill='none' stroke='white' stroke-width='2'/%3E%3Cpath d='M26.5 24.5l2 2' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>body{margin:0;background:#f8fafc;}</style>
 </head>
 <body>
@@ -1050,6 +1051,7 @@ function App(){
   const [isListening,setIsListening]=useState(false);
   const [showResetConfirm,setShowResetConfirm]=useState(false);
   const [showExamples,setShowExamples]=useState(false);
+  const [showProfileDD,setShowProfileDD]=useState(false);
   const recognitionRef=useRef(null);
   const ref=useRef(null);
   const isExp=mode==="expert";
@@ -1232,92 +1234,184 @@ function App(){
 
   return <>
     <style>{`
-      @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
-      :root{--f:'Instrument Sans',-apple-system,sans-serif;--m:'IBM Plex Mono',monospace;--bg:#f8fafc;--s1:#ffffff;--s2:#f1f5f9;--bd:#e2e8f0;--t1:#1e293b;--t2:#475569;--t3:#94a3b8;--ac:${ac};--ac-rgb:${acRgb}}
+      @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap');
+      :root{--f:'Instrument Sans',-apple-system,sans-serif;--m:'IBM Plex Mono',monospace;--bg:#f8fafc;--s1:#ffffff;--s2:#f1f5f9;--bd:#e2e8f0;--t1:#0f172a;--t2:#475569;--t3:#94a3b8;--ac:${ac};--ac-rgb:${acRgb}}
       *{box-sizing:border-box}::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}::-webkit-scrollbar-track{background:transparent}
-      @keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+      @keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
       @keyframes fadeIn{from{opacity:0}to{opacity:1}}
       @keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
       @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
-      body{background:#f8fafc}
+      @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+      body{background:#f8fafc;overflow-x:hidden}
       textarea:focus,input:focus{border-color:${ac}!important;box-shadow:0 0 0 3px ${ac}20}
-      .two-col-layout{display:grid;grid-template-columns:1fr;gap:30px;margin-bottom:40px;align-items:start}
-      @media (min-width:1024px){.two-col-layout{grid-template-columns:1fr 280px}}
+      .main-grid{display:grid;grid-template-columns:1fr;gap:32px;align-items:start}
+      @media(min-width:1024px){.main-grid{grid-template-columns:1fr 320px}}
+      @media(max-width:640px){.hero-grid{grid-template-columns:1fr!important}.hero-art{display:none!important}.chip-wrap{gap:5px!important}.chip-wrap button{font-size:11px!important;padding:6px 10px!important}}
+      .profile-dd{position:absolute;top:100%;right:0;margin-top:8px;background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:6px;min-width:200px;box-shadow:0 10px 40px rgba(0,0,0,.12);animation:slideDown .15s ease;z-index:1001}
+      .profile-dd button{display:flex;align-items:center;gap:10px;width:100%;padding:10px 14px;border:none;background:transparent;color:var(--t2);font-size:13px;font-family:var(--f);cursor:pointer;border-radius:8px;transition:background .15s}
+      .profile-dd button:hover{background:var(--s2)}
     `}</style>
     {/* STICKY NAV */}
-    <nav style={{position:"fixed",top:0,left:0,right:0,background:"var(--s1)",borderBottom:"1px solid var(--bd)",zIndex:1000,padding:"12px 14px"}}>
-      <div style={{maxWidth:760,margin:"0 auto",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-        <div style={{display:"flex",alignItems:"center",gap:8}}>
-          {LOGO(20,ac)}
-          <span style={{fontWeight:700,fontSize:16,color:"var(--t1)"}}>Prompt Architect</span>
+    <nav style={{position:"fixed",top:0,left:0,right:0,background:"rgba(255,255,255,.85)",backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)",borderBottom:"1px solid var(--bd)",zIndex:1000,padding:"0 24px"}}>
+      <div style={{maxWidth:1200,margin:"0 auto",display:"flex",justifyContent:"space-between",alignItems:"center",height:56}}>
+        <div style={{display:"flex",alignItems:"center",gap:10}}>
+          <div style={{width:32,height:32,borderRadius:8,background:`linear-gradient(135deg, ${ac}, #2563EB)`,display:"flex",alignItems:"center",justifyContent:"center"}}>
+            <svg width="18" height="18" viewBox="0 0 32 32" fill="none"><path d="M8 10h16M8 16h11M8 22h13" stroke="white" strokeWidth="2.4" strokeLinecap="round"/><circle cx="24" cy="22" r="3.5" fill="none" stroke="white" strokeWidth="2"/><path d="M26.5 24.5l2 2" stroke="white" strokeWidth="2" strokeLinecap="round"/></svg>
+          </div>
+          <span style={{fontWeight:700,fontSize:17,color:"var(--t1)",letterSpacing:"-.3px"}}>Prompt Architect</span>
+          <span style={{fontSize:10,fontWeight:600,padding:"2px 7px",borderRadius:4,background:ac+"14",color:ac,marginLeft:2}}>BETA</span>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:12}}>
           {user?(
-            <div style={{display:"flex",alignItems:"center",gap:10}}>
-              <span style={{fontSize:13,color:"var(--t2)"}}>{user.name}</span>
-              <button onClick={handleLogout} style={{fontSize:12,padding:"6px 14px",border:"1px solid var(--bd)",background:"var(--bg)",borderRadius:7,cursor:"pointer",color:"var(--t2)",fontFamily:"var(--f)",transition:"all .2s"}}> Logout</button>
+            <div style={{position:"relative"}}>
+              <button onClick={()=>setShowProfileDD(!showProfileDD)} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 12px",borderRadius:10,border:"1px solid var(--bd)",background:"var(--s1)",cursor:"pointer",fontFamily:"var(--f)",transition:"all .15s"}}>
+                <div style={{width:28,height:28,borderRadius:"50%",background:`linear-gradient(135deg, ${ac}, #2563EB)`,display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:12,fontWeight:700}}>{(user.name||"U")[0].toUpperCase()}</div>
+                <span style={{fontSize:13,fontWeight:500,color:"var(--t1)",maxWidth:120,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{user.name}</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" strokeWidth="2.5" strokeLinecap="round"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
+              {showProfileDD&&<>
+                <div style={{position:"fixed",inset:0,zIndex:1000}} onClick={()=>setShowProfileDD(false)}/>
+                <div className="profile-dd">
+                  <div style={{padding:"12px 14px 10px",borderBottom:"1px solid var(--bd)",marginBottom:4}}>
+                    <div style={{fontSize:13,fontWeight:600,color:"var(--t1)"}}>{user.name}</div>
+                    <div style={{fontSize:11,color:"var(--t3)",marginTop:2}}>{user.email}</div>
+                    {usage.is_paid&&<div style={{fontSize:10,fontWeight:600,color:"#10B981",marginTop:4,display:"flex",alignItems:"center",gap:4}}>{I.check(10,"#10B981")} Pro member</div>}
+                  </div>
+                  {user&&history.length>0&&(
+                    <button onClick={()=>{setShowHistory(!showHistory);setShowProfileDD(false);}}>{I.clock(14,"var(--t2)")} Prompt History ({history.length})</button>
+                  )}
+                  {!usage.is_paid&&usage.subscription_status!=="active"&&(
+                    <button onClick={()=>{setShowPaywall(true);setShowProfileDD(false);}} style={{color:ac+"!important"}}>{I.sparkle(14,ac)} Upgrade to Pro</button>
+                  )}
+                  <button onClick={()=>{handleLogout();setShowProfileDD(false);}} style={{color:"#ef4444!important"}}>{I.trash(14,"#ef4444")} Sign out</button>
+                </div>
+              </>}
             </div>
           ):(
             <>
-              <button onClick={()=>{setAuthMode("login");setShowAuth(true);setAuthErr("");}} style={{fontSize:12,padding:"6px 14px",border:"none",background:"transparent",color:"var(--t2)",cursor:"pointer",fontFamily:"var(--f)"}}>Log in</button>
-              <button onClick={()=>{setAuthMode("signup");setShowAuth(true);setAuthErr("");}} style={{fontSize:12,padding:"6px 14px",border:"none",background:ac,color:"#fff",borderRadius:7,cursor:"pointer",fontFamily:"var(--f)",fontWeight:600,transition:"all .2s"}}>Sign up</button>
+              <button onClick={()=>{setAuthMode("login");setShowAuth(true);setAuthErr("");}} style={{fontSize:13,padding:"8px 16px",border:"none",background:"transparent",color:"var(--t2)",cursor:"pointer",fontFamily:"var(--f)",fontWeight:500,transition:"all .15s"}}>Log in</button>
+              <button onClick={()=>{setAuthMode("signup");setShowAuth(true);setAuthErr("");}} style={{fontSize:13,padding:"8px 20px",border:"none",background:ac,color:"#fff",borderRadius:8,cursor:"pointer",fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",boxShadow:"0 2px 8px "+ac+"30"}}>Sign up</button>
             </>
           )}
         </div>
       </div>
     </nav>
 
-    <div style={{minHeight:"100vh",background:"var(--bg)",color:"var(--t1)",fontFamily:"var(--f)",paddingTop:60,paddingBottom:60,paddingLeft:14,paddingRight:14,maxWidth:760,margin:"0 auto"}}>
+    <div style={{minHeight:"100vh",background:"var(--bg)",color:"var(--t1)",fontFamily:"var(--f)",paddingTop:56}}>
 
-      {/* HERO SECTION - COMPACT */}
-      <section style={{marginBottom:40,paddingTop:20}}>
-        <h1 style={{fontSize:32,fontWeight:800,margin:"0 0 12px",lineHeight:1.2,color:"var(--t1)"}}>Turn vague ideas into expert-level AI prompts</h1>
-        <p style={{fontSize:14,color:"var(--t2)",margin:"0 0 24px",lineHeight:1.5,maxWidth:600}}>Smart prompt engineering that analyzes your goal and automatically injects audience targeting, reasoning strategies, and domain expertise.</p>
+      {/* HERO SECTION */}
+      <section style={{background:"linear-gradient(135deg, #f0f9ff 0%, #f0fdfa 40%, #faf5ff 100%)",borderBottom:"1px solid var(--bd)",padding:"48px 24px 52px",position:"relative",overflow:"hidden"}}>
+        {/* Decorative background elements */}
+        <div style={{position:"absolute",top:-60,right:-40,width:300,height:300,borderRadius:"50%",background:`radial-gradient(circle, ${ac}08 0%, transparent 70%)`,pointerEvents:"none"}}/>
+        <div style={{position:"absolute",bottom:-80,left:-60,width:250,height:250,borderRadius:"50%",background:"radial-gradient(circle, #2563EB08 0%, transparent 70%)",pointerEvents:"none"}}/>
+        <div style={{maxWidth:1200,margin:"0 auto",display:"grid",gridTemplateColumns:"1fr 1fr",gap:48,alignItems:"center"}} className="hero-grid">
+          <div>
+            <div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"5px 14px",borderRadius:20,background:"var(--s1)",border:"1px solid var(--bd)",marginBottom:20,fontSize:12,fontWeight:600,color:ac,boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
+              {I.sparkle(13,ac)} Smart Prompt Engineering
+            </div>
+            <h1 style={{fontSize:"clamp(28px, 4vw, 44px)",fontWeight:800,margin:"0 0 16px",lineHeight:1.15,color:"var(--t1)",letterSpacing:"-.5px"}}>Turn vague ideas into<br/><span style={{background:`linear-gradient(135deg, ${ac}, #2563EB)`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>expert-level AI prompts</span></h1>
+            <p style={{fontSize:"clamp(14px, 1.5vw, 17px)",color:"var(--t2)",margin:"0 0 28px",lineHeight:1.6,maxWidth:520}}>Describe any goal and Prompt Architect automatically injects audience targeting, reasoning strategies, and domain expertise. Works with Claude, ChatGPT, Gemini, and more.</p>
+            <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+              <button onClick={()=>document.getElementById("tool")?.scrollIntoView({behavior:"smooth"})} style={{padding:"12px 28px",borderRadius:10,border:"none",background:ac,color:"#fff",fontSize:14,fontWeight:650,fontFamily:"var(--f)",cursor:"pointer",boxShadow:"0 4px 14px "+ac+"30",transition:"all .2s",display:"flex",alignItems:"center",gap:8}}>{I.sparkle(15,"#fff")} Start building</button>
+              <button onClick={()=>document.getElementById("features")?.scrollIntoView({behavior:"smooth"})} style={{padding:"12px 24px",borderRadius:10,border:"1px solid var(--bd)",background:"var(--s1)",color:"var(--t2)",fontSize:14,fontWeight:550,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>See how it works</button>
+            </div>
+          </div>
+          <div className="hero-art" style={{display:"flex",justifyContent:"center",alignItems:"center"}}>
+            {/* Abstract prompt illustration */}
+            <div style={{position:"relative",width:340,height:280}}>
+              {/* Main card */}
+              <div style={{position:"absolute",top:10,left:20,right:20,background:"var(--s1)",borderRadius:16,padding:"20px 22px",boxShadow:"0 8px 32px rgba(0,0,0,.08)",border:"1px solid var(--bd)",animation:"float 4s ease-in-out infinite"}}>
+                <div style={{display:"flex",gap:6,marginBottom:14}}><div style={{width:8,height:8,borderRadius:"50%",background:"#ef4444"}}/><div style={{width:8,height:8,borderRadius:"50%",background:"#f59e0b"}}/><div style={{width:8,height:8,borderRadius:"50%",background:"#22c55e"}}/></div>
+                <div style={{height:10,width:"80%",background:"var(--s2)",borderRadius:4,marginBottom:8}}/>
+                <div style={{height:10,width:"60%",background:"var(--s2)",borderRadius:4,marginBottom:8}}/>
+                <div style={{height:10,width:"70%",background:ac+"18",borderRadius:4,marginBottom:12}}/>
+                <div style={{display:"flex",gap:6}}>
+                  <div style={{padding:"4px 10px",borderRadius:5,background:ac+"14",color:ac,fontSize:10,fontWeight:600}}>Analysis</div>
+                  <div style={{padding:"4px 10px",borderRadius:5,background:"#10B98114",color:"#10B981",fontSize:10,fontWeight:600}}>Enhanced</div>
+                  <div style={{padding:"4px 10px",borderRadius:5,background:"#8B5CF614",color:"#8B5CF6",fontSize:10,fontWeight:600}}>Expert</div>
+                </div>
+              </div>
+              {/* Floating badges */}
+              <div style={{position:"absolute",bottom:30,left:0,background:"var(--s1)",borderRadius:10,padding:"8px 14px",boxShadow:"0 4px 16px rgba(0,0,0,.06)",border:"1px solid var(--bd)",display:"flex",alignItems:"center",gap:6,animation:"float 4s ease-in-out 1s infinite"}}>
+                {I.wand(14,ac)}<span style={{fontSize:11,fontWeight:600,color:"var(--t1)"}}>Smart Enhancement</span>
+              </div>
+              <div style={{position:"absolute",top:0,right:0,background:"var(--s1)",borderRadius:10,padding:"8px 14px",boxShadow:"0 4px 16px rgba(0,0,0,.06)",border:"1px solid var(--bd)",display:"flex",alignItems:"center",gap:6,animation:"float 4s ease-in-out .5s infinite"}}>
+                <MM id="claude" size={16}/><span style={{fontSize:11,fontWeight:600,color:"var(--t1)"}}>Claude Ready</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* TWO-COLUMN LAYOUT */}
-      <div className="two-col-layout">
-        {/* MAIN TOOL AREA */}
-        <div id="tool">
-          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:20}}>
-            <div style={{width:28,height:28,borderRadius:8,background:ac+"18",display:"flex",alignItems:"center",justifyContent:"center"}}>{LOGO(16,ac)}</div>
-            <h2 style={{fontSize:20,fontWeight:700,margin:0}}>Build Your Prompt</h2>
+      {/* FEATURES BAR */}
+      <section id="features" style={{borderBottom:"1px solid var(--bd)",background:"var(--s1)",padding:"20px 24px"}}>
+        <div style={{maxWidth:1200,margin:"0 auto",display:"flex",justifyContent:"center",gap:"clamp(20px, 4vw, 48px)",flexWrap:"wrap"}}>
+          {[
+            {ic:"brain",t:"15 Task Types",s:"Writing, coding, analysis & more"},
+            {ic:"building",t:"15 Industries",s:"Deep domain context injection"},
+            {ic:"cpu",t:"5 AI Models",s:"Claude, ChatGPT, Gemini, Llama"},
+            {ic:"wand",t:"Smart Enhancement",s:"Auto-detects gaps and fills them"},
+          ].map(({ic,t,s},i)=>(
+            <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"4px 0"}}>
+              <div style={{width:36,height:36,borderRadius:10,background:ac+"10",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{I[ic](17,ac)}</div>
+              <div>
+                <div style={{fontSize:13,fontWeight:650,color:"var(--t1)"}}>{t}</div>
+                <div style={{fontSize:11.5,color:"var(--t3)"}}>{s}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* MAIN CONTENT */}
+      <div style={{maxWidth:1200,margin:"0 auto",padding:"36px 24px 60px"}}>
+
+      {/* TOOL HEADER + MODE SWITCH */}
+      <div id="tool" className="main-grid" style={{marginBottom:32}}>
+        <div>
+          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
+            <div style={{width:34,height:34,borderRadius:10,background:`linear-gradient(135deg, ${ac}18, ${ac}08)`,display:"flex",alignItems:"center",justifyContent:"center"}}>{LOGO(18,ac)}</div>
+            <h2 style={{fontSize:22,fontWeight:700,margin:0,letterSpacing:"-.3px"}}>Build Your Prompt</h2>
           </div>
-          <p style={{color:"var(--t3)",fontSize:13,margin:"0 0 18px",fontWeight:450}}>No account needed. Create one after your first build to save history.</p>
-          <div style={{display:"flex",gap:8,marginBottom:20,flexWrap:"wrap"}}>
-            <div style={{display:"inline-flex",borderRadius:10,background:"var(--s1)",border:"1px solid var(--bd)",padding:3}}>
+          <p style={{color:"var(--t3)",fontSize:14,margin:"0 0 18px",fontWeight:450,lineHeight:1.5}}>Configure your prompt settings below. No account needed to explore.</p>
+          <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+            <div style={{display:"inline-flex",borderRadius:10,background:"var(--s1)",border:"1px solid var(--bd)",padding:3,boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
               {[["amateur","seedling","Simple"],["expert","microscope","Expert"]].map(([m,ic,lb])=>(
-                <button key={m} onClick={()=>setMode(m)} style={{display:"flex",alignItems:"center",gap:6,padding:"8px 24px",border:"none",borderRadius:7.5,cursor:"pointer",background:mode===m?ac:"transparent",color:mode===m?"#fff":"var(--t3)",fontFamily:"var(--f)",fontSize:12.5,fontWeight:620,transition:"all .2s"}}>{I[ic](13,mode===m?"#fff":"var(--t3)")}{lb}</button>
+                <button key={m} onClick={()=>setMode(m)} style={{display:"flex",alignItems:"center",gap:6,padding:"9px 26px",border:"none",borderRadius:7.5,cursor:"pointer",background:mode===m?ac:"transparent",color:mode===m?"#fff":"var(--t3)",fontFamily:"var(--f)",fontSize:13,fontWeight:620,transition:"all .2s"}}>{I[ic](14,mode===m?"#fff":"var(--t3)")}{lb}</button>
               ))}
             </div>
-            {user&&history.length>0&&(
-              <button onClick={()=>setShowHistory(!showHistory)} style={{display:"flex",alignItems:"center",gap:5,padding:"8px 14px",borderRadius:10,border:"1px solid var(--bd)",background:"var(--s1)",color:"var(--t2)",cursor:"pointer",fontSize:12,fontFamily:"var(--f)",fontWeight:500}}>
-                {I.clock(13,"var(--t2)")} History ({history.length})
-              </button>
-            )}
           </div>
         </div>
 
         {/* RIGHT SIDEBAR - HOW IT WORKS */}
-        <aside style={{background:"var(--s1)",borderRadius:12,padding:20,border:"1px solid var(--bd)",position:"sticky",top:100}}>
-          <h3 style={{fontSize:13,fontWeight:700,margin:"0 0 16px",color:"var(--t1)",textTransform:"uppercase",letterSpacing:".5px"}}>How it works</h3>
-          {[{n:"1",t:"Describe goal"},{n:"2",t:"Get enhanced"},{n:"3",t:"Copy & paste"}].map((s,i)=>(
-            <div key={i} style={{display:"flex",gap:12,marginBottom:i<2?16:0}}>
-              <div style={{width:32,height:32,borderRadius:8,background:ac,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:13,flexShrink:0}}>{s.n}</div>
+        <aside style={{background:"var(--s1)",borderRadius:14,padding:24,border:"1px solid var(--bd)",position:"sticky",top:72,boxShadow:"0 1px 4px rgba(0,0,0,.04)"}}>
+          <h3 style={{fontSize:12,fontWeight:700,margin:"0 0 18px",color:"var(--t1)",textTransform:"uppercase",letterSpacing:".8px"}}>How it works</h3>
+          {[{n:"1",t:"Describe goal",s:"Tell us what you need"},{n:"2",t:"Get enhanced",s:"We inject specificity"},{n:"3",t:"Copy & paste",s:"Use in any AI model"}].map((s,i)=>(
+            <div key={i} style={{display:"flex",gap:14,marginBottom:i<2?18:0}}>
+              <div style={{width:34,height:34,borderRadius:9,background:`linear-gradient(135deg, ${ac}, #2563EB)`,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:13,flexShrink:0}}>{s.n}</div>
               <div>
-                <p style={{fontSize:12,fontWeight:600,color:"var(--t1)",margin:"2px 0 2px"}}>{s.t}</p>
-                <p style={{fontSize:11,color:"var(--t3)",margin:0}}>
-                  {i===0?"Tell us your goal"  :i===1?"We inject specificity":  "Use anywhere"}
-                </p>
+                <p style={{fontSize:13,fontWeight:600,color:"var(--t1)",margin:"2px 0 3px"}}>{s.t}</p>
+                <p style={{fontSize:11.5,color:"var(--t3)",margin:0,lineHeight:1.4}}>{s.s}</p>
               </div>
             </div>
           ))}
+          {!user&&<button onClick={()=>{setAuthMode("signup");setShowAuth(true);setAuthErr("");}} style={{width:"100%",marginTop:20,padding:"10px 16px",borderRadius:9,border:"none",background:ac,color:"#fff",fontSize:12.5,fontWeight:650,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s",boxShadow:"0 2px 8px "+ac+"25"}}>Sign up free</button>}
+          {user&&!usage.is_paid&&usage.subscription_status!=="active"&&(
+            <div style={{marginTop:18,padding:"12px 14px",borderRadius:9,background:ac+"08",border:"1px solid "+ac+"15"}}>
+              <div style={{fontSize:11,color:"var(--t2)",marginBottom:6}}>Free prompts remaining:</div>
+              <div style={{display:"flex",gap:8}}>
+                <span style={{fontSize:12,fontWeight:600,color:remainingSimple>0?"var(--t1)":"#ef4444"}}>{remainingSimple} Simple</span>
+                <span style={{color:"var(--bd)"}}>|</span>
+                <span style={{fontSize:12,fontWeight:600,color:remainingExpert>0?"var(--t1)":"#ef4444"}}>{remainingExpert} Expert</span>
+              </div>
+            </div>
+          )}
         </aside>
       </div>
 
       {/* HISTORY PANEL */}
       {showHistory&&history.length>0&&(
-        <div style={{background:"var(--s1)",borderRadius:14,border:"1px solid var(--bd)",padding:16,marginBottom:20,animation:"fadeIn .2s ease"}}>
+        <div style={{background:"var(--s1)",borderRadius:14,border:"1px solid var(--bd)",padding:20,marginBottom:24,animation:"fadeIn .2s ease",boxShadow:"0 1px 4px rgba(0,0,0,.04)"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
             <span style={{fontSize:13,fontWeight:640,color:"var(--t1)"}}>Recent Prompts</span>
             <button onClick={clearHistory} style={{display:"flex",alignItems:"center",gap:4,padding:"4px 10px",borderRadius:6,border:"1px solid rgba(239,68,68,.3)",background:"transparent",color:"#ef4444",cursor:"pointer",fontSize:11,fontFamily:"var(--f)"}}>{I.trash(11,"#ef4444")} Clear</button>
@@ -1332,7 +1426,7 @@ function App(){
       )}
 
       {/* FORM */}
-      <div style={{background:"var(--s1)",borderRadius:16,border:"1px solid var(--bd)",padding:"26px 20px",marginBottom:20}}>
+      <div style={{background:"var(--s1)",borderRadius:16,border:"1px solid var(--bd)",padding:"32px 28px",marginBottom:24,boxShadow:"0 1px 4px rgba(0,0,0,.04)"}}>
 
         {/* TOPIC */}
         <Step ico="pen" title="Describe your goal" sub="Be specific  -  but don't worry about being perfect. Smart enhancement fills the gaps.">
@@ -1487,21 +1581,22 @@ function App(){
         </Step>
 
         {/* GENERATE */}
-        <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:10,paddingTop:8}}>
-          <button onClick={go} disabled={!topic.trim()} style={{display:"flex",alignItems:"center",gap:8,padding:"12px 38px",borderRadius:10,border:"none",background:topic.trim()?(canGenerate?ac:"#94a3b8"):"rgba(255,255,255,.04)",color:topic.trim()?"#fff":"var(--t3)",fontSize:14,fontWeight:660,fontFamily:"var(--f)",cursor:topic.trim()?"pointer":"not-allowed",transition:"all .2s",boxShadow:topic.trim()&&canGenerate?"0 6px 28px "+ac+"35":"none"}}>{I.sparkle(15,topic.trim()?"#fff":"var(--t3)")} {canGenerate?"Generate Prompt":"Upgrade to Generate"}</button>
+        <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:12,paddingTop:12,borderTop:"1px solid var(--bd)",marginTop:8}}>
+          <button onClick={go} disabled={!topic.trim()} style={{display:"flex",alignItems:"center",gap:8,padding:"14px 44px",borderRadius:12,border:"none",background:topic.trim()?(canGenerate?`linear-gradient(135deg, ${ac}, #2563EB)`:"#94a3b8"):"var(--s2)",color:topic.trim()?"#fff":"var(--t3)",fontSize:15,fontWeight:660,fontFamily:"var(--f)",cursor:topic.trim()?"pointer":"not-allowed",transition:"all .2s",boxShadow:topic.trim()&&canGenerate?"0 6px 28px "+ac+"35":"none"}}>{I.sparkle(16,topic.trim()?"#fff":"var(--t3)")} {canGenerate?"Generate Prompt":"Upgrade to Generate"}</button>
           {user&&!usage.is_paid&&usage.subscription_status!=="active"&&(
-            <div style={{fontSize:11,color:"var(--t3)",display:"flex",gap:12}}>
-              <span>Simple: {remainingSimple}/{FREE_SIMPLE} free left</span>
-              <span>Expert: {remainingExpert}/{FREE_EXPERT} free left</span>
+            <div style={{fontSize:12,color:"var(--t3)",display:"flex",gap:14}}>
+              <span>Simple: {remainingSimple}/{FREE_SIMPLE} free</span>
+              <span style={{color:"var(--bd)"}}>|</span>
+              <span>Expert: {remainingExpert}/{FREE_EXPERT} free</span>
             </div>
           )}
-          {!user&&<div style={{fontSize:11,color:"var(--t3)"}}>Create a free account to start generating</div>}
+          {!user&&<div style={{fontSize:12,color:"var(--t3)"}}>Create a free account to start generating</div>}
         </div>
       </div>
 
       {/* RESULT */}
       {show&&topic.trim()&&(
-        <div ref={ref} style={{background:"var(--s1)",borderRadius:16,border:"1px solid var(--bd)",overflow:"hidden",animation:"up .35s ease"}}>
+        <div ref={ref} style={{background:"var(--s1)",borderRadius:16,border:"1px solid var(--bd)",overflow:"hidden",animation:"up .35s ease",boxShadow:"0 2px 8px rgba(0,0,0,.06)"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"13px 20px",borderBottom:"1px solid var(--bd)",flexWrap:"wrap",gap:8}}>
             <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
               <MM id={model} size={18}/>
@@ -1538,18 +1633,42 @@ function App(){
         </div>
       )}
 
+      </div>{/* end max-width content wrapper */}
+
       {/* FOOTER */}
-      <footer style={{textAlign:"center",marginTop:40,paddingTop:20,borderTop:"1px solid var(--bd)"}}>
-        <p style={{color:"var(--t3)",fontSize:11.5,margin:0}}>Prompt Architect  -  Smart AI prompt engineering</p>
-        <p style={{color:"var(--t3)",fontSize:10.5,margin:"4px 0 0",opacity:.6}}>No data leaves your browser. All prompt generation happens locally.</p>
+      <footer style={{borderTop:"1px solid var(--bd)",background:"var(--s1)",padding:"36px 24px 32px"}}>
+        <div style={{maxWidth:1200,margin:"0 auto",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:16}}>
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            <div style={{width:28,height:28,borderRadius:7,background:`linear-gradient(135deg, ${ac}, #2563EB)`,display:"flex",alignItems:"center",justifyContent:"center"}}>
+              <svg width="14" height="14" viewBox="0 0 32 32" fill="none"><path d="M8 10h16M8 16h11M8 22h13" stroke="white" strokeWidth="2.4" strokeLinecap="round"/></svg>
+            </div>
+            <span style={{fontSize:14,fontWeight:600,color:"var(--t1)"}}>Prompt Architect</span>
+          </div>
+          <div style={{display:"flex",gap:24,alignItems:"center"}}>
+            <span style={{fontSize:12,color:"var(--t3)"}}>All prompt generation happens locally in your browser.</span>
+            <a href="https://github.com/DoomsdayTycoon/prompt-architect" target="_blank" rel="noopener" style={{fontSize:12,color:"var(--t3)",textDecoration:"none",display:"flex",alignItems:"center",gap:5,transition:"color .15s"}}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+              GitHub
+            </a>
+          </div>
+        </div>
+        <div style={{maxWidth:1200,margin:"12px auto 0",paddingTop:12,borderTop:"1px solid var(--bd)",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8}}>
+          <span style={{fontSize:11,color:"var(--t3)"}}>Built by Ola Slettebak</span>
+          <span style={{fontSize:11,color:"var(--t3)",opacity:.5}}>proarch.tech</span>
+        </div>
       </footer>
-    </div>
+    </div>{/* end outer page wrapper */}
 
     {/* AUTH MODAL */}
     {showAuth&&(
-      <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,.5)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:2000,padding:20}} onClick={()=>setShowAuth(false)}>
-        <div style={{background:"var(--s1)",borderRadius:16,padding:32,maxWidth:360,width:"100%",boxShadow:"0 20px 60px rgba(0,0,0,.15)",animation:"slideDown .3s ease"}} onClick={(e)=>e.stopPropagation()}>
-          <h2 style={{fontSize:20,fontWeight:700,margin:"0 0 24px",color:"var(--t1)",textAlign:"center"}}>{authMode==="signup"?"Create your account":"Sign in to your account"}</h2>
+      <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,.45)",backdropFilter:"blur(4px)",WebkitBackdropFilter:"blur(4px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:2000,padding:20}} onClick={()=>setShowAuth(false)}>
+        <div style={{background:"var(--s1)",borderRadius:18,padding:36,maxWidth:400,width:"100%",boxShadow:"0 24px 64px rgba(0,0,0,.15)",animation:"slideDown .3s ease"}} onClick={(e)=>e.stopPropagation()}>
+          <div style={{display:"flex",justifyContent:"center",marginBottom:20}}>
+            <div style={{width:44,height:44,borderRadius:12,background:`linear-gradient(135deg, ${ac}, #2563EB)`,display:"flex",alignItems:"center",justifyContent:"center"}}>
+              <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><path d="M8 10h16M8 16h11M8 22h13" stroke="white" strokeWidth="2.4" strokeLinecap="round"/></svg>
+            </div>
+          </div>
+          <h2 style={{fontSize:21,fontWeight:700,margin:"0 0 24px",color:"var(--t1)",textAlign:"center"}}>{authMode==="signup"?"Create your account":"Welcome back"}</h2>
           <form onSubmit={handleAuthSubmit} style={{display:"flex",flexDirection:"column",gap:12}}>
             {authMode==="signup"&&(
               <input value={authName} onChange={(e)=>setAuthName(e.target.value)} placeholder="Your name" style={inp({fontSize:14,padding:14})} />
