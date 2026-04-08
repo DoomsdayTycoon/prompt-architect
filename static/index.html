@@ -93,6 +93,19 @@ const STYLES={formal:{l:"Formal",i:"target"},conversational:{l:"Conversational",
 const TONES=[{v:"Professional",i:"target"},{v:"Casual",i:"speaker"},{v:"Academic",i:"book"},{v:"Creative",i:"palette"},{v:"Friendly",i:"seedling"},{v:"Authoritative",i:"bolt"},{v:"Empathetic",i:"users"}];
 const LENGTHS=["Brief","Medium","Detailed","Comprehensive"];
 const LEN_SUB={Brief:"200-400 words",Medium:"500-900 words",Detailed:"1000-1800 words",Comprehensive:"2000+ words"};
+const LEN_BY_FILE={
+  pdf:{Brief:"1 page",Medium:"2-3 pages",Detailed:"4-6 pages",Comprehensive:"8+ pages"},
+  word:{Brief:"1 page",Medium:"2-3 pages",Detailed:"4-6 pages",Comprehensive:"8+ pages"},
+  excel:{Brief:"1 sheet, 10-20 rows",Medium:"2-3 sheets, 30-50 rows",Detailed:"4-5 sheets, 50-100 rows",Comprehensive:"6+ sheets, 100+ rows"},
+  ppt:{Brief:"5-8 slides",Medium:"10-15 slides",Detailed:"18-25 slides",Comprehensive:"30+ slides"},
+  markdown:{Brief:"200-400 words",Medium:"500-900 words",Detailed:"1000-1800 words",Comprehensive:"2000+ words"},
+  html:{Brief:"1 section, single view",Medium:"3-5 sections",Detailed:"6-10 sections with nav",Comprehensive:"Full multi-page site"},
+  json:{Brief:"10-20 fields",Medium:"30-60 fields",Detailed:"80-150 fields",Comprehensive:"200+ fields, nested"},
+  csv:{Brief:"10-20 rows",Medium:"30-50 rows",Detailed:"50-100 rows",Comprehensive:"100+ rows"},
+  plaintext:{Brief:"200-400 words",Medium:"500-900 words",Detailed:"1000-1800 words",Comprehensive:"2000+ words"},
+  codeFile:{Brief:"50-100 lines",Medium:"150-300 lines",Detailed:"400-700 lines",Comprehensive:"800+ lines"}
+};
+const getLenSub=(l,fo)=>(LEN_BY_FILE[fo]&&LEN_BY_FILE[fo][l])||LEN_SUB[l];
 const FMTS={prose:{l:"Prose paragraphs",i:"pen"},bullets:{l:"Bullet points",i:"checkList"},numbered:{l:"Numbered steps",i:"ruler"},table:{l:"Tables / Matrices",i:"layout"},qa:{l:"Q&A format",i:"users"},headers:{l:"Sectioned with headers",i:"layers"},tldr:{l:"TL;DR + Detail",i:"fileText"},framework:{l:"Framework / Model",i:"brain"},flowchart:{l:"Flowchart / Decision tree",i:"sliders"},before_after:{l:"Before / After",i:"bolt"},pros_cons:{l:"Pros & Cons",i:"target"},scorecard:{l:"Scorecard / Rating",i:"chart"},annotated:{l:"Annotated examples",i:"lightbulb"}};
 
 const FILE_OUTPUTS={pdf:{l:"PDF Document",i:"fileText"},word:{l:"Word / DOCX",i:"file"},excel:{l:"Excel / Spreadsheet",i:"chart"},ppt:{l:"PowerPoint / Slides",i:"layout"},markdown:{l:"Markdown (.md)",i:"hash"},html:{l:"HTML Page",i:"code"},json:{l:"JSON / Structured Data",i:"code"},csv:{l:"CSV / Data File",i:"chart"},plaintext:{l:"Plain Text",i:"fileText"},codeFile:{l:"Code File",i:"code"}};
@@ -508,7 +521,9 @@ function buildPrompt(p){
   else ctx.push("Target audience: Knowledgeable professionals who expect depth and precision");
   ctx.push("Tone: "+tone+"  -  "+(TONE_INST[tone]||""));
   ctx.push("Writing style: "+(STYLES[style]?.l||style)+"  -  "+(STYLE_INST[style]||""));
-  ctx.push("Length: "+(LEN_SUB[length]||length));
+  const fileLenSub=getLenSub(length,fileOutput);
+  const defaultLenSub=LEN_SUB[length]||length;
+  ctx.push("Length: "+fileLenSub+(fileLenSub!==defaultLenSub?" ("+defaultLenSub+")":""));
   ctx.push("Output format: "+fmtLabels);
   if(language&&language!=="English")ctx.push("Language: Respond entirely in "+language+". Use natural, native-quality "+language+" throughout.");
   sec("context",ctx.join("\n"));
@@ -1000,7 +1015,7 @@ function App(){
 
         {/* LENGTH + FORMAT */}
         <Step ico="ruler" title="Length">
-          <Wrap>{LENGTHS.map(l=><Chip key={l} active={len===l} accent={ac} onClick={()=>setLen(l)} sx={{flexDirection:"column",alignItems:"flex-start",gap:0,padding:"8px 14px"}}><span>{l}</span><span style={{fontSize:10.5,color:"var(--t3)",fontWeight:400}}>{LEN_SUB[l]}</span></Chip>)}</Wrap>
+          <Wrap>{LENGTHS.map(l=><Chip key={l} active={len===l} accent={ac} onClick={()=>setLen(l)} sx={{flexDirection:"column",alignItems:"flex-start",gap:0,padding:"8px 14px"}}><span>{l}</span><span style={{fontSize:10.5,color:"var(--t3)",fontWeight:400}}>{getLenSub(l,fileOutput)}</span></Chip>)}</Wrap>
         </Step>
 
         <Step ico="layout" title="Response format" sub="Select one or more  -  they combine in the prompt">
