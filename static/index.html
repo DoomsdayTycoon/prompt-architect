@@ -3,11 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prompt Architect — AI Prompt Engineering</title>
-<meta name="description" content="Professional AI Prompt Generator — Smart prompt engineering for Claude, ChatGPT, Gemini, and open-source models">
-<meta property="og:title" content="Prompt Architect">
-<meta property="og:description" content="Turn vague ideas into expert-level AI prompts with smart enhancement">
+<title>Prompt Architect | Expert AI Results Instantly</title>
+<meta name="description" content="Stop struggling with AI prompts. Describe your goal, get an expert-level prompt in seconds. Works with ChatGPT, Claude, Gemini. Free to start.">
+<meta property="og:title" content="Prompt Architect — Your AI is only as smart as your prompt">
+<meta property="og:description" content="Describe any goal. Get a precision-crafted prompt with strategy, structure, and domain expertise built in. Works with ChatGPT, Claude, Gemini, and more.">
 <meta property="og:image" content="https://www.proarch.tech/og-image.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.proarch.tech">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Prompt Architect — Get Expert AI Results Instantly">
+<meta name="twitter:description" content="Your AI is only as smart as your prompt. Describe any goal, get expert-level results. Free to start.">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='23' stroke='%230891B2' stroke-width='1.8' fill='%230891B208'/%3E%3Cpath d='M12 24h6l3-6 4.5 12 3-6H35' stroke='%230891B2' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='12' cy='24' r='2' fill='%230891B2'/%3E%3Ccircle cx='35' cy='24' r='2' fill='%230891B2'/%3E%3C/svg%3E">
 <style>body{margin:0;background:#f8fafc;}</style>
 </head>
@@ -27,8 +32,13 @@ const SUPABASE_URL="https://whfdtdcplkneviumgrkz.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndoZmR0ZGNwbGtuZXZpdW1ncmt6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2Mzk0MzQsImV4cCI6MjA5MTIxNTQzNH0.xmk6ZPvxt9dmezmDESMI8w6AmL3zErcjWb0T7iNHQAE";
 const supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
-const validateEmail=(e)=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
-const validatePassword=(p)=>p.length>=6;
+// Analytics: push events to dataLayer for GTM/GA4 (safe no-op if GTM not loaded)
+window.dataLayer=window.dataLayer||[];
+const trackEvent=(name,params={})=>{window.dataLayer.push({event:name,...params});};
+
+const validateEmail=(e)=>typeof e==="string"&&e.length<=254&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+const validatePassword=(p)=>typeof p==="string"&&p.length>=8&&/[A-Z]/.test(p)&&/[a-z]/.test(p)&&/[0-9]/.test(p);
+const sanitizeText=(s)=>typeof s==="string"?s.replace(/[<>]/g,"").trim().slice(0,5000):"";
 
 
 /* ═══════════════════════════════════════════════════════
@@ -1072,6 +1082,9 @@ function App(){
   const [showPaywall,setShowPaywall]=useState(false);
   const [paywallPlan,setPaywallPlan]=useState("annual");
   const [checkoutLoading,setCheckoutLoading]=useState(false);
+  const [promoCode,setPromoCode]=useState("");
+  const [promoLoading,setPromoLoading]=useState(false);
+  const [promoMsg,setPromoMsg]=useState("");
   const [showAuth,setShowAuth]=useState(false);
   const [authMode,setAuthMode]=useState("login");
   const [authEmail,setAuthEmail]=useState("");
@@ -1148,16 +1161,25 @@ function App(){
   const remainingSimple=Math.max(0,FREE_SIMPLE-usage.simple_used);
   const remainingExpert=Math.max(0,FREE_EXPERT-usage.expert_used);
 
+  const lastGenRef=useRef(0);
   const go=useCallback(()=>{
     // Must have account
     if(!user){setAuthMode("signup");setShowAuth(true);setAuthErr("");return;}
+    // Client-side rate limit: 1 generation per 3 seconds
+    const now=Date.now();
+    if(now-lastGenRef.current<3000){return;}
+    lastGenRef.current=now;
+    // Sanitize topic input
+    const cleanTopic=sanitizeText(topic);
+    if(!cleanTopic||cleanTopic.length<3){alert("Please describe your goal (at least 3 characters).");return;}
     // Check paywall
     if(!usage.is_paid&&usage.subscription_status!=="active"){
-      if(isExp&&usage.expert_used>=FREE_EXPERT){setShowPaywall(true);return;}
-      if(!isExp&&usage.simple_used>=FREE_SIMPLE){setShowPaywall(true);return;}
+      if(isExp&&usage.expert_used>=FREE_EXPERT){trackEvent("paywall_shown",{mode:"expert"});setShowPaywall(true);return;}
+      if(!isExp&&usage.simple_used>=FREE_SIMPLE){trackEvent("paywall_shown",{mode:"simple"});setShowPaywall(true);return;}
     }
     setShow(true);
     setPromptGenerated(true);
+    trackEvent("prompt_built",{mode:isExp?"expert":"simple",task,industry,model});
     // Increment usage in DB
     supabase.rpc("increment_prompt_count",{mode:isExp?"expert":"simple"}).then(({data})=>{
       if(data)setUsage(data);
@@ -1192,12 +1214,14 @@ function App(){
     setAuthSubmitting(true);
     try{
       if(authMode==="signup"){
-        if(!authName.trim()){setAuthErr("Name required");setAuthSubmitting(false);return;}
+        const cleanName=sanitizeText(authName);
+        if(!cleanName||cleanName.length<2||cleanName.length>100){setAuthErr("Name must be 2-100 characters");setAuthSubmitting(false);return;}
         if(!validateEmail(authEmail)){setAuthErr("Invalid email");setAuthSubmitting(false);return;}
-        if(!validatePassword(authPassword)){setAuthErr("Password must be 6+ characters");setAuthSubmitting(false);return;}
-        const {data,error}=await supabase.auth.signUp({email:authEmail,password:authPassword,options:{data:{name:authName}}});
+        if(!validatePassword(authPassword)){setAuthErr("Password must be 8+ characters with uppercase, lowercase, and a number");setAuthSubmitting(false);return;}
+        const {data,error}=await supabase.auth.signUp({email:authEmail,password:authPassword,options:{data:{name:cleanName}}});
         if(error){setAuthErr(error.message);setAuthSubmitting(false);return;}
         if(data.user&&!data.session){setAuthErr("Check your email for a confirmation link");setAuthSubmitting(false);return;}
+        trackEvent("account_created");
         setShowAuth(false);setAuthEmail("");setAuthPassword("");setAuthName("");
       }else{
         const {data,error}=await supabase.auth.signInWithPassword({email:authEmail,password:authPassword});
@@ -1221,11 +1245,34 @@ function App(){
         body:JSON.stringify({plan:paywallPlan,email:user.email,userId:session?.user?.id})
       });
       const data=await res.json();
-      if(data.url){window.location.href=data.url;}
+      if(data.url){trackEvent("subscription_started",{plan:paywallPlan});window.location.href=data.url;}
       else{alert(data.error||"Something went wrong. Please try again.");}
     }catch(err){alert("Failed to start checkout. Please try again.");}
     setCheckoutLoading(false);
   },[user,paywallPlan]);
+
+  const handlePromoRedeem=useCallback(async()=>{
+    if(!user||!promoCode.trim())return;
+    setPromoLoading(true);
+    setPromoMsg("");
+    try{
+      const {data:{session}}=await supabase.auth.getSession();
+      const res=await fetch("/api/redeem",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({code:promoCode.trim().toUpperCase(),userId:session?.user?.id})
+      });
+      const data=await res.json();
+      if(data.success){
+        setPromoMsg("Promo applied! You now have "+data.days+" days of Pro access.");
+        supabase.rpc("get_usage_status").then(({data})=>{if(data&&!data.error)setUsage(data);});
+        setTimeout(()=>{setShowPaywall(false);setPromoCode("");setPromoMsg("");},2500);
+      }else{
+        setPromoMsg(data.error||"Invalid code.");
+      }
+    }catch(err){setPromoMsg("Something went wrong. Please try again.");}
+    setPromoLoading(false);
+  },[user,promoCode]);
 
   const toggleVoice=useCallback(()=>{
     if(!recognitionRef.current){
@@ -1323,7 +1370,7 @@ function App(){
           ):(
             <>
               <button onClick={()=>{setAuthMode("login");setShowAuth(true);setAuthErr("");}} style={{fontSize:13,padding:"8px 16px",border:"none",background:"transparent",color:"var(--t2)",cursor:"pointer",fontFamily:"var(--f)",fontWeight:500,transition:"all .15s"}}>Log in</button>
-              <button onClick={()=>{setAuthMode("signup");setShowAuth(true);setAuthErr("");}} style={{fontSize:13,padding:"8px 20px",border:"none",background:ac,color:"#fff",borderRadius:8,cursor:"pointer",fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",boxShadow:"0 2px 8px "+ac+"30"}}>Sign up</button>
+              <button onClick={()=>{setAuthMode("signup");setShowAuth(true);setAuthErr("");}} style={{fontSize:13,padding:"8px 20px",border:"none",background:ac,color:"#fff",borderRadius:8,cursor:"pointer",fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",boxShadow:"0 2px 8px "+ac+"30"}}>Get started free</button>
             </>
           )}
         </div>
@@ -1336,18 +1383,19 @@ function App(){
       <section style={{background:"linear-gradient(180deg, #f0f9ff 0%, var(--bg) 100%)",padding:"32px 24px 0",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:-100,right:-80,width:350,height:350,borderRadius:"50%",background:`radial-gradient(circle, ${ac}06 0%, transparent 70%)`,pointerEvents:"none"}}/>
         <div style={{maxWidth:1200,margin:"0 auto"}}>
-          {/* Hero copy — single row, compact */}
-          <div style={{textAlign:"center",maxWidth:700,margin:"0 auto 28px"}}>
-            <h1 style={{fontSize:"clamp(26px, 3.5vw, 40px)",fontWeight:800,margin:"0 0 12px",lineHeight:1.15,color:"var(--t1)",letterSpacing:"-.4px"}}>Turn vague ideas into <span style={{color:ac}}>expert-level AI prompts</span></h1>
-            <p style={{fontSize:"clamp(13px, 1.3vw, 16px)",color:"var(--t2)",margin:0,lineHeight:1.6}}>Describe any goal. We automatically inject audience targeting, reasoning strategies, and domain expertise.</p>
+          {/* Hero copy — transformation-led */}
+          <div style={{textAlign:"center",maxWidth:720,margin:"0 auto 28px"}}>
+            <div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"5px 14px",borderRadius:20,background:ac+"10",marginBottom:16,fontSize:12,fontWeight:600,color:ac}}>Smart Prompt Engineering</div>
+            <h1 style={{fontSize:"clamp(26px, 3.5vw, 40px)",fontWeight:800,margin:"0 0 14px",lineHeight:1.15,color:"var(--t1)",letterSpacing:"-.4px"}}>Stop struggling with AI. <span style={{color:ac}}>Start getting expert results.</span></h1>
+            <p style={{fontSize:"clamp(14px, 1.4vw, 17px)",color:"var(--t2)",margin:"0 auto",lineHeight:1.65,maxWidth:600}}>Your AI is only as smart as your prompt. Describe any goal and we inject strategy, structure, and domain expertise automatically -- so every AI interaction delivers.</p>
           </div>
 
           {/* HOW IT WORKS — horizontal, seamless, no box */}
           <div id="features" style={{display:"flex",justifyContent:"center",gap:"clamp(16px, 4vw, 56px)",flexWrap:"wrap",paddingBottom:28,borderBottom:"1px solid var(--bd)"}}>
             {[
-              {ic:"pen",n:"1",t:"Describe your goal",s:"Any wording works"},
-              {ic:"wand",n:"2",t:"We enhance it",s:"Smart context injection"},
-              {ic:"copy",n:"3",t:"Copy & paste",s:"Into any AI model"},
+              {ic:"pen",n:"1",t:"Describe your goal",s:"Plain language, any topic"},
+              {ic:"wand",n:"2",t:"Get enhanced instantly",s:"Strategy + expertise injected"},
+              {ic:"copy",n:"3",t:"Paste into any AI",s:"ChatGPT, Claude, Gemini"},
             ].map(({ic,n,t,s},i)=>(
               <React.Fragment key={i}>
                 <div style={{display:"flex",alignItems:"center",gap:12,padding:"4px 0"}}>
@@ -1361,6 +1409,7 @@ function App(){
               </React.Fragment>
             ))}
           </div>
+
         </div>
       </section>
 
@@ -1373,24 +1422,28 @@ function App(){
           <div style={{width:34,height:34,borderRadius:10,background:ac+"10",display:"flex",alignItems:"center",justifyContent:"center"}}>{LOGO(18,ac)}</div>
           <div>
             <h2 style={{fontSize:20,fontWeight:700,margin:0,letterSpacing:"-.2px"}}>Build Your Prompt</h2>
-            <p style={{color:"var(--t3)",fontSize:12.5,margin:"2px 0 0",fontWeight:450}}>Configure settings below. No account needed to explore.</p>
+            <p style={{color:"var(--t3)",fontSize:12.5,margin:"2px 0 0",fontWeight:450}}>Configure your settings. Get an expert-level prompt in seconds.</p>
           </div>
         </div>
-        <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
-          <div style={{display:"inline-flex",borderRadius:10,background:"var(--s1)",border:"1px solid var(--bd)",padding:3,boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
-            {[["amateur","seedling","Simple"],["expert","microscope","Expert"]].map(([m,ic,lb])=>(
-              <button key={m} onClick={()=>setMode(m)} style={{display:"flex",alignItems:"center",gap:6,padding:"9px 26px",border:"none",borderRadius:7.5,cursor:"pointer",background:mode===m?ac:"transparent",color:mode===m?"#fff":"var(--t3)",fontFamily:"var(--f)",fontSize:13,fontWeight:620,transition:"all .2s"}}>{I[ic](14,mode===m?"#fff":"var(--t3)")}{lb}</button>
-            ))}
+        {user&&!usage.is_paid&&usage.subscription_status!=="active"&&(
+          <div style={{fontSize:12,color:"var(--t3)",display:"flex",alignItems:"center",gap:4}}>
+            <span style={{fontWeight:600,color:canGenerate?"var(--t2)":"#ef4444"}}>{isExp?remainingExpert:remainingSimple} free {isExp?"expert":"simple"}</span> left
           </div>
-          {user&&!usage.is_paid&&usage.subscription_status!=="active"&&(
-            <div style={{display:"flex",gap:8,fontSize:12,color:"var(--t3)",alignItems:"center"}}>
-              <span style={{fontWeight:600,color:remainingSimple>0?"var(--t2)":"#ef4444"}}>{remainingSimple} Simple</span>
-              <span style={{color:"var(--bd)"}}>|</span>
-              <span style={{fontWeight:600,color:remainingExpert>0?"var(--t2)":"#ef4444"}}>{remainingExpert} Expert</span>
-              <span>free left</span>
+        )}
+      </div>
+
+      {/* MODE SWITCH + HINT */}
+      <div style={{display:"flex",gap:8,marginBottom:20,flexWrap:"wrap"}}>
+        {[["amateur","seedling","Simple","15 task types, 15 industries, 10 AI models, smart enhancement"],["expert","microscope","Expert","All of Simple + firm expertise, 15 reasoning techniques, file output"]].map(([m,ic,lb,desc])=>(
+          <div key={m} onClick={()=>setMode(m)} style={{flex:1,minWidth:200,padding:"10px 14px",borderRadius:9,border:mode===m?"1.5px solid "+ac:"1px solid var(--bd)",background:mode===m?ac+"05":"var(--s1)",cursor:"pointer",transition:"all .15s"}}>
+            <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3}}>
+              {I[ic](13,mode===m?ac:"var(--t3)")}
+              <span style={{fontSize:12.5,fontWeight:700,color:mode===m?ac:"var(--t1)"}}>{lb}</span>
+              {m==="expert"&&mode!=="expert"&&<span style={{fontSize:9,fontWeight:700,padding:"1px 6px",borderRadius:5,background:ac,color:"#fff",marginLeft:2}}>PRO</span>}
             </div>
-          )}
-        </div>
+            <div style={{fontSize:11,color:"var(--t3)",lineHeight:1.5}}>{desc}</div>
+          </div>
+        ))}
       </div>
 
       {/* HISTORY PANEL */}
@@ -1415,7 +1468,7 @@ function App(){
         {/* TOPIC */}
         <Step ico="pen" title="Describe your goal" sub="Be specific  -  but don't worry about being perfect. Smart enhancement fills the gaps.">
           <div style={{display:"flex",gap:8,marginBottom:12,alignItems:"flex-start"}}>
-            <textarea value={topic} onChange={e=>{setTopic(e.target.value);setShow(false);}} placeholder="e.g. Build a DCF valuation tutorial for finance students who understand basic accounting but are new to valuation models. Include a worked example using Apple's 2024 financials..." rows={3} style={{...inp({resize:"vertical"}),flex:1}} />
+            <textarea value={topic} onChange={e=>{setTopic(e.target.value);setShow(false);}} placeholder="e.g. Analyze Apple's Q4 earnings and highlight key risks" rows={3} style={{...inp({resize:"vertical"}),flex:1}} />
             <div style={{display:"flex",flexDirection:"column",gap:8,alignSelf:"flex-start"}}>
               <button onClick={toggleVoice} style={{padding:"10px 12px",borderRadius:7,border:"1px solid "+(isListening?"#e11d48":"var(--bd)"),background:isListening?"#ffe4e9":"var(--s2)",color:isListening?"#be123c":"var(--t2)",cursor:"pointer",fontSize:11.5,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:5}}>{I.speaker(12,isListening?"#be123c":"var(--t2)")}{isListening?"Stop":"Voice"}</button>
               {topic.trim()&&(
@@ -1619,6 +1672,17 @@ function App(){
 
       </div>{/* end max-width content wrapper */}
 
+      {/* CTA BANNER */}
+      {!user&&(
+        <section style={{background:`linear-gradient(135deg, #1B2A4A 0%, ${ac} 100%)`,padding:"48px 24px",textAlign:"center"}}>
+          <div style={{maxWidth:560,margin:"0 auto"}}>
+            <h2 style={{fontSize:"clamp(20px, 2.5vw, 28px)",fontWeight:800,color:"#fff",margin:"0 0 12px",letterSpacing:"-.3px"}}>Every prompt you write without this is leaving value on the table.</h2>
+            <p style={{fontSize:14,color:"rgba(255,255,255,.75)",margin:"0 0 24px",lineHeight:1.6}}>Join professionals who use Prompt Architect to get expert-level results from every AI interaction.</p>
+            <button onClick={()=>{setAuthMode("signup");setShowAuth(true);setAuthErr("");}} style={{padding:"14px 36px",border:"none",borderRadius:10,background:"#fff",color:"#1B2A4A",fontSize:15,fontWeight:700,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s",boxShadow:"0 4px 20px rgba(0,0,0,.2)"}}>Build Your First Prompt</button>
+          </div>
+        </section>
+      )}
+
       {/* FOOTER */}
       <footer style={{borderTop:"1px solid var(--bd)",background:"var(--s1)",padding:"36px 24px 32px"}}>
         <div style={{maxWidth:1200,margin:"0 auto",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:16}}>
@@ -1631,8 +1695,8 @@ function App(){
             </svg>
             <span style={{fontSize:14,fontWeight:600,color:"var(--t1)"}}>Prompt Architect</span>
           </div>
-          <div style={{display:"flex",gap:24,alignItems:"center"}}>
-            <span style={{fontSize:12,color:"var(--t3)"}}>All prompt generation happens locally in your browser.</span>
+          <div style={{display:"flex",gap:24,alignItems:"center",flexWrap:"wrap"}}>
+            <span style={{fontSize:12,color:"var(--t3)"}}>Prompt generation runs entirely in your browser. Your data stays private.</span>
             <a href="https://github.com/DoomsdayTycoon/prompt-architect" target="_blank" rel="noopener" style={{fontSize:12,color:"var(--t3)",textDecoration:"none",display:"flex",alignItems:"center",gap:5,transition:"color .15s"}}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
               GitHub
@@ -1658,21 +1722,22 @@ function App(){
               <circle cx="35" cy="24" r="2" fill={ac}/>
             </svg>
           </div>
-          <h2 style={{fontSize:21,fontWeight:700,margin:"0 0 6px",color:"var(--t1)",textAlign:"center"}}>{authMode==="signup"?"Create your account":"Welcome back"}</h2>
-          {authMode==="signup"&&<p style={{textAlign:"center",fontSize:12.5,color:"var(--t3)",margin:"0 0 22px",lineHeight:1.5}}>Free to start. No credit card required.</p>}
+          <h2 style={{fontSize:21,fontWeight:700,margin:"0 0 6px",color:"var(--t1)",textAlign:"center"}}>{authMode==="signup"?"Start getting better AI results":"Welcome back"}</h2>
+          {authMode==="signup"&&<p style={{textAlign:"center",fontSize:12.5,color:"var(--t3)",margin:"0 0 22px",lineHeight:1.5}}>Free to start. No credit card required. Build your first prompt in seconds.</p>}
           {authMode!=="signup"&&<div style={{marginBottom:22}}/>}
           <form onSubmit={handleAuthSubmit} style={{display:"flex",flexDirection:"column",gap:12}}>
             {authMode==="signup"&&(
               <input value={authName} onChange={(e)=>setAuthName(e.target.value)} placeholder="Your name" style={inp({fontSize:14,padding:14})} />
             )}
             <input value={authEmail} onChange={(e)=>setAuthEmail(e.target.value)} type="email" placeholder="Email address" style={inp({fontSize:14,padding:14})} />
-            <input value={authPassword} onChange={(e)=>setAuthPassword(e.target.value)} type="password" placeholder="Password (6+ characters)" style={inp({fontSize:14,padding:14})} />
+            <input value={authPassword} onChange={(e)=>setAuthPassword(e.target.value)} type="password" placeholder="Password" style={inp({fontSize:14,padding:14})} />
+            {authMode==="signup"&&<div style={{fontSize:11,color:"var(--t3)",marginTop:-4,paddingLeft:2}}>Min. 8 characters with uppercase, lowercase, and a number</div>}
             {authErr&&<div style={{padding:10,background:"#fee2e2",border:"1px solid #fecaca",borderRadius:8,fontSize:13,color:"#dc2626",fontFamily:"var(--f)"}}>{authErr}</div>}
             <button type="submit" disabled={authSubmitting} style={{padding:14,background:authSubmitting?ac+"80":ac,color:"#fff",border:"none",borderRadius:10,fontSize:14,fontWeight:700,fontFamily:"var(--f)",cursor:authSubmitting?"not-allowed":"pointer",transition:"all .2s",marginTop:4}}>{authSubmitting?"Please wait...":(authMode==="signup"?"Create free account":"Sign in")}</button>
           </form>
           {authMode==="signup"&&(
             <div style={{display:"flex",justifyContent:"center",gap:16,marginTop:16,paddingTop:14,borderTop:"1px solid var(--bd)"}}>
-              {[{ic:"check",t:"2 free prompts"},{ic:"check",t:"No card needed"},{ic:"check",t:"Cancel anytime"}].map(({ic,t},i)=>(
+              {[{ic:"check",t:"Free prompts included"},{ic:"check",t:"No credit card"},{ic:"check",t:"Works in seconds"}].map(({ic,t},i)=>(
                 <div key={i} style={{display:"flex",alignItems:"center",gap:4,fontSize:11,color:"var(--t3)",fontWeight:500}}>{I[ic](11,"#10B981")}{t}</div>
               ))}
             </div>
@@ -1705,8 +1770,8 @@ function App(){
         <div style={{background:"var(--s1)",borderRadius:16,padding:0,maxWidth:480,width:"100%",boxShadow:"0 20px 60px rgba(0,0,0,.2)",animation:"slideDown .3s ease",overflow:"hidden"}} onClick={(e)=>e.stopPropagation()}>
           {/* Header */}
           <div style={{background:"linear-gradient(135deg, #1B2A4A 0%, #0891B2 100%)",padding:"28px 28px 24px",color:"#fff"}}>
-            <h2 style={{fontSize:22,fontWeight:700,margin:"0 0 8px"}}>Upgrade to Prompt Architect Pro</h2>
-            <p style={{fontSize:13,margin:0,opacity:.85,lineHeight:1.5}}>You've used all your free prompts. Unlock unlimited access to keep building expert-level prompts.</p>
+            <h2 style={{fontSize:22,fontWeight:700,margin:"0 0 8px"}}>Unlock Unlimited Expert Prompts</h2>
+            <p style={{fontSize:13,margin:0,opacity:.85,lineHeight:1.5}}>Every prompt you write without Prompt Architect is leaving value on the table. Upgrade to get unlimited access to expert-level prompts that make your AI deliver.</p>
           </div>
           {/* Usage summary */}
           <div style={{padding:"20px 28px",borderBottom:"1px solid var(--bd)"}}>
@@ -1740,13 +1805,21 @@ function App(){
             </div>
             {/* Features */}
             <div style={{marginBottom:20}}>
-              {["Unlimited prompts (Simple + Expert)","All 15 industries with firm & role selection","All 15 advanced thinking techniques","Priority support & feature requests","Prompt history saved forever"].map((f,i)=>(
+              {["Unlimited prompt generation (Simple + Expert)","15 industries with firm-specific expertise and roles","15 advanced reasoning techniques (red team, systems thinking)","Prompt history saved and searchable","Priority support and early access to new features"].map((f,i)=>(
                 <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 0",fontSize:12.5,color:"var(--t2)"}}>{I.check(14,"#10B981")}{f}</div>
               ))}
             </div>
             {/* CTA */}
             <button disabled={checkoutLoading} onClick={handleCheckout} style={{width:"100%",padding:14,borderRadius:10,border:"none",background:checkoutLoading?ac+"80":ac,color:"#fff",fontSize:14,fontWeight:700,fontFamily:"var(--f)",cursor:checkoutLoading?"not-allowed":"pointer",transition:"all .2s",boxShadow:"0 4px 20px "+ac+"35"}}>{checkoutLoading?"Redirecting to checkout...":"Upgrade Now"}</button>
-            <button onClick={()=>setShowPaywall(false)} style={{width:"100%",padding:10,borderRadius:8,border:"none",background:"transparent",color:"var(--t3)",fontSize:12,fontFamily:"var(--f)",cursor:"pointer",marginTop:8}}>Maybe later</button>
+            {/* Promo code section */}
+            <div style={{marginTop:16,padding:"14px 0 0",borderTop:"1px solid var(--bd)"}}>
+              <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                <input value={promoCode} onChange={(e)=>{setPromoCode(e.target.value.toUpperCase());setPromoMsg("");}} placeholder="Promo code" maxLength={14} style={{flex:1,padding:"10px 12px",borderRadius:8,border:"1.5px solid var(--bd)",background:"var(--bg)",color:"var(--t1)",fontSize:13,fontFamily:"'IBM Plex Mono',monospace",letterSpacing:1,outline:"none",textTransform:"uppercase"}} />
+                <button disabled={promoLoading||!promoCode.trim()} onClick={handlePromoRedeem} style={{padding:"10px 16px",borderRadius:8,border:"none",background:promoCode.trim()?"var(--t1)":"var(--bd)",color:promoCode.trim()?"#fff":"var(--t3)",fontSize:12,fontWeight:700,fontFamily:"var(--f)",cursor:promoCode.trim()?"pointer":"not-allowed",transition:"all .2s"}}>{promoLoading?"...":"Apply"}</button>
+              </div>
+              {promoMsg&&<div style={{fontSize:12,marginTop:8,color:promoMsg.includes("!")||promoMsg.includes("Pro")?"#10B981":"#dc2626",fontWeight:500}}>{promoMsg}</div>}
+            </div>
+            <button onClick={()=>{setShowPaywall(false);setPromoCode("");setPromoMsg("");}} style={{width:"100%",padding:10,borderRadius:8,border:"none",background:"transparent",color:"var(--t3)",fontSize:12,fontFamily:"var(--f)",cursor:"pointer",marginTop:8}}>Maybe later</button>
           </div>
         </div>
       </div>

@@ -6,7 +6,11 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-// Vercel needs raw body for Stripe signature verification
+// Validate UUID v4 format
+function isValidUUID(str) {
+  return typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+}
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -15,9 +19,14 @@ module.exports = async (req, res) => {
   const sig = req.headers['stripe-signature'];
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
+  if (!sig) {
+    return res.status(400).json({ error: 'Missing Stripe signature.' });
+  }
+
   let event;
   try {
-    // Vercel provides raw body as buffer
+    // When bodyParser is disabled, Vercel streams the raw body.
+    // Read it from the stream to guarantee byte-perfect signature verification.
     const rawBody = await getRawBody(req);
     event = stripe.webhooks.constructEvent(rawBody, sig, endpointSecret);
   } catch (err) {
@@ -32,7 +41,7 @@ module.exports = async (req, res) => {
         const userId = session.metadata?.supabase_user_id;
         const customerId = session.customer;
 
-        if (userId) {
+        if (userId && isValidUUID(userId)) {
           await supabase
             .from('profiles')
             .update({
@@ -42,6 +51,8 @@ module.exports = async (req, res) => {
             })
             .eq('id', userId);
           console.log(`User ${userId} upgraded to paid.`);
+        } else {
+          console.warn('checkout.session.completed: missing or invalid userId in metadata');
         }
         break;
       }
@@ -51,7 +62,7 @@ module.exports = async (req, res) => {
         const userId = subscription.metadata?.supabase_user_id;
         const status = subscription.status;
 
-        if (userId) {
+        if (userId && isValidUUID(userId)) {
           const isPaid = status === 'active' || status === 'trialing';
           await supabase
             .from('profiles')
@@ -64,6 +75,8 @@ module.exports = async (req, res) => {
             })
             .eq('id', userId);
           console.log(`User ${userId} subscription status: ${status}`);
+        } else {
+          console.warn('subscription.updated: missing or invalid userId in metadata');
         }
         break;
       }
@@ -72,7 +85,7 @@ module.exports = async (req, res) => {
         const subscription = event.data.object;
         const userId = subscription.metadata?.supabase_user_id;
 
-        if (userId) {
+        if (userId && isValidUUID(userId)) {
           await supabase
             .from('profiles')
             .update({
@@ -82,6 +95,8 @@ module.exports = async (req, res) => {
             })
             .eq('id', userId);
           console.log(`User ${userId} subscription cancelled.`);
+        } else {
+          console.warn('subscription.deleted: missing or invalid userId in metadata');
         }
         break;
       }
@@ -97,25 +112,18 @@ module.exports = async (req, res) => {
   return res.status(200).json({ received: true });
 };
 
-// Helper: read raw body from Vercel request
+// Read raw body from the request stream (byte-perfect for Stripe signature verification).
+// With bodyParser disabled, Vercel does NOT pre-parse the body, so we always read from the stream.
 function getRawBody(req) {
   return new Promise((resolve, reject) => {
-    if (req.body && typeof req.body !== 'string' && !Buffer.isBuffer(req.body)) {
-      // Body already parsed as object — need raw for signature verification
-      // Vercel may have already parsed it, so we reconstruct
-      resolve(Buffer.from(JSON.stringify(req.body)));
-    } else if (Buffer.isBuffer(req.body)) {
-      resolve(req.body);
-    } else {
-      const chunks = [];
-      req.on('data', (chunk) => chunks.push(chunk));
-      req.on('end', () => resolve(Buffer.concat(chunks)));
-      req.on('error', reject);
-    }
+    const chunks = [];
+    req.on('data', (chunk) => chunks.push(chunk));
+    req.on('end', () => resolve(Buffer.concat(chunks)));
+    req.on('error', reject);
   });
 }
 
-// Vercel config: disable body parsing so we get raw body for Stripe
+// Vercel config: disable body parsing so we get raw body for Stripe signature verification
 module.exports.config = {
   api: {
     bodyParser: false,
