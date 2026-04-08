@@ -561,10 +561,81 @@ function buildPrompt(p){
   fmtL.push(lenG[length]||lenG.Medium);
   sec("formatting",fmtL.join("\n\n"));
 
-  // FILE OUTPUT FORMAT
+  // FILE OUTPUT FORMAT — Professional-grade formatting standards per file type
   const FILE_INST={
-    pdf:"Structure the response as a polished, print-ready document. Use clear page-break-friendly sections, professional headers, numbered pages logic, and formatting that translates cleanly to PDF export. Include a title page section with title, date, and author placeholder.",
-    word:"Structure as a professional Word document with proper heading hierarchy (Heading 1, 2, 3), table of contents ready formatting, page numbers, and consistent paragraph styles. Use tables and bullet lists that render cleanly in Word/DOCX.",
+    pdf:`Design as a professional, print-ready PDF document. Follow these strict formatting standards:
+
+DOCUMENT STRUCTURE:
+- Title page: document title (bold, 24pt), subtitle, author name, date, classification level, and organization placeholder
+- Table of contents with page numbers for documents longer than 3 pages
+- Numbered sections and subsections (1.0, 1.1, 1.2) with consistent heading hierarchy
+- Page numbers in footer, document title in header
+- Clear page breaks between major sections
+
+TYPOGRAPHY & LAYOUT:
+- Body text: serif font (Times New Roman 11pt or Georgia 11pt), 1.15 line spacing
+- Headings: sans-serif font (Arial or Helvetica), bold  -  H1: 18pt, H2: 14pt, H3: 12pt
+- Margins: 1 inch all sides (standard professional)
+- Paragraphs: justified alignment, 6pt spacing after each paragraph
+- Pull quotes or key findings in indented, bordered callout boxes
+
+TABLE FORMATTING:
+- Header row: bold white text on dark navy background (#1B2A4A)
+- Alternating row shading: white and light gray (#F5F5F5)
+- All borders: thin, consistent gray lines  -  no thick or colored borders
+- Numbers right-aligned, text left-aligned, headers center-aligned
+- Table title above each table in bold, table source/notes below in italic 9pt
+- Column widths proportional to content  -  no truncation, no excessive whitespace
+- Negative values in parentheses: ($12.4M)
+- Percentages with 1 decimal, currencies with 2 decimals, commas for thousands
+
+FIGURES & CHARTS:
+- Numbered sequentially (Figure 1, Figure 2)
+- Title above stating the analytical conclusion  -  not just the topic
+- Source line below in italic
+- Color scheme: navy (#1B2A4A), steel blue (#4472C4), accent gray (#A5A5A5)  -  no bright or clashing colors
+
+PROFESSIONAL STANDARDS:
+- Executive summary on page 1 or 2 (before the detailed analysis)
+- Appendices for supporting data, methodology notes, and source citations
+- Footnotes for caveats and clarifications  -  not inline parentheticals
+- Consistent date format throughout (e.g., April 8, 2026 or 2026-04-08)
+- All claims traceable to data or cited source`,
+
+    word:`Design as a professional Word/DOCX document ready for corporate distribution. Follow these strict formatting standards:
+
+DOCUMENT STRUCTURE:
+- Title page with document title, subtitle, author, date, version, and confidentiality level
+- Auto-generated Table of Contents using Word heading styles (Heading 1, 2, 3)
+- Section numbering (1.0, 1.1, 1.2) using Word's built-in numbering
+- Headers: document title left, page number right
+- Footers: confidentiality notice or organization name
+
+STYLES & TYPOGRAPHY:
+- Body: Calibri 11pt, 1.15 spacing, justified alignment
+- Heading 1: Calibri 16pt bold, dark navy (#1B2A4A), 18pt space before
+- Heading 2: Calibri 13pt bold, dark gray (#333333), 12pt space before
+- Heading 3: Calibri 11pt bold italic, 6pt space before
+- Bullet lists: consistent indentation, round bullets for L1, dashes for L2
+- Numbered lists: Arabic numerals, consistent indentation
+- Captions: Calibri 9pt italic for tables and figures
+
+TABLE FORMATTING:
+- Use Word's "Grid Table 4 - Accent 1" style or equivalent professional style
+- Header row: bold white text on navy background, repeated on each page
+- Alternating row banding in light gray
+- Numbers right-aligned with consistent formatting (commas, decimals, currency symbols)
+- Negative values: red font in parentheses
+- Table title above in bold, source/notes below in italic 9pt
+- Ensure tables do not break awkwardly across pages
+
+PROFESSIONAL STANDARDS:
+- Track Changes ready  -  use proper styles, not manual formatting
+- Cross-references for figures and tables (Figure 1, Table 2)
+- Consistent date format, number format, and terminology throughout
+- Document properties filled: title, author, subject, keywords
+- Print-ready: proper margins (1 inch), no orphan/widow lines`,
+
     excel:`Design as a professional investment-bank-grade Excel workbook (Goldman Sachs / Morgan Stanley style). Follow these strict formatting and structural standards:
 
 WORKBOOK STRUCTURE:
@@ -609,13 +680,234 @@ PROFESSIONAL STANDARDS:
 - Freeze panes on header rows
 - Include data validation dropdowns for scenario selectors
 - Every number must trace to a source or formula  -  zero unexplained hardcodes`,
-    ppt:"Structure as presentation slides: one key insight per slide. Use Assertion-Evidence format (title states conclusion, body provides proof). Max 5 bullets per slide. Include speaker notes with talking points. Suggest visual aids for each slide.",
-    markdown:"Use valid Markdown throughout: proper heading hierarchy (# ## ###), code fences with language tags, links, emphasis, blockquotes, and horizontal rules for section breaks. Ready for direct use in GitHub, Notion, or any Markdown renderer.",
-    html:"Structure as semantic HTML with proper heading tags, paragraph elements, lists, tables, and code blocks. Include suggestions for CSS classes. Ensure accessibility (alt text, ARIA labels). Ready for direct web publishing.",
-    json:"Return valid, well-structured JSON. Use descriptive camelCase keys. Nest logically. Include a metadata object with type, version, and timestamp fields. Add inline comments as description fields.",
-    csv:"Present data as clean comma-separated values. Include a header row with descriptive column names. Use consistent data types per column. Note any encoding or delimiter considerations.",
-    plaintext:"Use clean, readable plain text with clear section breaks (===), indentation for hierarchy, and consistent spacing. No special formatting characters. Optimized for terminal, email, or plain text editors.",
-    codeFile:"Present as a complete, runnable code file with proper imports, type annotations, docstrings, error handling, and usage examples. Specify the filename and language at the top. Follow language-specific style guides."
+
+    ppt:`Design as a professional executive presentation (McKinsey / Goldman Sachs style). Follow these strict formatting standards:
+
+SLIDE STRUCTURE:
+- Title slide: presentation title (bold, 28pt), subtitle with context, presenter name, date, confidentiality marking
+- Agenda slide after title  -  numbered list of sections
+- Section divider slides: bold section title on navy background
+- Content slides: one key insight per slide  -  use Assertion-Evidence format (title states the conclusion, body proves it)
+- Summary/recommendation slide at the end with clear next steps
+
+SLIDE LAYOUT & TYPOGRAPHY:
+- Title text: 24-28pt bold, dark navy (#1B2A4A), left-aligned
+- Body text: 16-18pt, dark gray (#333333), left-aligned
+- Maximum 5 bullet points per slide, each 1-2 lines
+- No full sentences in bullets  -  use telegraphic style (action verb + key point)
+- Consistent margins and text placement across all slides
+- Slide numbers in bottom-right corner
+
+DATA VISUALIZATION:
+- Charts preferred over tables  -  if table is necessary, max 5 rows visible
+- Chart titles state the insight ("Revenue declined 18% QoQ" not "Revenue Chart")
+- Color palette: navy (#1B2A4A), steel blue (#4472C4), light gray (#D9D9D9), accent red for emphasis
+- Clean axis labels, no gridlines unless essential
+- Data labels directly on chart elements  -  minimize legend usage
+- Source line at bottom of every data slide in 8pt gray italic
+
+SPEAKER NOTES:
+- Include detailed speaker notes for every content slide
+- Notes should contain: key talking point, supporting data, anticipated questions, transition to next slide
+- 3-5 bullet points per slide in notes
+
+PROFESSIONAL STANDARDS:
+- Consistent template across all slides (same fonts, colors, logo placement)
+- No decorative clip art, stock photos, or unnecessary graphics
+- Animation: none or minimal (appear only, no fly-ins or spins)
+- Every number cited must have a source noted in speaker notes`,
+
+    markdown:`Design as clean, professional Markdown optimized for rendering in GitHub, Notion, Confluence, or any standard Markdown viewer. Follow these strict formatting standards:
+
+DOCUMENT STRUCTURE:
+- H1 (#) for document title only  -  used once at the top
+- H2 (##) for major sections, H3 (###) for subsections, H4 (####) sparingly for sub-subsections
+- Table of contents at top using linked headings for documents with 4+ sections
+- Horizontal rules (---) between major sections for visual separation
+- Metadata block at top: title, date, author, status (can use YAML frontmatter if appropriate)
+
+TEXT FORMATTING:
+- **Bold** for key terms, findings, and emphasis  -  use sparingly
+- *Italic* for citations, definitions, and secondary emphasis
+- Inline code backticks for technical terms, file names, commands, variables
+- Blockquotes (>) for key findings, callouts, or important notes
+- Ordered lists for sequential steps, unordered lists for non-sequential items
+- Nested lists indented consistently (2 or 4 spaces)
+
+TABLE FORMATTING:
+- Header row separated by |---|---|
+- Align columns: :--- left, :---: center, ---: right
+- Keep tables concise  -  max 6-7 columns for readability
+- Numbers right-aligned, text left-aligned
+- Use consistent decimal places and number formatting within each column
+
+CODE BLOCKS:
+- Always specify language tag after opening triple backticks
+- Include brief comment at top explaining what the code does
+- Keep code blocks focused  -  one concept per block
+
+PROFESSIONAL STANDARDS:
+- Links use descriptive text, never raw URLs in body text
+- Images include alt text describing the content
+- Consistent terminology and capitalization throughout
+- No trailing whitespace, no double blank lines
+- Render-test ready  -  no HTML workarounds unless Markdown cannot achieve the layout`,
+
+    html:`Design as semantic, accessible HTML ready for professional web publishing. Follow these strict formatting standards:
+
+DOCUMENT STRUCTURE:
+- Semantic HTML5 elements: header, nav, main, article, section, aside, footer
+- Single h1 for page title, h2 for sections, h3 for subsections  -  never skip heading levels
+- Meta tags: charset, viewport, description, author
+- Logical section ordering that makes sense when CSS is disabled
+
+TYPOGRAPHY & STYLING:
+- Suggest CSS class names for every styled element (e.g., .report-header, .data-table, .callout-box)
+- Font stack: system fonts or professional web fonts (Inter, Source Sans Pro)
+- Body text: 16px, 1.6 line-height, max-width 720px for readability
+- Color system: define primary (#1B2A4A), secondary (#4472C4), text (#333), muted (#666), border (#E2E8F0)
+- Responsive considerations noted (fluid widths, stackable columns)
+
+TABLE FORMATTING:
+- Use proper thead, tbody, th, td elements
+- Suggest striped rows via CSS (nth-child alternating)
+- Header cells: bold, dark background, white text
+- Numeric cells: text-align right, tabular-nums font-feature
+- Include caption element for table title
+- Responsive tables: suggest overflow-x scroll wrapper for mobile
+
+ACCESSIBILITY:
+- Alt text for all images
+- ARIA labels for interactive elements
+- Sufficient color contrast (WCAG AA minimum)
+- Logical tab order
+- Screen reader friendly table markup (scope attributes on th)
+
+PROFESSIONAL STANDARDS:
+- No inline styles  -  all styling via suggested CSS classes
+- Clean, indented, readable HTML structure
+- No deprecated elements (center, font, b for styling)
+- Print stylesheet considerations noted where relevant`,
+
+    json:`Design as clean, well-structured JSON suitable for production APIs and data interchange. Follow these strict formatting standards:
+
+STRUCTURE:
+- Root object with clear top-level keys: metadata, data, summary (or domain-appropriate equivalents)
+- Metadata object: type, version, generated_at (ISO 8601), author, description
+- Consistent nesting depth  -  max 4 levels deep, flatten where possible
+- Arrays for collections of similar items, objects for named properties
+
+NAMING CONVENTIONS:
+- camelCase for all keys (e.g., totalRevenue, createdAt, riskScore)
+- Descriptive names  -  never abbreviate (use customerLifetimeValue not clv)
+- Boolean keys prefixed with is/has/can (e.g., isActive, hasRisk)
+- Plural names for arrays (items, metrics, risks)
+
+DATA TYPES & VALUES:
+- Numbers: no quotes around numeric values, use null for missing data (not 0 or "N/A")
+- Dates: ISO 8601 format ("2026-04-08T14:30:00Z")
+- Enums: lowercase with underscores (e.g., "high_risk", "in_progress")
+- Currency: object with amount (number) and currency (string) fields
+- Percentages: decimal form (0.15 not 15 or "15%")
+
+PROFESSIONAL STANDARDS:
+- Valid JSON  -  parseable by any standard JSON parser
+- 2-space indentation for readability
+- No trailing commas
+- No comments (use description fields within objects instead)
+- Include a schema reference or type field so consumers know the structure
+- Every object in an array must have the same shape (consistent keys)`,
+
+    csv:`Design as clean, production-ready CSV suitable for data import and analysis. Follow these strict formatting standards:
+
+STRUCTURE:
+- Header row first  -  descriptive, unique column names in snake_case or Title Case
+- One record per row, consistent column count across all rows
+- Sort by the most analytically useful column (typically date or primary key)
+- Group related data logically if multiple datasets  -  use separate CSV files or clearly marked sections
+
+DATA FORMATTING:
+- Strings: quote fields containing commas, newlines, or special characters
+- Numbers: no thousand separators in raw data, use decimal points (not commas)
+- Dates: ISO 8601 format (YYYY-MM-DD) for unambiguous parsing
+- Currency: numeric only (no $ symbol)  -  note currency in column header (e.g., revenue_usd)
+- Percentages: decimal form (0.15 not 15%)  -  note in column header (e.g., growth_rate_pct)
+- Missing values: leave empty (not "N/A", "null", or 0)
+- Boolean: TRUE/FALSE or 1/0  -  consistent throughout
+
+PROFESSIONAL STANDARDS:
+- UTF-8 encoding
+- Line endings: LF (Unix) for cross-platform compatibility
+- No trailing commas or whitespace
+- Include a metadata comment or accompanying README describing: column definitions, data types, source, date range, and any transformations applied
+- Column order: identifiers first, then dimensions, then measures`,
+
+    plaintext:`Design as clean, professional plain text optimized for readability in any text editor, terminal, or email client. Follow these strict formatting standards:
+
+STRUCTURE:
+- Title block: centered title in CAPS, date, author, separator line (====)
+- Section headers in CAPS or Title Case, preceded by blank line and followed by underline (----)
+- Numbered sections (1.0, 1.1) for hierarchical documents
+- Clear visual separation between sections using blank lines and separator lines
+
+LAYOUT:
+- Line width: max 80 characters for universal compatibility
+- Body text: left-aligned, single-spaced within paragraphs, double-spaced between paragraphs
+- Lists: dash (-) or asterisk (*) with 2-space indent for sub-items
+- Numbered steps: Arabic numerals with period (1. 2. 3.)
+- Tables: aligned using spaces, header row with dashes below
+  Example:
+  Item          Value     Status
+  ----------    ------    --------
+  Revenue       $12.4M    Up 8%
+
+EMPHASIS:
+- *asterisks* for emphasis (renders in some viewers)
+- CAPS for critical warnings or section headers only
+- Indentation (4 spaces) for quoted text or callouts
+- Brackets [NOTE] or [IMPORTANT] for inline callouts
+
+PROFESSIONAL STANDARDS:
+- No special characters that might not render (use -- not em-dash, use ASCII quotes)
+- Consistent spacing and indentation throughout
+- Print-friendly  -  reads well on paper at monospaced font
+- Include section references ("see Section 3.2") for longer documents`,
+
+    codeFile:`Design as a complete, production-ready code file following industry best practices. Follow these strict formatting standards:
+
+FILE STRUCTURE:
+- File header comment: filename, description, author, date, version, license
+- Imports/dependencies grouped and ordered: standard library, third-party, local
+- Constants and configuration at top, below imports
+- Main logic in well-named functions/classes  -  no loose code at module level
+- Entry point / main block at bottom (if applicable)
+
+CODE QUALITY:
+- Follow the official style guide for the specified language (PEP 8, Google Style, Airbnb, etc.)
+- Type annotations/hints on all function signatures
+- Docstrings on all public functions: description, parameters, return type, example usage
+- Error handling: specific exception types, meaningful error messages, proper cleanup
+- Input validation at function boundaries
+- No magic numbers  -  use named constants with comments explaining the value
+
+NAMING CONVENTIONS:
+- Functions/methods: verb_noun (calculate_revenue, fetch_user_data)
+- Classes: PascalCase with descriptive names
+- Constants: UPPER_SNAKE_CASE
+- Variables: descriptive, no single-letter names except loop counters
+
+DOCUMENTATION:
+- Module-level docstring explaining purpose, usage, and dependencies
+- Inline comments for non-obvious logic only  -  code should be self-documenting
+- Usage examples in docstrings or a dedicated examples section at bottom
+- Dependencies noted with version requirements
+
+PROFESSIONAL STANDARDS:
+- Runs without modification  -  all imports resolvable, no placeholder code
+- Unit test structure suggested (test file name, key test cases to cover)
+- Logging over print statements for production code
+- Security: no hardcoded credentials, sanitize inputs, parameterize queries
+- Performance notes where relevant (time complexity, memory considerations)`
   };
   if(fileOutput&&FILE_INST[fileOutput]){
     sec("file_output_format","Target file format: "+(FILE_OUTPUTS[fileOutput]?.l||fileOutput)+".\n\n"+FILE_INST[fileOutput]);
