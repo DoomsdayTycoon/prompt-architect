@@ -8,7 +8,7 @@
 <meta property="og:title" content="Prompt Architect">
 <meta property="og:description" content="Turn vague ideas into expert-level AI prompts with smart enhancement">
 <meta property="og:image" content="https://www.proarch.tech/og-image.png">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='1' y='1' width='30' height='30' rx='8' fill='%230f172a'/%3E%3Cpath d='M8 16h5l2-4 3 8 2-4h4' stroke='%230891B2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='8' cy='16' r='1.5' fill='%230891B2'/%3E%3Ccircle cx='24' cy='16' r='1.5' fill='%230891B2'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='23' stroke='%230891B2' stroke-width='1.8' fill='%230891B208'/%3E%3Cpath d='M12 24h6l3-6 4.5 12 3-6H35' stroke='%230891B2' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='12' cy='24' r='2' fill='%230891B2'/%3E%3Ccircle cx='35' cy='24' r='2' fill='%230891B2'/%3E%3C/svg%3E">
 <style>body{margin:0;background:#f8fafc;}</style>
 </head>
 <body>
@@ -34,7 +34,7 @@ const validatePassword=(p)=>p.length>=6;
 /* ═══════════════════════════════════════════════════════
    ICONS
    ═══════════════════════════════════════════════════════ */
-const LOGO=(s=24,c="currentColor")=><svg width={s} height={s} viewBox="0 0 32 32" fill="none"><path d="M6 16h5l2.5-5 3.5 10 2.5-5H25" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><circle cx="6" cy="16" r="1.8" fill={c}/><circle cx="25" cy="16" r="1.8" fill={c}/></svg>;
+const LOGO=(s=24,c="currentColor")=><svg width={s} height={s} viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="22" stroke={c} strokeWidth="1.5" fill={c+"08"}/><path d="M12 24h6l3-6 4.5 12 3-6H35" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="24" r="1.8" fill={c}/><circle cx="35" cy="24" r="1.8" fill={c}/></svg>;
 
 const I={
   bolt:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
@@ -1286,11 +1286,11 @@ function App(){
     <nav style={{position:"fixed",top:0,left:0,right:0,background:"rgba(255,255,255,.85)",backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)",borderBottom:"1px solid var(--bd)",zIndex:1000,padding:"0 24px"}}>
       <div style={{maxWidth:1200,margin:"0 auto",display:"flex",justifyContent:"space-between",alignItems:"center",height:56}}>
         <div style={{display:"flex",alignItems:"center",gap:10}}>
-          <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
-            <rect x="1" y="1" width="30" height="30" rx="8" fill="var(--t1)"/>
-            <path d="M8 16h5l2-4 3 8 2-4h4" stroke={ac} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <circle cx="8" cy="16" r="1.5" fill={ac}/>
-            <circle cx="24" cy="16" r="1.5" fill={ac}/>
+          <svg width="30" height="30" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="23" stroke={ac} strokeWidth="1.8" fill={ac+"08"}/>
+            <path d="M12 24h6l3-6 4.5 12 3-6H35" stroke={ac} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+            <circle cx="12" cy="24" r="2" fill={ac}/>
+            <circle cx="35" cy="24" r="2" fill={ac}/>
           </svg>
           <span style={{fontWeight:700,fontSize:17,color:"var(--t1)",letterSpacing:"-.3px"}}>Prompt Architect</span>
         </div>
@@ -1623,11 +1623,11 @@ function App(){
       <footer style={{borderTop:"1px solid var(--bd)",background:"var(--s1)",padding:"36px 24px 32px"}}>
         <div style={{maxWidth:1200,margin:"0 auto",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:16}}>
           <div style={{display:"flex",alignItems:"center",gap:8}}>
-            <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
-              <rect x="1" y="1" width="30" height="30" rx="8" fill="var(--t1)"/>
-              <path d="M8 16h5l2-4 3 8 2-4h4" stroke={ac} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <circle cx="8" cy="16" r="1.5" fill={ac}/>
-              <circle cx="24" cy="16" r="1.5" fill={ac}/>
+            <svg width="24" height="24" viewBox="0 0 48 48" fill="none">
+              <circle cx="24" cy="24" r="23" stroke={ac} strokeWidth="1.8" fill={ac+"08"}/>
+              <path d="M12 24h6l3-6 4.5 12 3-6H35" stroke={ac} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+              <circle cx="12" cy="24" r="2" fill={ac}/>
+              <circle cx="35" cy="24" r="2" fill={ac}/>
             </svg>
             <span style={{fontSize:14,fontWeight:600,color:"var(--t1)"}}>Prompt Architect</span>
           </div>
@@ -1650,26 +1650,35 @@ function App(){
     {showAuth&&(
       <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,.45)",backdropFilter:"blur(4px)",WebkitBackdropFilter:"blur(4px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:2000,padding:20}} onClick={()=>setShowAuth(false)}>
         <div style={{background:"var(--s1)",borderRadius:18,padding:36,maxWidth:400,width:"100%",boxShadow:"0 24px 64px rgba(0,0,0,.15)",animation:"slideDown .3s ease"}} onClick={(e)=>e.stopPropagation()}>
-          <div style={{display:"flex",justifyContent:"center",marginBottom:20}}>
-            <svg width="44" height="44" viewBox="0 0 32 32" fill="none">
-              <rect x="1" y="1" width="30" height="30" rx="8" fill="var(--t1)"/>
-              <path d="M8 16h5l2-4 3 8 2-4h4" stroke={ac} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <circle cx="8" cy="16" r="1.5" fill={ac}/>
-              <circle cx="24" cy="16" r="1.5" fill={ac}/>
+          <div style={{display:"flex",justifyContent:"center",marginBottom:16}}>
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <circle cx="24" cy="24" r="23" stroke={ac} strokeWidth="1.5" fill={ac+"08"}/>
+              <path d="M12 24h6l3-6 4.5 12 3-6H35" stroke={ac} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+              <circle cx="12" cy="24" r="2" fill={ac}/>
+              <circle cx="35" cy="24" r="2" fill={ac}/>
             </svg>
           </div>
-          <h2 style={{fontSize:21,fontWeight:700,margin:"0 0 24px",color:"var(--t1)",textAlign:"center"}}>{authMode==="signup"?"Create your account":"Welcome back"}</h2>
+          <h2 style={{fontSize:21,fontWeight:700,margin:"0 0 6px",color:"var(--t1)",textAlign:"center"}}>{authMode==="signup"?"Create your account":"Welcome back"}</h2>
+          {authMode==="signup"&&<p style={{textAlign:"center",fontSize:12.5,color:"var(--t3)",margin:"0 0 22px",lineHeight:1.5}}>Free to start. No credit card required.</p>}
+          {authMode!=="signup"&&<div style={{marginBottom:22}}/>}
           <form onSubmit={handleAuthSubmit} style={{display:"flex",flexDirection:"column",gap:12}}>
             {authMode==="signup"&&(
               <input value={authName} onChange={(e)=>setAuthName(e.target.value)} placeholder="Your name" style={inp({fontSize:14,padding:14})} />
             )}
             <input value={authEmail} onChange={(e)=>setAuthEmail(e.target.value)} type="email" placeholder="Email address" style={inp({fontSize:14,padding:14})} />
-            <input value={authPassword} onChange={(e)=>setAuthPassword(e.target.value)} type="password" placeholder="Password" style={inp({fontSize:14,padding:14})} />
+            <input value={authPassword} onChange={(e)=>setAuthPassword(e.target.value)} type="password" placeholder="Password (6+ characters)" style={inp({fontSize:14,padding:14})} />
             {authErr&&<div style={{padding:10,background:"#fee2e2",border:"1px solid #fecaca",borderRadius:8,fontSize:13,color:"#dc2626",fontFamily:"var(--f)"}}>{authErr}</div>}
-            <button type="submit" disabled={authSubmitting} style={{padding:14,background:authSubmitting?ac+"80":ac,color:"#fff",border:"none",borderRadius:8,fontSize:14,fontWeight:700,fontFamily:"var(--f)",cursor:authSubmitting?"not-allowed":"pointer",transition:"all .2s",marginTop:8}}>{authSubmitting?"Please wait...":(authMode==="signup"?"Create account":"Sign in")}</button>
+            <button type="submit" disabled={authSubmitting} style={{padding:14,background:authSubmitting?ac+"80":ac,color:"#fff",border:"none",borderRadius:10,fontSize:14,fontWeight:700,fontFamily:"var(--f)",cursor:authSubmitting?"not-allowed":"pointer",transition:"all .2s",marginTop:4}}>{authSubmitting?"Please wait...":(authMode==="signup"?"Create free account":"Sign in")}</button>
           </form>
-          <div style={{marginTop:20,textAlign:"center",fontSize:13,color:"var(--t2)"}}>
-            {authMode==="signup"?(<>Already have an account? <button onClick={()=>{setAuthMode("login");setAuthErr("");}} style={{border:"none",background:"none",color:ac,cursor:"pointer",fontWeight:700,fontFamily:"var(--f)"}}>Sign in</button></>):(<>Don't have an account? <button onClick={()=>{setAuthMode("signup");setAuthErr("");}} style={{border:"none",background:"none",color:ac,cursor:"pointer",fontWeight:700,fontFamily:"var(--f)"}}>Sign up</button></>)}
+          {authMode==="signup"&&(
+            <div style={{display:"flex",justifyContent:"center",gap:16,marginTop:16,paddingTop:14,borderTop:"1px solid var(--bd)"}}>
+              {[{ic:"check",t:"2 free prompts"},{ic:"check",t:"No card needed"},{ic:"check",t:"Cancel anytime"}].map(({ic,t},i)=>(
+                <div key={i} style={{display:"flex",alignItems:"center",gap:4,fontSize:11,color:"var(--t3)",fontWeight:500}}>{I[ic](11,"#10B981")}{t}</div>
+              ))}
+            </div>
+          )}
+          <div style={{marginTop:authMode==="signup"?14:20,textAlign:"center",fontSize:13,color:"var(--t2)"}}>
+            {authMode==="signup"?(<>Already have an account? <button onClick={()=>{setAuthMode("login");setAuthErr("");}} style={{border:"none",background:"none",color:ac,cursor:"pointer",fontWeight:700,fontFamily:"var(--f)"}}>Sign in</button></>):(<>Don't have an account? <button onClick={()=>{setAuthMode("signup");setAuthErr("");}} style={{border:"none",background:"none",color:ac,cursor:"pointer",fontWeight:700,fontFamily:"var(--f)"}}>Sign up free</button></>)}
           </div>
         </div>
       </div>
