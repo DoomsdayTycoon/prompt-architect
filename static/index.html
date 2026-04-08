@@ -1093,11 +1093,9 @@ function App(){
   const [authErr,setAuthErr]=useState("");
   const [promptGenerated,setPromptGenerated]=useState(false);
   const [exampleSector,setExampleSector]=useState("");
-  const [isListening,setIsListening]=useState(false);
   const [showResetConfirm,setShowResetConfirm]=useState(false);
   const [showExamples,setShowExamples]=useState(false);
   const [showProfileDD,setShowProfileDD]=useState(false);
-  const recognitionRef=useRef(null);
   const ref=useRef(null);
   const isExp=mode==="expert";
   const ac=MODELS[model].col;
@@ -1274,33 +1272,6 @@ function App(){
     setPromoLoading(false);
   },[user,promoCode]);
 
-  const toggleVoice=useCallback(()=>{
-    if(!recognitionRef.current){
-      const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
-      if(!SpeechRecognition){alert("Voice input not supported in this browser");return;}
-      const recognition=new SpeechRecognition();
-      recognition.continuous=false;
-      recognition.interimResults=true;
-      recognition.lang="en-US";
-      recognition.onresult=(event)=>{
-        let transcript="";
-        for(let i=event.resultIndex;i<event.results.length;i++){
-          transcript+=event.results[i][0].transcript;
-        }
-        setTopic(prev=>prev+(!prev.trim()?transcript:" "+transcript));
-      };
-      recognition.onerror=(event)=>{console.error("Speech recognition error",event.error);setIsListening(false);};
-      recognition.onend=()=>setIsListening(false);
-      recognitionRef.current=recognition;
-    }
-    if(isListening){
-      recognitionRef.current.stop();
-      setIsListening(false);
-    }else{
-      recognitionRef.current.start();
-      setIsListening(true);
-    }
-  },[isListening]);
 
   const resetAll=useCallback(()=>{
     setTopic("");setTask("writing");setIndustry("general");setOutput("document");setModel("claude");
@@ -1478,14 +1449,11 @@ function App(){
 
         {/* TOPIC */}
         <Step ico="pen" title="Describe your goal" sub="Be specific  -  but don't worry about being perfect. Smart enhancement fills the gaps.">
-          <div style={{display:"flex",gap:8,marginBottom:12,alignItems:"flex-start"}}>
-            <textarea value={topic} onChange={e=>{setTopic(e.target.value);setShow(false);}} placeholder="e.g. Analyze Apple's Q4 earnings and highlight key risks" rows={3} style={{...inp({resize:"vertical"}),flex:1}} />
-            <div style={{display:"flex",flexDirection:"column",gap:8,alignSelf:"flex-start"}}>
-              <button onClick={toggleVoice} style={{padding:"10px 12px",borderRadius:7,border:"1px solid "+(isListening?"#e11d48":"var(--bd)"),background:isListening?"#ffe4e9":"var(--s2)",color:isListening?"#be123c":"var(--t2)",cursor:"pointer",fontSize:11.5,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:5}}>{I.speaker(12,isListening?"#be123c":"var(--t2)")}{isListening?"Stop":"Voice"}</button>
-              {topic.trim()&&(
-                <button onClick={()=>{setTopic("");setShow(false);}} style={{padding:"10px 12px",borderRadius:7,border:"1px solid #fca5a5",background:"#fee2e2",color:"#dc2626",cursor:"pointer",fontSize:11.5,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",whiteSpace:"nowrap"}}>{I.trash(12,"#dc2626")} Clear</button>
-              )}
-            </div>
+          <div style={{position:"relative",marginBottom:12}}>
+            <textarea value={topic} onChange={e=>{setTopic(e.target.value);setShow(false);}} placeholder="e.g. Analyze Apple's Q4 earnings and highlight key risks" rows={3} style={inp({resize:"vertical"})} />
+            {topic.trim()&&(
+              <button onClick={()=>{setTopic("");setShow(false);}} style={{position:"absolute",top:10,right:10,padding:"5px 10px",borderRadius:6,border:"1px solid #fca5a5",background:"#fee2e2",color:"#dc2626",cursor:"pointer",fontSize:11,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",display:"flex",alignItems:"center",gap:4}}>{I.trash(11,"#dc2626")} Clear</button>
+            )}
           </div>
 
           {/* EXAMPLE PROMPTS */}
