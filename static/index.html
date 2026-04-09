@@ -133,6 +133,59 @@ const MODELS={
   general:{name:"Universal",col:"#64748B",tips:"Cross-model best practices — clear structure, explicit constraints, works with any AI model",fmt:"md"}
 };
 
+/* Sub-models per parent model — tier: flagship / balanced / fast
+   cost: relative token cost indicator ($$$ / $$ / $)
+   desc: one-line usage guidance */
+const SUB_MODELS={
+  claude:[
+    {id:"opus-4-6",name:"Opus 4.6",tier:"flagship",cost:"$$$",desc:"Most capable. Complex reasoning, long documents, research. ~$15/M input tokens.",badge:"Most capable"},
+    {id:"sonnet-4-6",name:"Sonnet 4.6",tier:"balanced",cost:"$$",desc:"Best value. Fast and smart for most tasks. ~$3/M input tokens.",badge:"Best value"},
+    {id:"haiku-4-5",name:"Haiku 4.5",tier:"fast",cost:"$",desc:"Fastest and cheapest. Quick edits, classification, summaries. ~$0.25/M input tokens.",badge:"Fastest"}
+  ],
+  chatgpt:[
+    {id:"gpt-4.1",name:"GPT-4.1",tier:"flagship",cost:"$$$",desc:"Strongest OpenAI model. Complex analysis, coding, long context. ~$2/M input tokens.",badge:"Most capable"},
+    {id:"gpt-4.1-mini",name:"GPT-4.1 Mini",tier:"balanced",cost:"$$",desc:"Great balance of speed and quality. Everyday tasks. ~$0.40/M input tokens.",badge:"Best value"},
+    {id:"gpt-4.1-nano",name:"GPT-4.1 Nano",tier:"fast",cost:"$",desc:"Ultra-fast, lowest cost. Simple queries and drafts. ~$0.10/M input tokens.",badge:"Fastest"}
+  ],
+  gpt4o:[
+    {id:"gpt-4o",name:"GPT-4o",tier:"flagship",cost:"$$$",desc:"Multimodal flagship. Vision, audio, complex reasoning. ~$2.50/M input tokens.",badge:"Most capable"},
+    {id:"gpt-4o-mini",name:"GPT-4o Mini",tier:"balanced",cost:"$$",desc:"Fast multimodal. Good for image+text tasks. ~$0.15/M input tokens.",badge:"Best value"},
+    {id:"o3-mini",name:"o3-mini",tier:"fast",cost:"$",desc:"Optimized reasoning. Math, logic, structured output. ~$1.10/M input tokens.",badge:"Reasoning"}
+  ],
+  gemini:[
+    {id:"gemini-2.5-pro",name:"Gemini 2.5 Pro",tier:"flagship",cost:"$$$",desc:"Google flagship. Long context (1M tokens), complex tasks. ~$1.25/M input tokens.",badge:"Most capable"},
+    {id:"gemini-2.5-flash",name:"Gemini 2.5 Flash",tier:"balanced",cost:"$$",desc:"Fast and capable. Great for most tasks. ~$0.15/M input tokens.",badge:"Best value"},
+    {id:"gemini-2.0-flash-lite",name:"Gemini 2.0 Flash Lite",tier:"fast",cost:"$",desc:"Fastest Gemini. Simple tasks, high volume. ~$0.075/M input tokens.",badge:"Fastest"}
+  ],
+  grok:[
+    {id:"grok-3",name:"Grok 3",tier:"flagship",cost:"$$$",desc:"xAI flagship. Strong reasoning with real-time knowledge. Included in X Premium+.",badge:"Most capable"},
+    {id:"grok-3-mini",name:"Grok 3 Mini",tier:"balanced",cost:"$$",desc:"Lighter, faster Grok. Good for everyday use. Included in X Premium.",badge:"Best value"}
+  ],
+  mistral:[
+    {id:"mistral-large",name:"Mistral Large",tier:"flagship",cost:"$$$",desc:"Most capable Mistral. Complex reasoning, multilingual. ~$2/M input tokens.",badge:"Most capable"},
+    {id:"mistral-medium",name:"Mistral Medium",tier:"balanced",cost:"$$",desc:"Balanced performance. Good for structured tasks. ~$0.40/M input tokens.",badge:"Best value"},
+    {id:"mistral-small",name:"Mistral Small",tier:"fast",cost:"$",desc:"Fast and efficient. Quick tasks, classification. ~$0.10/M input tokens.",badge:"Fastest"}
+  ],
+  llama:[
+    {id:"llama-4-maverick",name:"Llama 4 Maverick",tier:"flagship",cost:"$$$",desc:"Meta flagship. 128 experts MoE, strong reasoning. Free/open-weight.",badge:"Most capable"},
+    {id:"llama-4-scout",name:"Llama 4 Scout",tier:"balanced",cost:"$$",desc:"Efficient 17B active params. 10M token context. Free/open-weight.",badge:"Best value"},
+    {id:"llama-3.3-70b",name:"Llama 3.3 70B",tier:"fast",cost:"$",desc:"Proven workhorse. Fast, widely deployed. Free/open-weight.",badge:"Popular"}
+  ],
+  perplexity:[
+    {id:"sonar-pro",name:"Sonar Pro",tier:"flagship",cost:"$$$",desc:"Advanced search + reasoning. Complex research queries. ~$3/M input tokens.",badge:"Most capable"},
+    {id:"sonar",name:"Sonar",tier:"balanced",cost:"$$",desc:"Standard search-augmented. Quick fact-checking. ~$1/M input tokens.",badge:"Best value"}
+  ],
+  copilot:[
+    {id:"copilot-gpt4",name:"Copilot (GPT-4)",tier:"flagship",cost:"$$$",desc:"Full GPT-4 powered. Complex code gen, architecture. Requires Pro subscription.",badge:"Most capable"},
+    {id:"copilot-standard",name:"Copilot",tier:"balanced",cost:"$$",desc:"Standard Copilot. Everyday code assistance. Free tier available.",badge:"Best value"}
+  ],
+  general:[
+    {id:"flagship",name:"Flagship tier",tier:"flagship",cost:"$$$",desc:"Use the most capable model available. Best for complex, high-stakes tasks.",badge:"Most capable"},
+    {id:"balanced",name:"Balanced tier",tier:"balanced",cost:"$$",desc:"Good balance of quality and cost. Suitable for most tasks.",badge:"Best value"},
+    {id:"fast",name:"Fast / Light tier",tier:"fast",cost:"$",desc:"Fastest, cheapest option. Simple tasks, quick iterations.",badge:"Fastest"}
+  ]
+};
+
 const TASKS={writing:{l:"Writing",i:"pen"},coding:{l:"Coding",i:"code"},analysis:{l:"Analysis",i:"chart"},brainstorm:{l:"Brainstorm",i:"lightbulb"},summarize:{l:"Summarize",i:"fileText"},translate:{l:"Translate",i:"globe"},image:{l:"Image Gen",i:"palette"},roleplay:{l:"Role / Persona",i:"theater"},email:{l:"Email / Comms",i:"mail"},learning:{l:"Learning",i:"book"},strategy:{l:"Strategy",i:"target"},debug:{l:"Debug / Troubleshoot",i:"microscope"},review:{l:"Review / Critique",i:"checkList"},decision:{l:"Decision Framework",i:"sliders"},persuade:{l:"Persuade / Negotiate",i:"bolt"}};
 
 const INDUSTRIES={general:{l:"General",i:"target"},finance:{l:"Finance & Banking",i:"chart"},healthcare:{l:"Healthcare",i:"plus"},legal:{l:"Legal",i:"book"},marketing:{l:"Marketing & Ads",i:"speaker"},tech:{l:"Tech / SaaS",i:"code"},education:{l:"Education",i:"book"},ecommerce:{l:"E-commerce",i:"globe"},consulting:{l:"Consulting",i:"lightbulb"},realestate:{l:"Real Estate",i:"building"},media:{l:"Media & Content",i:"palette"},hr:{l:"HR & Recruiting",i:"users"},manufacturing:{l:"Manufacturing",i:"cpu"},government:{l:"Government",i:"building"},research:{l:"Research / R&D",i:"microscope"}};
@@ -259,6 +312,11 @@ const UI={
   fileOutput:{en:"File output",no:"Filformat"},
   fileOutputSub:{en:"What file type should the AI format the response for?",no:"Hvilket filformat skal AI-en formatere svaret for?"},
   targetModel:{en:"Target AI model",no:"AI-modell"},
+  subModelTitle:{en:"Model version",no:"Modellversjon"},
+  subModelSub:{en:"Choose a specific model to optimize your prompt for. Higher-tier models handle more complexity but cost more tokens.",no:"Velg en spesifikk modell for å optimalisere prompten. Modeller på høyere nivå håndterer mer kompleksitet, men koster flere tokens."},
+  tierFlagship:{en:"Flagship",no:"Flaggskip"},
+  tierBalanced:{en:"Balanced",no:"Balansert"},
+  tierFast:{en:"Fast",no:"Rask"},
   writingStyle:{en:"Writing style",no:"Skrivestil"},
   toneLabel:{en:"Tone",no:"Tone"},
   lengthLabel:{en:"Length",no:"Lengde"},
@@ -767,8 +825,8 @@ function getSmartEnhancements(topic,taskType,industry,output){
    PROMPT BUILD ENGINE
    ═══════════════════════════════════════════════════════ */
 function buildPrompt(p){
-  const {topic,taskType,model,tone,length,format,techniques,audience,extra,special,mode,industry,output,style,includes,language,fileOutput,selectedFirm,selectedRole,hasAttachment}=p;
-  const mfmt=MODELS[model]?.fmt||"md";const isXml=mfmt==="xml";const isExp=mode==="expert";const lines=[];
+  const {topic,taskType,model,subModel,subModelTier,tone,length,format,techniques,audience,extra,special,mode,industry,output,style,includes,language,fileOutput,selectedFirm,selectedRole,hasAttachment}=p;
+  const mfmt=MODELS[model]?.fmt||"md";const isXml=mfmt==="xml";const isExp=mode==="expert";const tier=subModelTier||"flagship";const lines=[];
   const sec=(tag,content)=>{
     if(mfmt==="xml")lines.push("<"+tag+">\n"+content+"\n</"+tag+">");
     else if(mfmt==="bold")lines.push("**"+tag.toUpperCase().replace(/_/g," ")+"**\n"+content);
@@ -789,10 +847,15 @@ function buildPrompt(p){
     sec("firm_context",firmCtx);
   }
 
-  // TASK + SMART ENHANCEMENT
+  // TASK + SMART ENHANCEMENT (adjusted by model tier)
   const enhancements=getSmartEnhancements(topic,taskType,industry,output);
   const smartContext=enhancements.filter(e=>e.type==="specificity"||e.type==="scope").map(e=>e.text).join("\n\n");
-  const taskBlock=topic+(smartContext?"\n\n"+smartContext:"")+"\n\nYour response must be thorough, well-structured, and demonstrate expert-level depth. Deliver genuine professional value  -  not a surface-level overview.";
+  const tierSuffix=tier==="flagship"
+    ?"\n\nYour response must be thorough, well-structured, and demonstrate expert-level depth. Deliver genuine professional value  -  not a surface-level overview."
+    :tier==="balanced"
+    ?"\n\nBe thorough but efficient. Cover all key points with clear structure. Prioritize actionable insights over exhaustive detail."
+    :"\n\nBe concise and direct. Focus on the most important points. Use short paragraphs and clear structure. Skip preamble.";
+  const taskBlock=topic+(smartContext?"\n\n"+smartContext:"")+tierSuffix;
   sec("task",taskBlock);
 
   // ATTACHMENT CONTEXT
@@ -821,12 +884,20 @@ function buildPrompt(p){
   // OUTPUT TYPE
   if(output&&OUTPUT_INST[output])sec("output_type",OUTPUT_INST[output]);
 
-  // METHODOLOGY
+  // METHODOLOGY (adapted to model tier)
   const methods=METHODOLOGY[taskType]||METHODOLOGY.writing;
-  sec("methodology","Follow this structured approach:\n\n"+methods.map((m,i)=>(i+1)+". "+m).join("\n"));
+  if(tier==="fast"){
+    // For fast/light models: condensed methodology, max 3 steps
+    const shortMethods=methods.slice(0,3);
+    sec("methodology","Follow these steps:\n\n"+shortMethods.map((m,i)=>(i+1)+". "+m).join("\n"));
+  }else{
+    sec("methodology","Follow this structured approach:\n\n"+methods.map((m,i)=>(i+1)+". "+m).join("\n"));
+  }
 
-  // QUALITY
-  sec("quality_standards",QUALITY[taskType]||QUALITY.writing);
+  // QUALITY (skip for fast tier to save tokens)
+  if(tier!=="fast"){
+    sec("quality_standards",QUALITY[taskType]||QUALITY.writing);
+  }
 
   // FORMAT DETAIL
   const fmtArr=Array.isArray(format)?format:[format];
@@ -1482,14 +1553,25 @@ PROFESSIONAL STANDARDS:
   // SPECIAL REQUESTS
   if(special)sec("special_requests_and_constraints",special);
 
-  // DOCUMENT QUALITY GATE — final check for file outputs
+  // DOCUMENT QUALITY GATE — final check for file outputs (skip for fast tier)
   const docFileTypes=["pdf","word","ppt","excel"];
-  if(fileOutput&&docFileTypes.includes(fileOutput)){
+  if(tier!=="fast"&&fileOutput&&docFileTypes.includes(fileOutput)){
     sec("quality_gate","BEFORE delivering your final response, perform this quality gate check on every table, matrix, and structured element:\n\n1. CELL INTEGRITY: Read every cell in every table. Does any cell contain a word that is split across two lines? If yes, abbreviate the header or widen the column.\n2. COLUMN FIT: Is any column so narrow that its content wraps? If yes, redistribute column widths.\n3. PAGE UTILIZATION: Is any page less than 40% filled with content? If yes, merge sections or extend content to fill it.\n4. NUMBER CONSISTENCY: Within each column, are all numbers formatted identically (same decimal places, same unit notation, same alignment)? Fix any inconsistency.\n5. ABBREVIATION COVERAGE: Is every abbreviation defined in the glossary or a footnote? Add any missing definitions.\n\nIf ANY check fails, fix it before delivering. The document must look like it was prepared by a senior analyst at a top-tier investment bank for a board presentation.");
   }
 
-  // ANTI-PATTERNS
-  sec("avoid","- Do not open with filler phrases like \"Sure!\" or \"Great question!\"  -  begin directly with substance\n- Do not use vague hedging like \"it depends\" without explaining what it depends on specifically\n- Do not pad with generic background the audience already knows\n- Do not end with empty cliches  -  close with actionable specifics\n- Do not repeat the same point in different words to inflate length");
+  // ANTI-PATTERNS (condensed for fast tier)
+  if(tier==="fast"){
+    sec("avoid","- No filler phrases, hedging, or preamble. Start with substance, end with actionable specifics.");
+  }else{
+    sec("avoid","- Do not open with filler phrases like \"Sure!\" or \"Great question!\"  -  begin directly with substance\n- Do not use vague hedging like \"it depends\" without explaining what it depends on specifically\n- Do not pad with generic background the audience already knows\n- Do not end with empty cliches  -  close with actionable specifics\n- Do not repeat the same point in different words to inflate length");
+  }
+
+  // TOKEN EFFICIENCY for non-flagship tiers
+  if(tier==="balanced"){
+    sec("efficiency","This prompt targets a balanced-tier model. Prioritize clarity and completeness but avoid over-elaboration. Use concise sentences. Combine related points where possible. Aim for maximum insight per paragraph.");
+  }else if(tier==="fast"){
+    sec("efficiency","This prompt targets a fast/lightweight model. Be extremely concise. Use short sentences, bullet points over paragraphs, and skip obvious context. Prioritize the single most important answer. Keep total response short.");
+  }
 
   return lines.join("\n\n");
 }
@@ -1547,6 +1629,7 @@ function App(){
   const [topic,setTopic]=useState("");
   const [task,setTask]=useState("writing");
   const [model,setModel]=useState("claude");
+  const [subModel,setSubModel]=useState("opus-4-6");
   const [industry,setIndustry]=useState("general");
   const [output,setOutput]=useState("document");
   const [style,setStyle]=useState("formal");
@@ -1597,7 +1680,20 @@ function App(){
   const ac=MODELS[model].col;
   const acRgb={"#0891B2":"8,145,178","#D97706":"217,119,6","#10A37F":"16,163,127","#0EA5E9":"14,165,233","#4285F4":"66,133,244","#F97316":"249,115,22","#FF6F00":"255,111,0","#8B5CF6":"139,92,246","#22D3EE":"34,211,238","#6366F1":"99,102,241","#64748B":"100,116,139"}[ac];
 
-  const prompt=buildPrompt({topic,taskType:task,model,tone,length:len,format:fmt,techniques:techs,audience:aud,extra,special,mode,industry,output,style,includes,language,fileOutput,selectedFirm,selectedRole,hasAttachment});
+  // Auto-select first sub-model when parent model changes
+  useEffect(()=>{
+    const subs=SUB_MODELS[model];
+    if(subs&&subs.length>0&&!subs.find(s=>s.id===subModel)){
+      setSubModel(subs[0].id);
+    }
+  },[model]);
+
+  const activeSubModel=useMemo(()=>{
+    const subs=SUB_MODELS[model]||[];
+    return subs.find(s=>s.id===subModel)||subs[0]||null;
+  },[model,subModel]);
+
+  const prompt=buildPrompt({topic,taskType:task,model,subModel,subModelTier:activeSubModel?.tier||"flagship",tone,length:len,format:fmt,techniques:techs,audience:aud,extra,special,mode,industry,output,style,includes,language,fileOutput,selectedFirm,selectedRole,hasAttachment});
   const enhancements=useMemo(()=>topic.trim()?getSmartEnhancements(topic,task,industry,output):[], [topic,task,industry,output]);
 
   // Load usage status from Supabase
@@ -1818,7 +1914,7 @@ function App(){
 
 
   const resetAll=useCallback(()=>{
-    setTopic("");setTask("writing");setIndustry("general");setOutput("document");setModel("claude");
+    setTopic("");setTask("writing");setIndustry("general");setOutput("document");setModel("claude");setSubModel("opus-4-6");
     setStyle("formal");setTone("Professional");setLen("Medium");setFmt(["prose","headers"]);
     setIncludes([]);setTechs([]);setAud("");setExtra("");setSpecial("");setLanguage("English");
     setFileOutput("pdf");setSelectedFirm("");setSelectedRole("");setHasAttachment(false);
@@ -2173,6 +2269,31 @@ function App(){
             ))}
           </Wrap>
           <div style={{marginTop:9,padding:"8px 12px",borderRadius:8,background:ac+"0C",border:"1px solid "+ac+"1A",fontSize:11.5,color:"var(--t2)",lineHeight:1.5,display:"flex",gap:7,alignItems:"center"}}>{I.info(13,ac)}<span>{MODELS[model].tips}</span></div>
+
+          {/* Sub-model selector */}
+          {SUB_MODELS[model]&&<div style={{marginTop:14}}>
+            <div style={{fontSize:12,fontWeight:600,color:"var(--t1)",marginBottom:4}}>{t("subModelTitle")}</div>
+            <div style={{fontSize:11,color:"var(--t3)",marginBottom:8}}>{t("subModelSub")}</div>
+            <div style={{display:"flex",flexDirection:"column",gap:6}}>
+              {SUB_MODELS[model].map(sm=>{
+                const active=subModel===sm.id;
+                const tierCol=sm.tier==="flagship"?ac:sm.tier==="balanced"?"#059669":"#64748B";
+                return <div key={sm.id} onClick={()=>setSubModel(sm.id)} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",borderRadius:10,border:"1.5px solid "+(active?ac:"var(--bd)"),background:active?ac+"0A":"var(--s2)",cursor:"pointer",transition:"all .15s"}}>
+                  <div style={{width:18,height:18,borderRadius:9,border:"2px solid "+(active?ac:"#CBD5E1"),background:active?ac:"#fff",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,transition:"all .15s"}}>
+                    {active&&<div style={{width:8,height:8,borderRadius:4,background:"#fff"}}/>}
+                  </div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+                      <span style={{fontSize:13,fontWeight:active?640:500,color:active?ac:"var(--t1)"}}>{sm.name}</span>
+                      <span style={{fontSize:10,fontWeight:600,padding:"1px 7px",borderRadius:6,background:tierCol+"18",color:tierCol}}>{sm.badge}</span>
+                      <span style={{fontSize:10.5,color:"var(--t3)",fontFamily:"var(--fm)"}}>{sm.cost}</span>
+                    </div>
+                    <div style={{fontSize:11,color:"var(--t3)",marginTop:2,lineHeight:1.4}}>{sm.desc}</div>
+                  </div>
+                </div>;
+              })}
+            </div>
+          </div>}
         </Step>
 
         {/* STYLE */}
@@ -2272,7 +2393,7 @@ function App(){
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"13px 20px",borderBottom:"1px solid var(--bd)",flexWrap:"wrap",gap:8}}>
             <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
               <MM id={model} size={18}/>
-              <span style={{fontWeight:640,fontSize:13}}>{MODELS[model].name}</span>
+              <span style={{fontWeight:640,fontSize:13}}>{MODELS[model].name}{activeSubModel?" / "+activeSubModel.name:""}</span>
               <span style={{fontSize:11,color:ac,background:ac+"14",padding:"2px 8px",borderRadius:5,fontWeight:600}}>{tl(UI_INDUSTRIES,industry)}</span>
               <span style={{fontSize:11,color:"var(--t3)",background:"var(--s2)",padding:"2px 8px",borderRadius:5}}>{isExp?"Expert":"Simple"}</span>
               {enhancements.length>0&&<span style={{fontSize:11,color:"#10B981",background:"#10B98114",padding:"2px 8px",borderRadius:5,fontWeight:600,display:"flex",alignItems:"center",gap:3}}>{I.wand(10,"#10B981")} {enhancements.length} {enhancements.length!==1?t("smartBoosts"):t("smartBoost")}</span>}
