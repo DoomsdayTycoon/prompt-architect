@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Prompt Architect | Expert AI Results Instantly</title>
-<meta name="description" content="Stop struggling with AI prompts. Describe your goal, get an expert-level prompt in seconds. Works with ChatGPT, Claude, Gemini. Free to start.">
+<meta name="description" content="Stop struggling with AI prompts. Describe your goal, get an expert-level prompt in seconds. Best PromptPerfect alternative. Works with ChatGPT, Claude, Gemini. Free to start.">
+<meta name="keywords" content="prompt engineering, AI prompt generator, prompt builder, PromptPerfect alternative, ChatGPT prompts, Claude prompts, Gemini prompts, AI productivity, prompt optimization">
 <meta property="og:title" content="Prompt Architect — Your AI is only as smart as your prompt">
 <meta property="og:description" content="Describe any goal. Get a precision-crafted prompt with strategy, structure, and domain expertise built in. Works with ChatGPT, Claude, Gemini, and more.">
 <meta property="og:image" content="https://www.proarch.tech/og-image.png">
@@ -1443,6 +1444,82 @@ function App(){
         </div>
       </section>
 
+      {/* WHY PROMPT ARCHITECT — value props */}
+      <section style={{padding:"clamp(28px,5vw,48px) clamp(12px,3vw,24px)",background:"var(--bg)"}}>
+        <div style={{maxWidth:1200,margin:"0 auto"}}>
+          <h2 style={{fontSize:"clamp(20px,2.5vw,26px)",fontWeight:800,textAlign:"center",margin:"0 0 8px",color:"var(--t1)",letterSpacing:"-.3px"}}>Why professionals switch to Prompt Architect</h2>
+          <p style={{fontSize:13,color:"var(--t3)",textAlign:"center",margin:"0 auto 28px",maxWidth:520}}>Stop wasting time on trial-and-error prompting. Get structured, expert-level results on the first try.</p>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(260px, 1fr))",gap:16}}>
+            {[
+              {ic:"brain",t:"Deep domain expertise",d:"15 industries with specialized context, terminology, and frameworks injected into every prompt."},
+              {ic:"wand",t:"Smart enhancement engine",d:"Detects vague input and automatically adds audience targeting, scope, and reasoning strategies."},
+              {ic:"layers",t:"Multi-model optimization",d:"Prompts formatted specifically for Claude, ChatGPT, Gemini, Llama, or any model you use."},
+              {ic:"target",t:"Precision output control",d:"Define tone, length, format, file type, and language. Get exactly what you need, not generic filler."},
+              {ic:"building",t:"Firm & role context",d:"Expert mode injects real-world firm perspectives and role-specific expertise into your prompts."},
+              {ic:"cpu",t:"15 advanced techniques",d:"Red teaming, first principles, systems thinking, and more. Built into your prompt with one click."},
+            ].map(({ic,t,d},i)=>(
+              <div key={i} style={{background:"var(--s1)",border:"1px solid var(--bd)",borderRadius:12,padding:"20px 18px"}}>
+                <div style={{width:34,height:34,borderRadius:9,background:ac+"10",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:10}}>{I[ic](17,ac)}</div>
+                <div style={{fontSize:14,fontWeight:650,color:"var(--t1)",marginBottom:4}}>{t}</div>
+                <div style={{fontSize:12.5,color:"var(--t3)",lineHeight:1.55}}>{d}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* COMPARISON TABLE */}
+      <section style={{padding:"0 clamp(12px,3vw,24px) clamp(28px,5vw,48px)",background:"var(--bg)"}}>
+        <div style={{maxWidth:700,margin:"0 auto"}}>
+          <h3 style={{fontSize:"clamp(17px,2vw,22px)",fontWeight:700,textAlign:"center",margin:"0 0 20px",color:"var(--t1)"}}>Manual prompting vs. Prompt Architect</h3>
+          <div style={{background:"var(--s1)",border:"1px solid var(--bd)",borderRadius:14,overflow:"hidden"}}>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",borderBottom:"1px solid var(--bd)"}}>
+              <div style={{padding:"12px 16px",fontSize:12,fontWeight:700,color:"var(--t3)"}}></div>
+              <div style={{padding:"12px 16px",fontSize:12,fontWeight:700,color:"var(--t3)",textAlign:"center",borderLeft:"1px solid var(--bd)"}}>Manual</div>
+              <div style={{padding:"12px 16px",fontSize:12,fontWeight:700,color:ac,textAlign:"center",borderLeft:"1px solid var(--bd)",background:ac+"06"}}>Prompt Architect</div>
+            </div>
+            {[
+              ["Domain expertise","Generic","15 industries deep"],
+              ["Audience targeting","Manual guess","Auto-detected"],
+              ["Model optimization","One-size-fits-all","Per-model formatting"],
+              ["Reasoning strategy","None","Auto-injected"],
+              ["Output structure","Inconsistent","Precision control"],
+              ["Time per prompt","5-15 minutes","Under 30 seconds"],
+            ].map(([label,manual,pa],i)=>(
+              <div key={i} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",borderBottom:i<5?"1px solid var(--bd)":"none"}}>
+                <div style={{padding:"10px 16px",fontSize:12,fontWeight:600,color:"var(--t1)"}}>{label}</div>
+                <div style={{padding:"10px 16px",fontSize:12,color:"var(--t3)",textAlign:"center",borderLeft:"1px solid var(--bd)"}}>{manual}</div>
+                <div style={{padding:"10px 16px",fontSize:12,color:ac,fontWeight:600,textAlign:"center",borderLeft:"1px solid var(--bd)",background:ac+"06"}}>{pa}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* USE CASES */}
+      <section style={{padding:"clamp(28px,5vw,48px) clamp(12px,3vw,24px) 0",background:"var(--bg)"}}>
+        <div style={{maxWidth:1200,margin:"0 auto"}}>
+          <h2 style={{fontSize:"clamp(18px,2.2vw,24px)",fontWeight:800,textAlign:"center",margin:"0 0 6px",color:"var(--t1)",letterSpacing:"-.2px"}}>Built for how you actually work</h2>
+          <p style={{fontSize:13,color:"var(--t3)",textAlign:"center",margin:"0 auto 24px",maxWidth:460}}>Professionals across industries use Prompt Architect to save hours every week.</p>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(220px, 1fr))",gap:14}}>
+            {[
+              {role:"Financial Analyst",task:"Build DCF models and earnings analysis prompts with sector-specific frameworks",ic:"chart"},
+              {role:"Software Engineer",task:"Generate code review, debugging, and architecture prompts with best practices baked in",ic:"code"},
+              {role:"Marketing Lead",task:"Create campaign strategy and content briefs with audience targeting and channel insights",ic:"target"},
+              {role:"Consultant",task:"Draft client deliverables, market analysis, and strategy decks with industry context",ic:"building"},
+            ].map(({role,task,ic},i)=>(
+              <div key={i} style={{background:"var(--s1)",border:"1px solid var(--bd)",borderRadius:12,padding:"18px 16px"}}>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+                  <div style={{width:28,height:28,borderRadius:7,background:ac+"10",display:"flex",alignItems:"center",justifyContent:"center"}}>{I[ic](14,ac)}</div>
+                  <span style={{fontSize:13,fontWeight:650,color:"var(--t1)"}}>{role}</span>
+                </div>
+                <p style={{fontSize:12,color:"var(--t3)",margin:0,lineHeight:1.55}}>{task}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* MAIN CONTENT */}
       <div style={{maxWidth:1200,margin:"0 auto",padding:"clamp(16px,4vw,28px) clamp(12px,3vw,24px) 60px"}}>
 
@@ -1723,6 +1800,28 @@ function App(){
           </div>
         </section>
       )}
+
+      {/* PROMPTPERFECT ALTERNATIVE — SEO migration capture */}
+      <section id="alternative" style={{background:"var(--bg)",borderTop:"1px solid var(--bd)",padding:"clamp(28px,5vw,48px) 24px"}}>
+        <div style={{maxWidth:640,margin:"0 auto",textAlign:"center"}}>
+          <div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"5px 14px",borderRadius:20,background:"#F59E0B14",marginBottom:14,fontSize:12,fontWeight:600,color:"#D97706"}}>Switching from another tool?</div>
+          <h2 style={{fontSize:"clamp(20px,2.5vw,28px)",fontWeight:800,margin:"0 0 12px",color:"var(--t1)",letterSpacing:"-.3px"}}>The best PromptPerfect alternative</h2>
+          <p style={{fontSize:14,color:"var(--t2)",margin:"0 auto 24px",lineHeight:1.65,maxWidth:520}}>PromptPerfect is shutting down. Prompt Architect gives you everything it did and more -- deeper industry context, multi-model optimization, and expert-level prompt engineering that runs entirely in your browser.</p>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(180px, 1fr))",gap:12,marginBottom:24,textAlign:"left"}}>
+            {[
+              "No API keys required",
+              "Works offline in your browser",
+              "15 industries with deep context",
+              "5 AI model formats",
+              "Free tier included",
+              "Pro plan from $6/month",
+            ].map((item,i)=>(
+              <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderRadius:8,background:"var(--s1)",border:"1px solid var(--bd)",fontSize:12,color:"var(--t1)",fontWeight:500}}>{I.check(14,"#10B981")} {item}</div>
+            ))}
+          </div>
+          <button onClick={()=>{document.getElementById("tool")?.scrollIntoView({behavior:"smooth"});trackEvent("promptperfect_cta_clicked");}} style={{padding:"12px 28px",border:"none",borderRadius:9,background:ac,color:"#fff",fontSize:14,fontWeight:700,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s",boxShadow:"0 2px 10px "+ac+"30"}}>Try Prompt Architect free</button>
+        </div>
+      </section>
 
       {/* EMAIL CAPTURE */}
       <section style={{background:"var(--s1)",borderTop:"1px solid var(--bd)",padding:"40px 24px"}}>
