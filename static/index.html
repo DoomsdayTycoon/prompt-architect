@@ -595,7 +595,7 @@ function buildPrompt(p){
     prose:"Use flowing, well-structured paragraphs with clear topic sentences and logical transitions. Use subheadings to organize major sections.",
     bullets:"Use concise bullet points grouped under clear section headers. Each bullet should be a complete thought (1-2 sentences). Lead with the most important information in each bullet.",
     numbered:"Present key sequences as clearly numbered steps. Start each step with a bold action verb. Include brief explanations under each step when needed.",
-    table:"Organize comparative or multi-variable information into well-labeled tables with clear column headers. Add a narrative summary before and after each table highlighting key takeaways.",
+    table:"Organize comparative or multi-variable information into well-labeled tables with clear column headers. CRITICAL TABLE RULES: (1) Every cell must display complete content -- no truncation, overflow, or mid-word breaking. (2) Column widths must auto-adjust to fit the longest value plus generous padding. (3) If a label is too long, use a standard abbreviation and define it in a footnote -- never break a word across lines. (4) Numbers are always right-aligned and never wrap to a second line. (5) Maximum 2 lines per cell -- shorten wording if needed. (6) Use consistent number formatting within each column (commas for thousands, 1 decimal for %, negatives in parentheses). Add a narrative summary before and after each table highlighting key takeaways.",
     qa:"Structure appropriate sections as specific questions followed by thorough answers. Order from foundational to advanced. Make each Q&A pair self-contained.",
     headers:"Use a clear hierarchy of section headers (H2 for major sections, H3 for subsections). Every section should be scannable independently. Include a table of contents for longer responses.",
     tldr:"Begin with a TL;DR section (3-5 sentences capturing the absolute essence), then follow with the full detailed response. The TL;DR must be useful on its own.",
@@ -603,7 +603,7 @@ function buildPrompt(p){
     flowchart:"Include text-based decision trees or flowcharts (using arrows and branching) to illustrate processes, decisions, or workflows. Label each decision point and outcome clearly.",
     before_after:"Where applicable, use Before / After comparisons to illustrate transformations, improvements, or changes. Show concrete examples of the current state vs. the recommended state.",
     pros_cons:"For any recommendation or option, include a structured Pros & Cons analysis. Be specific and quantify where possible.",
-    scorecard:"Evaluate options using a structured scorecard or rating matrix. Define clear criteria, use a consistent scale (e.g., 1-5 or Low/Med/High), and include weighted totals if appropriate.",
+    scorecard:"Evaluate options using a structured scorecard or rating matrix. Define clear criteria, use a consistent scale (e.g., 1-5 or Low/Med/High), and include weighted totals if appropriate. MATRIX RULES: Equal-width columns for all rating columns, wider column for labels/criteria. Every cell fully visible with no overlap or truncation. Center-align ratings, left-align criteria names. Use consistent formatting across all cells in each column.",
     annotated:"Include annotated examples that walk through real or realistic scenarios step by step, with inline commentary explaining why each element matters and what to watch for."
   };
   const fmtL=[];
@@ -659,13 +659,28 @@ FIGURES & CHARTS:
 - Source line below: 8pt Italic gray, 4pt above
 - White space: 12pt above figure title, 16pt below source line
 
+CONTENT-FITTING RULES (applies to every table, matrix, and structured element):
+- Every cell must display its COMPLETE content without truncation, overflow, or word-breaking mid-word
+- Column widths MUST auto-adjust to fit the longest value in that column plus 24px padding on each side
+- If a text label is too long for its column: use a standard abbreviation AND define it in a footnote below the table (e.g., "Rev." for Revenue, "YoY" for Year-over-Year, "EBITDA" for full term) -- NEVER break a word across two lines
+- Maximum 2 lines per cell. If content exceeds 2 lines, shorten the wording or move detail to a footnote
+- Numbers NEVER wrap to a second line -- if a number column is too narrow, widen it
+- Header text may use abbreviations freely but must have a footnote defining each abbreviation on first use
+- When a table has more than 7 columns: either (a) split into two tables stacked vertically, (b) rotate to landscape orientation, or (c) use a smaller font (minimum 8pt) with tighter padding (6px)
+- Row heights must be uniform within each section (all data rows same height, all header rows same height)
+- White space between tables: minimum 20pt vertical gap -- tables must never touch or visually merge
+- Matrix/scorecard layouts: use equal column widths for rating columns, wider column for the label column, and ensure cell content is centered both horizontally and vertically
+- Before finalizing any table: mentally verify that every column header aligns with its data, no columns overlap, and no cell content is cut off
+
 CRITICAL DO-NOT RULES:
+- NEVER allow a word to break mid-syllable across lines (no hyphenation in table cells)
 - NEVER overlap text, columns, rows, or visual elements -- if content is too wide, restructure or paginate
 - NEVER truncate numbers, labels, or headers -- expand column width or abbreviate with a footnote
 - NEVER use bright colors, decorative fonts, clip art, or stock photography
 - NEVER leave orphan/widow lines (single line at top/bottom of page)
 - NEVER hardcode line breaks inside table cells to force-fit content
 - NEVER use font sizes below 8pt for any element
+- NEVER let adjacent columns have less than 12px visual gap between their content
 - Every number must be formatted consistently within its column -- no mixing of formats
 - Every table and figure must have both a title above and source below`,
 
@@ -703,12 +718,25 @@ TABLE FORMATTING (CRITICAL):
 - Tables MUST NOT break mid-row across pages -- keep rows together, allow page break only between rows
 - If table is wider than margins: switch to landscape section break for that page only
 
+CONTENT-FITTING RULES (applies to every table and matrix):
+- Every cell must show its COMPLETE text -- no truncation, no overflow, no mid-word breaks
+- Auto-fit column widths to longest cell value plus 16px padding per side
+- If text is too long: use standard abbreviations with a footnote defining them (e.g., "Rev." = Revenue) -- NEVER split a word across two lines
+- Maximum 2 lines per data cell. If content needs more, shorten wording or move to footnote
+- Numbers NEVER wrap -- widen the column instead
+- Uniform row heights within each table section (data rows equal, header rows equal)
+- Minimum 12px visual gap between adjacent column content -- columns must never touch
+- Tables wider than margins: use landscape section break for that page, or split vertically
+- Matrices/scorecards: equal-width rating columns, wider label column, centered cell content
+
 CRITICAL DO-NOT RULES:
+- NEVER allow word-breaking (hyphenation) inside table cells
 - NEVER overlap table columns or truncate cell content
 - NEVER use manual formatting (direct font changes) -- everything must use defined Styles
 - NEVER leave orphan/widow lines
 - NEVER mix number formats within a column
 - NEVER use font below 8pt for any element
+- NEVER let two tables touch without at least 16pt vertical space between them
 - All tables and figures must have title above and source below`,
 
     excel:`Design as an investment-bank-grade Excel workbook at the standard of Goldman Sachs TMT / J.P. Morgan M&A advisory. This workbook must be ready to present to a board of directors or IPO steering committee. Zero tolerance for formatting inconsistencies.
@@ -784,8 +812,18 @@ PROFESSIONAL STANDARDS:
 - Conditional formatting: use for KPI status (green #00B050 / yellow #FFC000 / red #FF0000), data bars for relative comparison
 - Protection: suggest which cells to lock (all except blue input cells)
 
+CONTENT-FITTING RULES:
+- Every cell must display COMPLETE content with zero truncation -- no ### symbols, no cut-off text, no hidden overflow
+- Auto-fit all columns to widest content plus 20px padding. Then verify no column shows ### or clipped text
+- Text labels: if too long for column, abbreviate with a comment or footnote explaining the abbreviation -- NEVER break a word across lines within a cell
+- Numbers NEVER wrap -- if a number column is too narrow, widen it immediately
+- Row heights: uniform within data sections. Header rows: 22px. Data rows: 18px. Never let content overflow vertically
+- Merged cells: ONLY in title block (rows 1-3). NEVER merge cells in data ranges -- breaks sorting, filtering, and formulas
+- Between separate data tables on the same sheet: minimum 3 empty rows as visual separator
+
 CRITICAL DO-NOT RULES:
 - NEVER show ### in any cell -- auto-fit or manually widen columns
+- NEVER allow word-breaking or hyphenation in any cell
 - NEVER mix number formats within a column
 - NEVER leave blank rows in the middle of a data table (use spacer formatting instead)
 - NEVER use merged cells in data ranges (breaks sorting and formulas) -- merge only in title block
@@ -849,7 +887,20 @@ SPEAKER NOTES (every content slide):
 - Transition phrase to next slide
 - Format: bullet points, 11pt, complete sentences allowed in notes
 
+CONTENT-FITTING RULES (applies to every table, matrix, and text element on slides):
+- Every table cell must show COMPLETE text -- no truncation, no overflow outside cell boundaries, no word-breaking
+- Table column widths: proportional to content, auto-adjusted so the widest value fits with 8px padding per side
+- If a label is too long: use standard abbreviations with a footnote row or source note defining them -- NEVER split a word across lines
+- Slide tables: max 7 rows x 6 columns. If data exceeds this, split across slides or move to appendix
+- Numbers in tables NEVER wrap -- if column is too narrow, widen it or abbreviate units ($M, $B)
+- Bullet text: must fit on 1-2 lines maximum. If a bullet needs 3+ lines, split into two bullets or shorten
+- Slide titles: must fit on exactly 1-2 lines. If longer, sharpen the wording -- do not shrink font
+- All text boxes and tables must have at least 0.3" margin from slide edges and from other elements
+- Charts and tables must be horizontally centered on the slide with equal left/right margins
+- Verify: no element on any slide overlaps another element, extends beyond slide boundaries, or clips against an edge
+
 CRITICAL DO-NOT RULES:
+- NEVER allow any word to break mid-syllable in tables, bullets, or titles
 - NEVER misalign elements across slides -- titles, content areas, and footers must be at identical positions on every slide
 - NEVER exceed 5 bullets or 7 table rows on a single slide
 - NEVER use animations, transitions, sound effects, or decorative graphics
@@ -857,6 +908,7 @@ CRITICAL DO-NOT RULES:
 - NEVER let data labels overlap each other or chart elements
 - NEVER use font below 8pt for any visible element
 - NEVER place text directly against a slide edge without margin
+- NEVER shrink font to fit content -- instead shorten the content
 - NEVER present a number without a source (in footer or speaker notes)
 - Every chart, table, and data point must have a source attribution`,
 
