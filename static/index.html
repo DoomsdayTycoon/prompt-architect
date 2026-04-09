@@ -168,6 +168,238 @@ const TECHS={cot:{l:"Chain of Thought",i:"brain"},fewshot:{l:"Few-Shot Examples"
 const LANGS=["English","Spanish","French","German","Portuguese","Italian","Dutch","Norwegian","Swedish","Danish","Chinese","Japanese","Korean","Arabic","Hindi","Russian","Polish","Turkish"];
 
 /* ═══════════════════════════════════════════════════════
+   UI TRANSLATIONS — English (default) + Norwegian
+   ═══════════════════════════════════════════════════════ */
+const UI={
+  // Nav & auth
+  logIn:{en:"Log in",no:"Logg inn"},
+  getStarted:{en:"Get started free",no:"Kom i gang gratis"},
+  signOut:{en:"Sign out",no:"Logg ut"},
+  proMember:{en:"Pro member",no:"Pro-medlem"},
+  upgradePro:{en:"Upgrade to Pro",no:"Oppgrader til Pro"},
+  referFriend:{en:"Refer a friend",no:"Inviter en venn"},
+  promptHistory:{en:"Prompt History",no:"Prompthistorikk"},
+
+  // Hero
+  heroBadge:{en:"Smart Prompt Engineering",no:"Smart Prompt-utforming"},
+  heroTitle1:{en:"Stop struggling with AI.",no:"Slutt og slite med AI."},
+  heroTitle2:{en:"Start getting expert results.",no:"Fa ekspertresultater."},
+  heroSub:{en:"Your AI is only as smart as your prompt. Describe any goal and we inject strategy, structure, and domain expertise automatically -- so every AI interaction delivers.",no:"AI-en din er bare sa smart som prompten din. Beskriv et mal, sa legger vi til strategi, struktur og domenekunnskap automatisk -- slik at hver AI-interaksjon leverer."},
+  trustedBy:{en:"Trusted by professionals",no:"Brukt av profesjonelle"},
+  industryContexts:{en:"15 industry contexts",no:"15 bransjer"},
+  modelsSupported:{en:"5 AI models supported",no:"5 AI-modeller"},
+
+  // How it works
+  step1t:{en:"Describe your goal",no:"Beskriv malet ditt"},
+  step1s:{en:"Plain language, any topic",no:"Vanlig sprak, hvilket som helst tema"},
+  step2t:{en:"Get enhanced instantly",no:"Forbedres umiddelbart"},
+  step2s:{en:"Strategy + expertise injected",no:"Strategi + ekspertise injisert"},
+  step3t:{en:"Paste into any AI",no:"Lim inn i hvilken som helst AI"},
+  step3s:{en:"ChatGPT, Claude, Gemini",no:"ChatGPT, Claude, Gemini"},
+
+  // Value props
+  vpTitle:{en:"Why professionals switch to Prompt Architect",no:"Hvorfor profesjonelle bytter til Prompt Architect"},
+  vpSub:{en:"Stop wasting time on trial-and-error prompting. Get structured, expert-level results on the first try.",no:"Slutt a kaste bort tid pa proveog-feile-prompting. Fa strukturerte, ekspertniva resultater pa forste forsok."},
+  vp1t:{en:"Deep domain expertise",no:"Dyp domenekunnskap"},
+  vp1d:{en:"15 industries with specialized context, terminology, and frameworks injected into every prompt.",no:"15 bransjer med spesialisert kontekst, terminologi og rammeverk i hver prompt."},
+  vp2t:{en:"Smart enhancement engine",no:"Smart forbedringsmotor"},
+  vp2d:{en:"Detects vague input and automatically adds audience targeting, scope, and reasoning strategies.",no:"Oppdager vag input og legger automatisk til malgruppe, omfang og resonnementstrategier."},
+  vp3t:{en:"Multi-model optimization",no:"Multimodell-optimalisering"},
+  vp3d:{en:"Prompts formatted specifically for Claude, ChatGPT, Gemini, Llama, or any model you use.",no:"Prompter formatert spesifikt for Claude, ChatGPT, Gemini, Llama eller hvilken som helst modell."},
+  vp4t:{en:"Precision output control",no:"Presis utdatakontroll"},
+  vp4d:{en:"Define tone, length, format, file type, and language. Get exactly what you need, not generic filler.",no:"Definer tone, lengde, format, filtype og sprak. Fa noyaktig det du trenger."},
+  vp5t:{en:"Firm & role context",no:"Firma- og rollekontekst"},
+  vp5d:{en:"Expert mode injects real-world firm perspectives and role-specific expertise into your prompts.",no:"Ekspertmodus injiserer firmaperspektiver og rollespesifikk ekspertise i promptene dine."},
+  vp6t:{en:"15 advanced techniques",no:"15 avanserte teknikker"},
+  vp6d:{en:"Red teaming, first principles, systems thinking, and more. Built into your prompt with one click.",no:"Red teaming, forsteprinsipp-tenkning, systemtenkning og mer. Bygget inn med ett klikk."},
+
+  // Comparison table
+  compTitle:{en:"Manual prompting vs. Prompt Architect",no:"Manuell prompting vs. Prompt Architect"},
+  compManual:{en:"Manual",no:"Manuell"},
+  comp1:{en:["Domain expertise","Generic","15 industries deep"],no:["Domenekunnskap","Generisk","15 bransjer dyp"]},
+  comp2:{en:["Audience targeting","Manual guess","Auto-detected"],no:["Malgruppe","Manuell gjetning","Automatisk"]},
+  comp3:{en:["Model optimization","One-size-fits-all","Per-model formatting"],no:["Modelloptimalisering","En-storrelse-passer-alle","Per-modell formatering"]},
+  comp4:{en:["Reasoning strategy","None","Auto-injected"],no:["Resonneringsstrategi","Ingen","Automatisk injisert"]},
+  comp5:{en:["Output structure","Inconsistent","Precision control"],no:["Utdatastruktur","Inkonsekvent","Presisjonskontroll"]},
+  comp6:{en:["Time per prompt","5-15 minutes","Under 30 seconds"],no:["Tid per prompt","5-15 minutter","Under 30 sekunder"]},
+
+  // Use cases
+  ucTitle:{en:"Built for how you actually work",no:"Bygget for maten du faktisk jobber"},
+  ucSub:{en:"Professionals across industries use Prompt Architect to save hours every week.",no:"Profesjonelle pa tvers av bransjer bruker Prompt Architect for a spare timer hver uke."},
+  uc1r:{en:"Financial Analyst",no:"Finansanalytiker"},
+  uc1t:{en:"Build DCF models and earnings analysis prompts with sector-specific frameworks",no:"Bygg DCF-modeller og inntektsanalyse-prompter med sektorspesifikke rammeverk"},
+  uc2r:{en:"Software Engineer",no:"Programvareutvikler"},
+  uc2t:{en:"Generate code review, debugging, and architecture prompts with best practices baked in",no:"Generer kodeanmeldelse, feilsoking og arkitektur-prompter med beste praksis innebygd"},
+  uc3r:{en:"Marketing Lead",no:"Markedsansvarlig"},
+  uc3t:{en:"Create campaign strategy and content briefs with audience targeting and channel insights",no:"Lag kampanjestrategi og innholdsbriefs med malgruppemalsetting og kanalinnsikt"},
+  uc4r:{en:"Consultant",no:"Konsulent"},
+  uc4t:{en:"Draft client deliverables, market analysis, and strategy decks with industry context",no:"Utkast til klientleveranser, markedsanalyse og strategidekker med bransjekontekst"},
+
+  // Tool header & mode
+  buildTitle:{en:"Build Your Prompt",no:"Bygg din prompt"},
+  buildSub:{en:"Configure your settings. Get an expert-level prompt in seconds.",no:"Konfigurer innstillingene. Fa en ekspertniva-prompt pa sekunder."},
+  freeLeft:{en:"left",no:"igjen"},
+  modeSimple:{en:"Simple",no:"Enkel"},
+  modeExpert:{en:"Expert",no:"Ekspert"},
+  modeSimpleDesc:{en:"15 task types, 15 industries, 10 AI models, smart enhancement",no:"15 oppgavetyper, 15 bransjer, 10 AI-modeller, smart forbedring"},
+  modeExpertDesc:{en:"All of Simple + firm expertise, 15 reasoning techniques, file output",no:"Alt fra Enkel + firmaekspertise, 15 resonnementsteknikker, filutdata"},
+
+  // History
+  recentPrompts:{en:"Recent Prompts",no:"Nylige prompter"},
+
+  // Step titles
+  describeGoal:{en:"Describe your goal",no:"Beskriv malet ditt"},
+  describeGoalSub:{en:"Be specific  -  but don't worry about being perfect. Smart enhancement fills the gaps.",no:"Vaer spesifikk  -  men ikke bekymre deg for a vaere perfekt. Smart forbedring fyller hullene."},
+  describeGoalPh:{en:"e.g. Analyze Apple's Q4 earnings and highlight key risks",no:"f.eks. Analyser Apples Q4-resultater og fremhev viktige risikoer"},
+  taskType:{en:"Task type",no:"Oppgavetype"},
+  industrySector:{en:"Industry / Sector",no:"Bransje / Sektor"},
+  industrySectorSub:{en:"Injects domain-specific terminology, frameworks, and compliance requirements",no:"Injiserer domenespesifikk terminologi, rammeverk og krav"},
+  outputType:{en:"Output type",no:"Utdatatype"},
+  outputTypeSub:{en:"What deliverable format should the AI produce?",no:"Hvilket leveranseformat skal AI-en produsere?"},
+  fileOutput:{en:"File output",no:"Filformat"},
+  fileOutputSub:{en:"What file type should the AI format the response for?",no:"Hvilket filformat skal AI-en formatere svaret for?"},
+  targetModel:{en:"Target AI model",no:"AI-modell"},
+  writingStyle:{en:"Writing style",no:"Skrivestil"},
+  toneLabel:{en:"Tone",no:"Tone"},
+  lengthLabel:{en:"Length",no:"Lengde"},
+  responseFormat:{en:"Response format",no:"Responsformat"},
+  responseFormatSub:{en:"Select one or more  -  they combine in the prompt",no:"Velg en eller flere  -  de kombineres i prompten"},
+  languageLabel:{en:"Language",no:"Sprak"},
+  includeSections:{en:"Include sections",no:"Inkluder seksjoner"},
+  includeSectionsSub:{en:"Select specific sections that must appear in the response",no:"Velg spesifikke seksjoner som ma vaere med i svaret"},
+  advTechniques:{en:"Advanced techniques",no:"Avanserte teknikker"},
+  advTechniquesSub:{en:"Each adds a dedicated instruction block to the prompt",no:"Hver legger til en dedikert instruksjonsblokk i prompten"},
+  targetAudience:{en:"Target audience",no:"Malgruppe"},
+  targetAudienceSub:{en:"Override smart audience detection with a specific audience",no:"Overstyr smart malgruppesensing med en spesifikk malgruppe"},
+  targetAudiencePh:{en:"e.g. Senior financial analysts with 5+ years experience",no:"f.eks. Seniore finansanalytikere med 5+ ars erfaring"},
+  addInstructions:{en:"Additional instructions",no:"Tilleggsinstruksjoner"},
+  addInstructionsSub:{en:"Added verbatim as a final section",no:"Legges til ordrett som en siste seksjon"},
+  addInstructionsPh:{en:"e.g. Compare at least 3 competitors side by side",no:"f.eks. Sammenlign minst 3 konkurrenter side om side"},
+  specialReq:{en:"Special requests (optional)",no:"Spesielle onsker (valgfritt)"},
+  specialReqSub:{en:"Format, style, or content constraints",no:"Format-, stil- eller innholdsbegrensninger"},
+  specialReqPh:{en:"e.g. Use bullet points, keep it under 500 words",no:"f.eks. Bruk punktlister, hold det under 500 ord"},
+
+  // Quick-add chips
+  chipRealExamples:{en:"Add real-world examples",no:"Legg til eksempler fra virkeligheten"},
+  chipWalkthrough:{en:"Include a step-by-step walkthrough",no:"Inkluder en steg-for-steg gjennomgang"},
+  chipCalc:{en:"Show calculations with formulas",no:"Vis beregninger med formler"},
+  chipSWOT:{en:"Add a SWOT analysis",no:"Legg til en SWOT-analyse"},
+  chipCompare:{en:"Compare 3+ options side by side",no:"Sammenlign 3+ alternativer side om side"},
+  chipNoEmoji:{en:"No emojis",no:"Ingen emojis"},
+  chipBullets:{en:"Bullet points only",no:"Kun punktlister"},
+  chip500:{en:"Under 500 words",no:"Under 500 ord"},
+  chipSources:{en:"Include sources",no:"Inkluder kilder"},
+  chipTables:{en:"Use tables",no:"Bruk tabeller"},
+  chipConcise:{en:"Be concise",no:"Vaer kortfattet"},
+  chipJargon:{en:"Avoid jargon",no:"Unnga fagsprak"},
+  chipVisuals:{en:"Add visuals",no:"Legg til visualiseringer"},
+
+  // Attachment checkbox
+  attachTitle:{en:"I will attach files with this prompt",no:"Jeg vil legge ved filer med denne prompten"},
+  attachOn:{en:"The prompt will instruct the AI to use your attached files as the primary data source. Recommended for best results with documents, spreadsheets, or datasets.",no:"Prompten vil instruere AI-en til a bruke vedlagte filer som primaer datakilde. Anbefalt for beste resultater med dokumenter, regneark eller datasett."},
+  attachOff:{en:"The prompt will focus entirely on generating content from the task description. Check this if you plan to upload files alongside the prompt in your AI tool.",no:"Prompten vil fokusere helt pa a generere innhold fra oppgavebeskrivelsen. Kryss av her hvis du planlegger a laste opp filer sammen med prompten."},
+
+  // Generate
+  generateBtn:{en:"Generate Prompt",no:"Generer prompt"},
+  upgradeGenerate:{en:"Upgrade to Generate",no:"Oppgrader for a generere"},
+  freeSimple:{en:"free",no:"gratis"},
+  createAccount:{en:"Create a free account to start generating",no:"Opprett en gratis konto for a begynne"},
+
+  // Result
+  smartBoost:{en:"smart boost",no:"smart forbedring"},
+  smartBoosts:{en:"smart boosts",no:"smarte forbedringer"},
+  shareBtn:{en:"Share",no:"Del"},
+  copiedBtn:{en:"Copied",no:"Kopiert"},
+  copyBtn:{en:"Copy",no:"Kopier"},
+  newBtn:{en:"New",no:"Ny"},
+  resultInfo:{en:"This prompt has been enhanced with smart audience targeting, reasoning strategies, and domain expertise based on your inputs. Copy it to Claude, ChatGPT, Gemini, or any AI model and paste it directly. The AI will understand the context and deliver better results than a generic prompt.",no:"Denne prompten er forbedret med smart malgruppemalsetting, resonnementstrategier og domenekunnskap basert pa dine valg. Kopier den til Claude, ChatGPT, Gemini eller en hvilken som helst AI-modell. AI-en vil forsta konteksten og levere bedre resultater enn en generisk prompt."},
+  watermarkNote:{en:"Copies include \"Generated with Prompt Architect\" attribution.",no:"Kopier inkluderer \"Generert med Prompt Architect\"-tilskrivning."},
+  upgradeRemove:{en:"Upgrade to Pro",no:"Oppgrader til Pro"},
+  removeIt:{en:"to remove it.",no:"for a fjerne den."},
+
+  // Reset confirm
+  resetTitle:{en:"Start a new prompt?",no:"Starte en ny prompt?"},
+  resetMsg:{en:"This will clear all your current settings and start fresh.",no:"Dette vil slette alle dine navarende innstillinger og starte pa nytt."},
+  resetYes:{en:"Yes, start fresh",no:"Ja, start pa nytt"},
+  resetNo:{en:"Cancel",no:"Avbryt"},
+
+  // Auth modal
+  signUp:{en:"Sign up",no:"Registrer deg"},
+  loginTitle:{en:"Log in",no:"Logg inn"},
+  signupTitle:{en:"Create your account",no:"Opprett din konto"},
+  nameLabel:{en:"Name",no:"Navn"},
+  emailLabel:{en:"Email",no:"E-post"},
+  passwordLabel:{en:"Password",no:"Passord"},
+  noAccount:{en:"Don't have an account?",no:"Har du ikke en konto?"},
+  hasAccount:{en:"Already have an account?",no:"Har du allerede en konto?"},
+
+  // Paywall
+  unlockTitle:{en:"Unlock unlimited prompts",no:"Las opp ubegrensede prompter"},
+  monthly:{en:"Monthly",no:"Manedlig"},
+  annual:{en:"Annual",no:"Arlig"},
+  perMonth:{en:"/month",no:"/mnd"},
+  perYear:{en:"/year",no:"/ar"},
+  saveBadge:{en:"Save 33%",no:"Spar 33%"},
+  subscribe:{en:"Subscribe",no:"Abonner"},
+
+  // Examples
+  examplesTitle:{en:"Example prompts for inspiration",no:"Eksempelprompter for inspirasjon"},
+  tryThis:{en:"Try this",no:"Prov denne"},
+  clear:{en:"Clear",no:"Fjern"},
+
+  // Footer / newsletter
+  nlTitle:{en:"Get smarter prompts in your inbox",no:"Fa smartere prompter i innboksen"},
+  nlSub:{en:"Weekly tips on AI prompt engineering. No spam.",no:"Ukentlige tips om AI-promptutforming. Ingen spam."},
+  nlPlaceholder:{en:"Your email",no:"Din e-post"},
+  nlButton:{en:"Subscribe",no:"Abonner"},
+  nlSuccess:{en:"You're in! Check your inbox.",no:"Du er med! Sjekk innboksen."},
+  nlExists:{en:"Already subscribed!",no:"Allerede abonnent!"},
+
+  // Cookie banner
+  cookieMsg:{en:"We use cookies for analytics to improve your experience. By continuing to use this site, you agree to our use of cookies.",no:"Vi bruker informasjonskapsler for analyse for a forbedre opplevelsen din. Ved a fortsette a bruke dette nettstedet, godtar du var bruk av informasjonskapsler."},
+  cookieAccept:{en:"Accept",no:"Godta"},
+  cookieDecline:{en:"Decline",no:"Avvis"},
+
+  // Firm/role selector
+  selectFirm:{en:"Select a firm",no:"Velg et firma"},
+  selectRole:{en:"Select a role",no:"Velg en rolle"},
+  firmContext:{en:"Firm & role context",no:"Firma- og rollekontekst"},
+  firmContextSub:{en:"Adopt a specific firm's methodology and role perspective",no:"Adopter et spesifikt firmas metodikk og rolleperspektiv"},
+};
+
+// Translated labels for data constants
+const UI_TASKS={
+  writing:{en:"Writing",no:"Skriving"},coding:{en:"Coding",no:"Koding"},analysis:{en:"Analysis",no:"Analyse"},brainstorm:{en:"Brainstorm",no:"Idedugnad"},summarize:{en:"Summarize",no:"Oppsummering"},translate:{en:"Translate",no:"Oversettelse"},image:{en:"Image Gen",no:"Bildegenerering"},roleplay:{en:"Role / Persona",no:"Rolle / Persona"},email:{en:"Email / Comms",no:"E-post / Komm."},learning:{en:"Learning",no:"Laering"},strategy:{en:"Strategy",no:"Strategi"},debug:{en:"Debug / Troubleshoot",no:"Feilsoking"},review:{en:"Review / Critique",no:"Vurdering / Kritikk"},decision:{en:"Decision Framework",no:"Beslutningsrammeverk"},persuade:{en:"Persuade / Negotiate",no:"Overtale / Forhandle"}
+};
+const UI_INDUSTRIES={
+  general:{en:"General",no:"Generelt"},finance:{en:"Finance & Banking",no:"Finans og bank"},healthcare:{en:"Healthcare",no:"Helsevesen"},legal:{en:"Legal",no:"Juss"},marketing:{en:"Marketing & Ads",no:"Markedsforing og reklame"},tech:{en:"Tech / SaaS",no:"Teknologi / SaaS"},education:{en:"Education",no:"Utdanning"},ecommerce:{en:"E-commerce",no:"Netthandel"},consulting:{en:"Consulting",no:"Konsulentvirksomhet"},realestate:{en:"Real Estate",no:"Eiendom"},media:{en:"Media & Content",no:"Media og innhold"},hr:{en:"HR & Recruiting",no:"HR og rekruttering"},manufacturing:{en:"Manufacturing",no:"Produksjon"},government:{en:"Government",no:"Offentlig sektor"},research:{en:"Research / R&D",no:"Forskning / FoU"}
+};
+const UI_OUTPUTS={
+  document:{en:"Document / Report",no:"Dokument / Rapport"},email:{en:"Email",no:"E-post"},code:{en:"Code / Script",no:"Kode / Skript"},presentation:{en:"Presentation",no:"Presentasjon"},spreadsheet:{en:"Spreadsheet / Data",no:"Regneark / Data"},social:{en:"Social Media Post",no:"Innlegg i sosiale medier"},blog:{en:"Blog / Article",no:"Blogg / Artikkel"},proposal:{en:"Proposal / Pitch",no:"Forslag / Pitch"},brief:{en:"Brief / Summary",no:"Brief / Sammendrag"},docs:{en:"Documentation",no:"Dokumentasjon"},creative:{en:"Creative / Story",no:"Kreativt / Fortelling"},checklist:{en:"Checklist / SOP",no:"Sjekkliste / SOP"}
+};
+const UI_STYLES={
+  formal:{en:"Formal",no:"Formell"},conversational:{en:"Conversational",no:"Uformell"},technical:{en:"Technical",no:"Teknisk"},persuasive:{en:"Persuasive",no:"Overbevisende"},narrative:{en:"Narrative",no:"Fortellende"},instructional:{en:"Instructional",no:"Instruksjonell"},analytical:{en:"Analytical",no:"Analytisk"},minimalist:{en:"Minimalist",no:"Minimalistisk"}
+};
+const UI_TONES={
+  Professional:{en:"Professional",no:"Profesjonell"},Casual:{en:"Casual",no:"Uformell"},Academic:{en:"Academic",no:"Akademisk"},Creative:{en:"Creative",no:"Kreativ"},Friendly:{en:"Friendly",no:"Vennlig"},Authoritative:{en:"Authoritative",no:"Autoritaer"},Empathetic:{en:"Empathetic",no:"Empatisk"}
+};
+const UI_LENGTHS={
+  Brief:{en:"Brief",no:"Kort"},Medium:{en:"Medium",no:"Middels"},Detailed:{en:"Detailed",no:"Detaljert"},Comprehensive:{en:"Comprehensive",no:"Omfattende"}
+};
+const UI_FMTS={
+  prose:{en:"Prose paragraphs",no:"Prosaparagrafer"},bullets:{en:"Bullet points",no:"Punktlister"},numbered:{en:"Numbered steps",no:"Nummererte steg"},table:{en:"Tables / Matrices",no:"Tabeller / Matriser"},qa:{en:"Q&A format",no:"Sporsmal og svar"},headers:{en:"Sectioned with headers",no:"Seksjonert med overskrifter"},tldr:{en:"TL;DR + Detail",no:"TL;DR + Detalj"},framework:{en:"Framework / Model",no:"Rammeverk / Modell"},flowchart:{en:"Flowchart / Decision tree",no:"Flytskjema / Beslutningstre"},before_after:{en:"Before / After",no:"For / Etter"},pros_cons:{en:"Pros & Cons",no:"Fordeler og ulemper"},scorecard:{en:"Scorecard / Rating",no:"Poengkort / Vurdering"},annotated:{en:"Annotated examples",no:"Annoterte eksempler"}
+};
+const UI_FILE_OUTPUTS={
+  pdf:{en:"PDF Document",no:"PDF-dokument"},word:{en:"Word / DOCX",no:"Word / DOCX"},excel:{en:"Excel / Spreadsheet",no:"Excel / Regneark"},ppt:{en:"PowerPoint / Slides",no:"PowerPoint / Lysbilder"},markdown:{en:"Markdown (.md)",no:"Markdown (.md)"},html:{en:"HTML Page",no:"HTML-side"},json:{en:"JSON / Structured Data",no:"JSON / Strukturerte data"},csv:{en:"CSV / Data File",no:"CSV / Datafil"},plaintext:{en:"Plain Text",no:"Ren tekst"},codeFile:{en:"Code File",no:"Kodefil"}
+};
+const UI_INCLUDES={
+  exec_summary:{en:"Executive Summary",no:"Sammendrag"},examples:{en:"Real-World Examples",no:"Eksempler fra virkeligheten"},sources:{en:"Source Citations",no:"Kildehenvisninger"},action_items:{en:"Action Items / Next Steps",no:"Handlingspunkter / Neste steg"},risks:{en:"Risk Assessment",no:"Risikovurdering"},comparison:{en:"Comparison Table",no:"Sammenligningstabell"},timeline:{en:"Timeline / Milestones",no:"Tidslinje / Milepaler"},metrics:{en:"KPIs / Metrics",no:"KPI-er / Metrikker"},glossary:{en:"Glossary / Definitions",no:"Ordliste / Definisjoner"},visuals:{en:"Visual Descriptions",no:"Visuelle beskrivelser"}
+};
+const UI_TECHS={
+  cot:{en:"Chain of Thought",no:"Tankerekke"},fewshot:{en:"Few-Shot Examples",no:"Fa-skudd eksempler"},constraints:{en:"Strict Constraints",no:"Strenge begrensninger"},selfcheck:{en:"Self-Verification",no:"Selvverifisering"},compare:{en:"Compare Options",no:"Sammenlign alternativer"},iterative:{en:"Iterative Refine",no:"Iterativ forbedring"},roleplay:{en:"Role Assignment",no:"Rolletildeling"},redteam:{en:"Red Team / Devil's Advocate",no:"Rod team / Djevelens advokat"},firstprinciples:{en:"First Principles Thinking",no:"Forsteprinsipp-tenkning"},inversion:{en:"Inversion (Pre-mortem)",no:"Inversjon (Pre-mortem)"},multiagent:{en:"Multi-Perspective Panel",no:"Multiperspektivpanel"},structured_debate:{en:"Structured Debate",no:"Strukturert debatt"},systems:{en:"Systems Thinking",no:"Systemtenkning"},decompose:{en:"Task Decomposition",no:"Oppgavenedbrytning"},meta:{en:"Meta-Reasoning",no:"Metaresonering"}
+};
+
+/* ═══════════════════════════════════════════════════════
    SECTOR FIRMS & ROLES — Expert mode company/role selection
    Format: Industry > Firm > Role
    ═══════════════════════════════════════════════════════ */
@@ -1308,6 +1540,9 @@ const Wrap=({children})=><div style={{display:"flex",flexWrap:"wrap",gap:"clamp(
    MAIN APP
    ═══════════════════════════════════════════════════════ */
 function App(){
+  const [uiLang,setUiLang]=useState(()=>localStorage.getItem("pa_ui_lang")||"en");
+  const t=(key)=>(UI[key]&&UI[key][uiLang])||UI[key]?.en||key;
+  const tl=(map,key)=>(map[key]&&map[key][uiLang])||map[key]?.en||key;
   const [mode,setMode]=useState("amateur");
   const [topic,setTopic]=useState("");
   const [task,setTask]=useState("writing");
@@ -1371,6 +1606,14 @@ function App(){
     if(!error&&data&&!data.error)setUsage(data);
   },[]);
 
+  // Toggle UI language and persist to localStorage + Supabase profile
+  const toggleUiLang=useCallback(()=>{
+    const next=uiLang==="en"?"no":"en";
+    setUiLang(next);
+    localStorage.setItem("pa_ui_lang",next);
+    if(user?.id){supabase.from("profiles").update({ui_lang:next}).eq("id",user.id);}
+  },[uiLang,user]);
+
   // Initialize Supabase auth session and listen for changes
   useEffect(()=>{
     supabase.auth.getSession().then(({data:{session}})=>{
@@ -1379,6 +1622,10 @@ function App(){
         setUser({id:u.id,name:u.user_metadata?.name||u.email?.split("@")[0]||"User",email:u.email});
         loadHistoryFromDB().then(h=>setHistory(h));
         supabase.rpc("get_usage_status").then(({data})=>{if(data&&!data.error)setUsage(data);});
+        // Load saved UI language preference
+        supabase.from("profiles").select("ui_lang").eq("id",u.id).single().then(({data})=>{
+          if(data?.ui_lang){setUiLang(data.ui_lang);localStorage.setItem("pa_ui_lang",data.ui_lang);}
+        });
       }
       setAuthLoading(false);
     });
@@ -1388,6 +1635,9 @@ function App(){
         setUser({id:u.id,name:u.user_metadata?.name||u.email?.split("@")[0]||"User",email:u.email});
         loadHistoryFromDB().then(h=>setHistory(h));
         supabase.rpc("get_usage_status").then(({data})=>{if(data&&!data.error)setUsage(data);});
+        supabase.from("profiles").select("ui_lang").eq("id",u.id).single().then(({data})=>{
+          if(data?.ui_lang){setUiLang(data.ui_lang);localStorage.setItem("pa_ui_lang",data.ui_lang);}
+        });
       }else if(event==="SIGNED_OUT"){
         setUser(null);
         setHistory([]);
@@ -1612,6 +1862,10 @@ function App(){
           <span style={{fontWeight:700,fontSize:17,color:"var(--t1)",letterSpacing:"-.3px"}}>Prompt Architect</span>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:12}}>
+          <button onClick={toggleUiLang} style={{display:"flex",alignItems:"center",gap:5,padding:"5px 10px",borderRadius:7,border:"1px solid var(--bd)",background:"var(--s2)",cursor:"pointer",fontFamily:"var(--f)",fontSize:11.5,fontWeight:600,color:"var(--t2)",transition:"all .15s"}} title={uiLang==="en"?"Bytt til norsk":"Switch to English"}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            {uiLang==="en"?"EN":"NO"}
+          </button>
           {user?(
             <div style={{position:"relative"}}>
               <button onClick={()=>setShowProfileDD(!showProfileDD)} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 12px",borderRadius:10,border:"1px solid var(--bd)",background:"var(--s1)",cursor:"pointer",fontFamily:"var(--f)",transition:"all .15s"}}>
@@ -1625,23 +1879,23 @@ function App(){
                   <div style={{padding:"12px 14px 10px",borderBottom:"1px solid var(--bd)",marginBottom:4}}>
                     <div style={{fontSize:13,fontWeight:600,color:"var(--t1)"}}>{user.name}</div>
                     <div style={{fontSize:11,color:"var(--t3)",marginTop:2}}>{user.email}</div>
-                    {usage.is_paid&&<div style={{fontSize:10,fontWeight:600,color:"#10B981",marginTop:4,display:"flex",alignItems:"center",gap:4}}>{I.check(10,"#10B981")} Pro member</div>}
+                    {usage.is_paid&&<div style={{fontSize:10,fontWeight:600,color:"#10B981",marginTop:4,display:"flex",alignItems:"center",gap:4}}>{I.check(10,"#10B981")} {t("proMember")}</div>}
                   </div>
                   {user&&history.length>0&&(
-                    <button onClick={()=>{setShowHistory(!showHistory);setShowProfileDD(false);}}>{I.clock(14,"var(--t2)")} Prompt History ({history.length})</button>
+                    <button onClick={()=>{setShowHistory(!showHistory);setShowProfileDD(false);}}>{I.clock(14,"var(--t2)")} {t("promptHistory")} ({history.length})</button>
                   )}
-                  <button onClick={()=>{setShowReferral(true);setShowProfileDD(false);}}>{I.gift(14,"var(--t2)")} Refer a friend</button>
+                  <button onClick={()=>{setShowReferral(true);setShowProfileDD(false);}}>{I.gift(14,"var(--t2)")} {t("referFriend")}</button>
                   {!usage.is_paid&&usage.subscription_status!=="active"&&(
-                    <button onClick={()=>{setShowPaywall(true);setShowProfileDD(false);}} style={{color:ac+"!important"}}>{I.sparkle(14,ac)} Upgrade to Pro</button>
+                    <button onClick={()=>{setShowPaywall(true);setShowProfileDD(false);}} style={{color:ac+"!important"}}>{I.sparkle(14,ac)} {t("upgradePro")}</button>
                   )}
-                  <button onClick={()=>{handleLogout();setShowProfileDD(false);}} style={{color:"#ef4444!important"}}>{I.trash(14,"#ef4444")} Sign out</button>
+                  <button onClick={()=>{handleLogout();setShowProfileDD(false);}} style={{color:"#ef4444!important"}}>{I.trash(14,"#ef4444")} {t("signOut")}</button>
                 </div>
               </>}
             </div>
           ):(
             <>
-              <button onClick={()=>{setAuthMode("login");setShowAuth(true);setAuthErr("");}} style={{fontSize:13,padding:"8px 16px",border:"none",background:"transparent",color:"var(--t2)",cursor:"pointer",fontFamily:"var(--f)",fontWeight:500,transition:"all .15s"}}>Log in</button>
-              <button onClick={()=>{setAuthMode("signup");setShowAuth(true);setAuthErr("");}} style={{fontSize:13,padding:"8px 20px",border:"none",background:ac,color:"#fff",borderRadius:8,cursor:"pointer",fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",boxShadow:"0 2px 8px "+ac+"30"}}>Get started free</button>
+              <button onClick={()=>{setAuthMode("login");setShowAuth(true);setAuthErr("");}} style={{fontSize:13,padding:"8px 16px",border:"none",background:"transparent",color:"var(--t2)",cursor:"pointer",fontFamily:"var(--f)",fontWeight:500,transition:"all .15s"}}>{t("logIn")}</button>
+              <button onClick={()=>{setAuthMode("signup");setShowAuth(true);setAuthErr("");}} style={{fontSize:13,padding:"8px 20px",border:"none",background:ac,color:"#fff",borderRadius:8,cursor:"pointer",fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",boxShadow:"0 2px 8px "+ac+"30"}}>{t("getStarted")}</button>
             </>
           )}
         </div>
@@ -1656,30 +1910,30 @@ function App(){
         <div style={{maxWidth:1200,margin:"0 auto"}}>
           {/* Hero copy — transformation-led */}
           <div style={{textAlign:"center",maxWidth:720,margin:"0 auto 28px"}}>
-            <div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"5px 14px",borderRadius:20,background:ac+"10",marginBottom:16,fontSize:12,fontWeight:600,color:ac}}>Smart Prompt Engineering</div>
-            <h1 style={{fontSize:"clamp(26px, 3.5vw, 40px)",fontWeight:800,margin:"0 0 14px",lineHeight:1.15,color:"var(--t1)",letterSpacing:"-.4px"}}>Stop struggling with AI. <span style={{color:ac}}>Start getting expert results.</span></h1>
-            <p style={{fontSize:"clamp(14px, 1.4vw, 17px)",color:"var(--t2)",margin:"0 auto",lineHeight:1.65,maxWidth:600}}>Your AI is only as smart as your prompt. Describe any goal and we inject strategy, structure, and domain expertise automatically -- so every AI interaction delivers.</p>
+            <div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"5px 14px",borderRadius:20,background:ac+"10",marginBottom:16,fontSize:12,fontWeight:600,color:ac}}>{t("heroBadge")}</div>
+            <h1 style={{fontSize:"clamp(26px, 3.5vw, 40px)",fontWeight:800,margin:"0 0 14px",lineHeight:1.15,color:"var(--t1)",letterSpacing:"-.4px"}}>{t("heroTitle1")} <span style={{color:ac}}>{t("heroTitle2")}</span></h1>
+            <p style={{fontSize:"clamp(14px, 1.4vw, 17px)",color:"var(--t2)",margin:"0 auto",lineHeight:1.65,maxWidth:600}}>{t("heroSub")}</p>
             <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:16,marginTop:16,fontSize:12,color:"var(--t3)"}}>
-              <span style={{display:"flex",alignItems:"center",gap:4}}>{I.users(13,"var(--t3)")} Trusted by professionals</span>
+              <span style={{display:"flex",alignItems:"center",gap:4}}>{I.users(13,"var(--t3)")} {t("trustedBy")}</span>
               <span style={{width:1,height:14,background:"var(--bd)"}}/>
-              <span style={{display:"flex",alignItems:"center",gap:4}}>{I.bolt(13,"var(--t3)")} 15 industry contexts</span>
+              <span style={{display:"flex",alignItems:"center",gap:4}}>{I.bolt(13,"var(--t3)")} {t("industryContexts")}</span>
               <span style={{width:1,height:14,background:"var(--bd)"}} className="hero-art"/>
-              <span style={{display:"flex",alignItems:"center",gap:4}} className="hero-art">{I.sparkle(13,"var(--t3)")} 5 AI models supported</span>
+              <span style={{display:"flex",alignItems:"center",gap:4}} className="hero-art">{I.sparkle(13,"var(--t3)")} {t("modelsSupported")}</span>
             </div>
           </div>
 
           {/* HOW IT WORKS — horizontal, seamless, no box */}
           <div id="features" style={{display:"flex",justifyContent:"center",gap:"clamp(16px, 4vw, 56px)",flexWrap:"wrap",paddingBottom:28,borderBottom:"1px solid var(--bd)"}}>
             {[
-              {ic:"pen",n:"1",t:"Describe your goal",s:"Plain language, any topic"},
-              {ic:"wand",n:"2",t:"Get enhanced instantly",s:"Strategy + expertise injected"},
-              {ic:"copy",n:"3",t:"Paste into any AI",s:"ChatGPT, Claude, Gemini"},
-            ].map(({ic,n,t,s},i)=>(
+              {ic:"pen",n:"1",tt:t("step1t"),s:t("step1s")},
+              {ic:"wand",n:"2",tt:t("step2t"),s:t("step2s")},
+              {ic:"copy",n:"3",tt:t("step3t"),s:t("step3s")},
+            ].map(({ic,n,tt,s},i)=>(
               <React.Fragment key={i}>
                 <div style={{display:"flex",alignItems:"center",gap:12,padding:"4px 0"}}>
                   <div style={{width:34,height:34,borderRadius:9,background:ac+"10",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,color:ac,fontSize:14,fontWeight:700}}>{n}</div>
                   <div>
-                    <div style={{fontSize:13,fontWeight:620,color:"var(--t1)"}}>{t}</div>
+                    <div style={{fontSize:13,fontWeight:620,color:"var(--t1)"}}>{tt}</div>
                     <div style={{fontSize:11.5,color:"var(--t3)",lineHeight:1.3}}>{s}</div>
                   </div>
                 </div>
@@ -1694,20 +1948,20 @@ function App(){
       {/* WHY PROMPT ARCHITECT — value props */}
       <section style={{padding:"clamp(28px,5vw,48px) clamp(12px,3vw,24px)",background:"var(--bg)"}}>
         <div style={{maxWidth:1200,margin:"0 auto"}}>
-          <h2 style={{fontSize:"clamp(20px,2.5vw,26px)",fontWeight:800,textAlign:"center",margin:"0 0 8px",color:"var(--t1)",letterSpacing:"-.3px"}}>Why professionals switch to Prompt Architect</h2>
-          <p style={{fontSize:13,color:"var(--t3)",textAlign:"center",margin:"0 auto 28px",maxWidth:520}}>Stop wasting time on trial-and-error prompting. Get structured, expert-level results on the first try.</p>
+          <h2 style={{fontSize:"clamp(20px,2.5vw,26px)",fontWeight:800,textAlign:"center",margin:"0 0 8px",color:"var(--t1)",letterSpacing:"-.3px"}}>{t("vpTitle")}</h2>
+          <p style={{fontSize:13,color:"var(--t3)",textAlign:"center",margin:"0 auto 28px",maxWidth:520}}>{t("vpSub")}</p>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(260px, 1fr))",gap:16}}>
             {[
-              {ic:"brain",t:"Deep domain expertise",d:"15 industries with specialized context, terminology, and frameworks injected into every prompt."},
-              {ic:"wand",t:"Smart enhancement engine",d:"Detects vague input and automatically adds audience targeting, scope, and reasoning strategies."},
-              {ic:"layers",t:"Multi-model optimization",d:"Prompts formatted specifically for Claude, ChatGPT, Gemini, Llama, or any model you use."},
-              {ic:"target",t:"Precision output control",d:"Define tone, length, format, file type, and language. Get exactly what you need, not generic filler."},
-              {ic:"building",t:"Firm & role context",d:"Expert mode injects real-world firm perspectives and role-specific expertise into your prompts."},
-              {ic:"cpu",t:"15 advanced techniques",d:"Red teaming, first principles, systems thinking, and more. Built into your prompt with one click."},
-            ].map(({ic,t,d},i)=>(
+              {ic:"brain",tt:t("vp1t"),d:t("vp1d")},
+              {ic:"wand",tt:t("vp2t"),d:t("vp2d")},
+              {ic:"layers",tt:t("vp3t"),d:t("vp3d")},
+              {ic:"target",tt:t("vp4t"),d:t("vp4d")},
+              {ic:"building",tt:t("vp5t"),d:t("vp5d")},
+              {ic:"cpu",tt:t("vp6t"),d:t("vp6d")},
+            ].map(({ic,tt,d},i)=>(
               <div key={i} style={{background:"var(--s1)",border:"1px solid var(--bd)",borderRadius:12,padding:"20px 18px"}}>
                 <div style={{width:34,height:34,borderRadius:9,background:ac+"10",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:10}}>{I[ic](17,ac)}</div>
-                <div style={{fontSize:14,fontWeight:650,color:"var(--t1)",marginBottom:4}}>{t}</div>
+                <div style={{fontSize:14,fontWeight:650,color:"var(--t1)",marginBottom:4}}>{tt}</div>
                 <div style={{fontSize:12.5,color:"var(--t3)",lineHeight:1.55}}>{d}</div>
               </div>
             ))}
@@ -1718,25 +1972,18 @@ function App(){
       {/* COMPARISON TABLE */}
       <section style={{padding:"0 clamp(12px,3vw,24px) clamp(28px,5vw,48px)",background:"var(--bg)"}}>
         <div style={{maxWidth:700,margin:"0 auto"}}>
-          <h3 style={{fontSize:"clamp(17px,2vw,22px)",fontWeight:700,textAlign:"center",margin:"0 0 20px",color:"var(--t1)"}}>Manual prompting vs. Prompt Architect</h3>
+          <h3 style={{fontSize:"clamp(17px,2vw,22px)",fontWeight:700,textAlign:"center",margin:"0 0 20px",color:"var(--t1)"}}>{t("compTitle")}</h3>
           <div style={{background:"var(--s1)",border:"1px solid var(--bd)",borderRadius:14,overflow:"hidden"}}>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",borderBottom:"1px solid var(--bd)"}}>
               <div style={{padding:"12px 16px",fontSize:12,fontWeight:700,color:"var(--t3)"}}></div>
-              <div style={{padding:"12px 16px",fontSize:12,fontWeight:700,color:"var(--t3)",textAlign:"center",borderLeft:"1px solid var(--bd)"}}>Manual</div>
+              <div style={{padding:"12px 16px",fontSize:12,fontWeight:700,color:"var(--t3)",textAlign:"center",borderLeft:"1px solid var(--bd)"}}>{t("compManual")}</div>
               <div style={{padding:"12px 16px",fontSize:12,fontWeight:700,color:ac,textAlign:"center",borderLeft:"1px solid var(--bd)",background:ac+"06"}}>Prompt Architect</div>
             </div>
-            {[
-              ["Domain expertise","Generic","15 industries deep"],
-              ["Audience targeting","Manual guess","Auto-detected"],
-              ["Model optimization","One-size-fits-all","Per-model formatting"],
-              ["Reasoning strategy","None","Auto-injected"],
-              ["Output structure","Inconsistent","Precision control"],
-              ["Time per prompt","5-15 minutes","Under 30 seconds"],
-            ].map(([label,manual,pa],i)=>(
+            {[t("comp1"),t("comp2"),t("comp3"),t("comp4"),t("comp5"),t("comp6")].map((row,i)=>(
               <div key={i} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",borderBottom:i<5?"1px solid var(--bd)":"none"}}>
-                <div style={{padding:"10px 16px",fontSize:12,fontWeight:600,color:"var(--t1)"}}>{label}</div>
-                <div style={{padding:"10px 16px",fontSize:12,color:"var(--t3)",textAlign:"center",borderLeft:"1px solid var(--bd)"}}>{manual}</div>
-                <div style={{padding:"10px 16px",fontSize:12,color:ac,fontWeight:600,textAlign:"center",borderLeft:"1px solid var(--bd)",background:ac+"06"}}>{pa}</div>
+                <div style={{padding:"10px 16px",fontSize:12,fontWeight:600,color:"var(--t1)"}}>{row[0]}</div>
+                <div style={{padding:"10px 16px",fontSize:12,color:"var(--t3)",textAlign:"center",borderLeft:"1px solid var(--bd)"}}>{row[1]}</div>
+                <div style={{padding:"10px 16px",fontSize:12,color:ac,fontWeight:600,textAlign:"center",borderLeft:"1px solid var(--bd)",background:ac+"06"}}>{row[2]}</div>
               </div>
             ))}
           </div>
@@ -1746,14 +1993,14 @@ function App(){
       {/* USE CASES */}
       <section style={{padding:"clamp(28px,5vw,48px) clamp(12px,3vw,24px) 0",background:"var(--bg)"}}>
         <div style={{maxWidth:1200,margin:"0 auto"}}>
-          <h2 style={{fontSize:"clamp(18px,2.2vw,24px)",fontWeight:800,textAlign:"center",margin:"0 0 6px",color:"var(--t1)",letterSpacing:"-.2px"}}>Built for how you actually work</h2>
-          <p style={{fontSize:13,color:"var(--t3)",textAlign:"center",margin:"0 auto 24px",maxWidth:460}}>Professionals across industries use Prompt Architect to save hours every week.</p>
+          <h2 style={{fontSize:"clamp(18px,2.2vw,24px)",fontWeight:800,textAlign:"center",margin:"0 0 6px",color:"var(--t1)",letterSpacing:"-.2px"}}>{t("ucTitle")}</h2>
+          <p style={{fontSize:13,color:"var(--t3)",textAlign:"center",margin:"0 auto 24px",maxWidth:460}}>{t("ucSub")}</p>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(220px, 1fr))",gap:14}}>
             {[
-              {role:"Financial Analyst",task:"Build DCF models and earnings analysis prompts with sector-specific frameworks",ic:"chart"},
-              {role:"Software Engineer",task:"Generate code review, debugging, and architecture prompts with best practices baked in",ic:"code"},
-              {role:"Marketing Lead",task:"Create campaign strategy and content briefs with audience targeting and channel insights",ic:"target"},
-              {role:"Consultant",task:"Draft client deliverables, market analysis, and strategy decks with industry context",ic:"building"},
+              {role:t("uc1r"),task:t("uc1t"),ic:"chart"},
+              {role:t("uc2r"),task:t("uc2t"),ic:"code"},
+              {role:t("uc3r"),task:t("uc3t"),ic:"target"},
+              {role:t("uc4r"),task:t("uc4t"),ic:"building"},
             ].map(({role,task,ic},i)=>(
               <div key={i} style={{background:"var(--s1)",border:"1px solid var(--bd)",borderRadius:12,padding:"18px 16px"}}>
                 <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
@@ -1775,20 +2022,20 @@ function App(){
         <div style={{display:"flex",alignItems:"center",gap:10}}>
           <div style={{width:34,height:34,borderRadius:10,background:ac+"10",display:"flex",alignItems:"center",justifyContent:"center"}}>{LOGO(18,ac)}</div>
           <div>
-            <h2 style={{fontSize:20,fontWeight:700,margin:0,letterSpacing:"-.2px"}}>Build Your Prompt</h2>
-            <p style={{color:"var(--t3)",fontSize:12.5,margin:"2px 0 0",fontWeight:450}}>Configure your settings. Get an expert-level prompt in seconds.</p>
+            <h2 style={{fontSize:20,fontWeight:700,margin:0,letterSpacing:"-.2px"}}>{t("buildTitle")}</h2>
+            <p style={{color:"var(--t3)",fontSize:12.5,margin:"2px 0 0",fontWeight:450}}>{t("buildSub")}</p>
           </div>
         </div>
         {user&&!usage.is_paid&&usage.subscription_status!=="active"&&(
           <div style={{fontSize:12,color:"var(--t3)",display:"flex",alignItems:"center",gap:4}}>
-            <span style={{fontWeight:600,color:canGenerate?"var(--t2)":"#ef4444"}}>{isExp?remainingExpert:remainingSimple} free {isExp?"expert":"simple"}</span> left
+            <span style={{fontWeight:600,color:canGenerate?"var(--t2)":"#ef4444"}}>{isExp?remainingExpert:remainingSimple} {t("freeSimple")} {isExp?t("modeExpert").toLowerCase():t("modeSimple").toLowerCase()}</span> {t("freeLeft")}
           </div>
         )}
       </div>
 
       {/* MODE SWITCH + HINT */}
       <div className="mobile-stack" style={{display:"flex",gap:8,marginBottom:20,flexWrap:"wrap"}}>
-        {[["amateur","seedling","Simple","15 task types, 15 industries, 10 AI models, smart enhancement"],["expert","microscope","Expert","All of Simple + firm expertise, 15 reasoning techniques, file output"]].map(([m,ic,lb,desc])=>(
+        {[["amateur","seedling",t("modeSimple"),t("modeSimpleDesc")],["expert","microscope",t("modeExpert"),t("modeExpertDesc")]].map(([m,ic,lb,desc])=>(
           <div key={m} onClick={()=>setMode(m)} style={{flex:1,minWidth:200,padding:"10px 14px",borderRadius:9,border:mode===m?"1.5px solid "+ac:"1px solid var(--bd)",background:mode===m?ac+"05":"var(--s1)",cursor:"pointer",transition:"all .15s"}}>
             <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3}}>
               {I[ic](13,mode===m?ac:"var(--t3)")}
@@ -1804,13 +2051,13 @@ function App(){
       {showHistory&&history.length>0&&(
         <div style={{background:"var(--s1)",borderRadius:14,border:"1px solid var(--bd)",padding:20,marginBottom:24,animation:"fadeIn .2s ease",boxShadow:"0 1px 4px rgba(0,0,0,.04)"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-            <span style={{fontSize:13,fontWeight:640,color:"var(--t1)"}}>Recent Prompts</span>
-            <button onClick={clearHistory} style={{display:"flex",alignItems:"center",gap:4,padding:"4px 10px",borderRadius:6,border:"1px solid rgba(239,68,68,.3)",background:"transparent",color:"#ef4444",cursor:"pointer",fontSize:11,fontFamily:"var(--f)"}}>{I.trash(11,"#ef4444")} Clear</button>
+            <span style={{fontSize:13,fontWeight:640,color:"var(--t1)"}}>{t("recentPrompts")}</span>
+            <button onClick={clearHistory} style={{display:"flex",alignItems:"center",gap:4,padding:"4px 10px",borderRadius:6,border:"1px solid rgba(239,68,68,.3)",background:"transparent",color:"#ef4444",cursor:"pointer",fontSize:11,fontFamily:"var(--f)"}}>{I.trash(11,"#ef4444")} {t("clear")}</button>
           </div>
           {history.map((h,i)=>(
             <button key={i} onClick={()=>loadFromHistory(h)} style={{display:"block",width:"100%",textAlign:"left",padding:"10px 12px",marginBottom:4,borderRadius:8,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t1)",cursor:"pointer",fontFamily:"var(--f)",fontSize:12,lineHeight:1.4,transition:"border-color .15s"}}>
               <div style={{fontWeight:600,marginBottom:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{h.topic}</div>
-              <div style={{color:"var(--t3)",fontSize:11}}>{TASKS[h.task]?.l} \u00b7 {INDUSTRIES[h.industry]?.l} \u00b7 {new Date(h.timestamp).toLocaleDateString()}</div>
+              <div style={{color:"var(--t3)",fontSize:11}}>{tl(UI_TASKS,h.task)} \u00b7 {tl(UI_INDUSTRIES,h.industry)} \u00b7 {new Date(h.timestamp).toLocaleDateString()}</div>
             </button>
           ))}
         </div>
@@ -1820,18 +2067,18 @@ function App(){
       <div style={{background:"var(--s1)",borderRadius:16,border:"1px solid var(--bd)",padding:"clamp(16px,4vw,32px) clamp(14px,3.5vw,28px)",marginBottom:24,boxShadow:"0 1px 4px rgba(0,0,0,.04)"}}>
 
         {/* TOPIC */}
-        <Step ico="pen" title="Describe your goal" sub="Be specific  -  but don't worry about being perfect. Smart enhancement fills the gaps.">
+        <Step ico="pen" title={t("describeGoal")} sub={t("describeGoalSub")}>
           <div style={{position:"relative",marginBottom:12}}>
-            <textarea value={topic} onChange={e=>{setTopic(e.target.value);setShow(false);}} placeholder="e.g. Analyze Apple's Q4 earnings and highlight key risks" rows={3} style={inp({resize:"vertical"})} />
+            <textarea value={topic} onChange={e=>{setTopic(e.target.value);setShow(false);}} placeholder={t("describeGoalPh")} rows={3} style={inp({resize:"vertical"})} />
             {topic.trim()&&(
-              <button onClick={()=>{setTopic("");setShow(false);}} style={{position:"absolute",top:10,right:10,padding:"5px 10px",borderRadius:6,border:"1px solid #fca5a5",background:"#fee2e2",color:"#dc2626",cursor:"pointer",fontSize:11,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",display:"flex",alignItems:"center",gap:4}}>{I.trash(11,"#dc2626")} Clear</button>
+              <button onClick={()=>{setTopic("");setShow(false);}} style={{position:"absolute",top:10,right:10,padding:"5px 10px",borderRadius:6,border:"1px solid #fca5a5",background:"#fee2e2",color:"#dc2626",cursor:"pointer",fontSize:11,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",display:"flex",alignItems:"center",gap:4}}>{I.trash(11,"#dc2626")} {t("clear")}</button>
             )}
           </div>
 
           {/* EXAMPLE PROMPTS */}
           {!topic.trim()&&(
             <div style={{marginTop:14}}>
-              <div style={{fontSize:11.5,color:"var(--t3)",marginBottom:8,fontWeight:600}}>Try an example by sector:</div>
+              <div style={{fontSize:11.5,color:"var(--t3)",marginBottom:8,fontWeight:600}}>{t("examplesTitle")}:</div>
               <div style={{display:"flex",gap:6,marginBottom:12,flexWrap:"wrap"}}>
                 {[...new Set(EXAMPLES.map(e=>e.sector))].map((sector,i)=>(
                   <button key={i} onClick={()=>setExampleSector(exampleSector===sector?"":sector)} style={{padding:"5px 10px",borderRadius:6,border:"1.5px solid "+(exampleSector===sector?ac:"var(--bd)"),background:exampleSector===sector?ac+"14":"var(--s2)",color:exampleSector===sector?ac:"var(--t2)",cursor:"pointer",fontSize:10.5,fontFamily:"var(--f)",fontWeight:600,transition:"all .15s"}}>{sector}</button>
@@ -1844,7 +2091,7 @@ function App(){
                     <span style={{fontSize:12,fontWeight:620,lineHeight:1.3}}>{ex.label}</span>
                     <span style={{fontSize:10.5,color:"var(--t3)",lineHeight:1.4,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{ex.topic.substring(0,90)}...</span>
                     <div style={{display:"flex",gap:4,marginTop:2}}>
-                      <span style={{fontSize:9.5,padding:"2px 6px",borderRadius:4,background:ac+"10",color:ac,fontWeight:550}}>{TASKS[ex.task]?.l}</span>
+                      <span style={{fontSize:9.5,padding:"2px 6px",borderRadius:4,background:ac+"10",color:ac,fontWeight:550}}>{tl(UI_TASKS,ex.task)}</span>
                       <span style={{fontSize:9.5,padding:"2px 6px",borderRadius:4,background:"var(--s2)",color:"var(--t3)",fontWeight:500}}>{MODELS[ex.model]?.name}</span>
                     </div>
                   </button>
@@ -1871,15 +2118,15 @@ function App(){
         </Step>
 
         {/* TASK + INDUSTRY */}
-        <Step ico="layout" title="Task type">
-          <Wrap>{Object.entries(TASKS).map(([k,v])=><Chip key={k} active={task===k} accent={ac} onClick={()=>setTask(k)}>{I[v.i]?.(12,task===k?ac:"var(--t3)")}{v.l}</Chip>)}</Wrap>
+        <Step ico="layout" title={t("taskType")}>
+          <Wrap>{Object.entries(TASKS).map(([k,v])=><Chip key={k} active={task===k} accent={ac} onClick={()=>setTask(k)}>{I[v.i]?.(12,task===k?ac:"var(--t3)")}{tl(UI_TASKS,k)}</Chip>)}</Wrap>
         </Step>
 
-        <Step ico="building" title="Industry / Sector" sub="Injects domain-specific terminology, frameworks, and compliance requirements">
-          <Wrap>{Object.entries(INDUSTRIES).map(([k,v])=><Chip key={k} active={industry===k} accent={ac} onClick={()=>{setIndustry(k);setSelectedFirm("");setSelectedRole("");}}>{I[v.i]?.(12,industry===k?ac:"var(--t3)")}{v.l}</Chip>)}</Wrap>
+        <Step ico="building" title={t("industrySector")} sub={t("industrySectorSub")}>
+          <Wrap>{Object.entries(INDUSTRIES).map(([k,v])=><Chip key={k} active={industry===k} accent={ac} onClick={()=>{setIndustry(k);setSelectedFirm("");setSelectedRole("");}}>{I[v.i]?.(12,industry===k?ac:"var(--t3)")}{tl(UI_INDUSTRIES,k)}</Chip>)}</Wrap>
           {isExp&&industry!=="general"&&SECTOR_FIRMS[industry]&&(
             <div style={{marginTop:14,padding:"14px 16px",borderRadius:10,background:ac+"08",border:"1px solid "+ac+"18",animation:"fadeIn .2s ease"}}>
-              <div style={{fontSize:11.5,fontWeight:640,color:ac,marginBottom:10,display:"flex",alignItems:"center",gap:6}}>{I.building(13,ac)} Firm & Role Style</div>
+              <div style={{fontSize:11.5,fontWeight:640,color:ac,marginBottom:10,display:"flex",alignItems:"center",gap:6}}>{I.building(13,ac)} {t("firmContext")}</div>
               <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:selectedFirm?10:0}}>
                 {Object.entries(SECTOR_FIRMS[industry].firms).map(([k,v])=>(
                   <button key={k} onClick={()=>{setSelectedFirm(selectedFirm===k?"":k);setSelectedRole("");}} style={{padding:"6px 12px",borderRadius:7,border:"1.5px solid "+(selectedFirm===k?ac:"var(--bd)"),background:selectedFirm===k?ac+"14":"var(--s1)",color:selectedFirm===k?ac:"var(--t2)",cursor:"pointer",fontSize:11.5,fontFamily:"var(--f)",fontWeight:selectedFirm===k?620:450,transition:"all .15s"}}>{v.name}</button>
@@ -1896,24 +2143,24 @@ function App(){
                 </div>
               )}
               {selectedFirm&&selectedRole&&(
-                <div style={{marginTop:10,fontSize:11,color:ac,fontWeight:550,display:"flex",alignItems:"center",gap:4}}>{I.check(11,ac)} {INDUSTRIES[industry].l} &rarr; {SECTOR_FIRMS[industry].firms[selectedFirm].name} &rarr; {selectedRole}</div>
+                <div style={{marginTop:10,fontSize:11,color:ac,fontWeight:550,display:"flex",alignItems:"center",gap:4}}>{I.check(11,ac)} {tl(UI_INDUSTRIES,industry)} &rarr; {SECTOR_FIRMS[industry].firms[selectedFirm].name} &rarr; {selectedRole}</div>
               )}
             </div>
           )}
         </Step>
 
         {/* OUTPUT TYPE */}
-        <Step ico="file" title="Output type" sub="What deliverable format should the AI produce?">
-          <Wrap>{Object.entries(OUTPUTS).map(([k,v])=><Chip key={k} active={output===k} accent={ac} onClick={()=>setOutput(k)}>{I[v.i]?.(12,output===k?ac:"var(--t3)")}{v.l}</Chip>)}</Wrap>
+        <Step ico="file" title={t("outputType")} sub={t("outputTypeSub")}>
+          <Wrap>{Object.entries(OUTPUTS).map(([k,v])=><Chip key={k} active={output===k} accent={ac} onClick={()=>setOutput(k)}>{I[v.i]?.(12,output===k?ac:"var(--t3)")}{tl(UI_OUTPUTS,k)}</Chip>)}</Wrap>
         </Step>
 
         {/* FILE OUTPUT */}
-        <Step ico="download" title="File output" sub="What file type should the AI format the response for?">
-          <Wrap>{Object.entries(FILE_OUTPUTS).map(([k,v])=><Chip key={k} active={fileOutput===k} accent={ac} onClick={()=>setFileOutput(k)}>{I[v.i]?.(12,fileOutput===k?ac:"var(--t3)")}{v.l}</Chip>)}</Wrap>
+        <Step ico="download" title={t("fileOutput")} sub={t("fileOutputSub")}>
+          <Wrap>{Object.entries(FILE_OUTPUTS).map(([k,v])=><Chip key={k} active={fileOutput===k} accent={ac} onClick={()=>setFileOutput(k)}>{I[v.i]?.(12,fileOutput===k?ac:"var(--t3)")}{tl(UI_FILE_OUTPUTS,k)}</Chip>)}</Wrap>
         </Step>
 
         {/* AI MODEL */}
-        <Step ico="cpu" title="Target AI model">
+        <Step ico="cpu" title={t("targetModel")}>
           <Wrap>
             {Object.entries(MODELS).map(([k,v])=>(
               <button key={k} onClick={()=>setModel(k)} style={{display:"flex",alignItems:"center",gap:7,padding:"8px 14px",borderRadius:9,border:"1.5px solid "+(model===k?v.col:"var(--bd)"),background:model===k?v.col+"14":"var(--s2)",color:model===k?v.col:"var(--t2)",cursor:"pointer",fontSize:12.5,fontWeight:model===k?620:450,fontFamily:"var(--f)",transition:"all .15s"}}><MM id={k} size={17}/>{v.name}</button>
@@ -1923,73 +2170,69 @@ function App(){
         </Step>
 
         {/* STYLE */}
-        <Step ico="pen" title="Writing style">
-          <Wrap>{Object.entries(STYLES).map(([k,v])=><Chip key={k} active={style===k} accent={ac} onClick={()=>setStyle(k)}>{I[v.i]?.(12,style===k?ac:"var(--t3)")}{v.l}</Chip>)}</Wrap>
+        <Step ico="pen" title={t("writingStyle")}>
+          <Wrap>{Object.entries(STYLES).map(([k,v])=><Chip key={k} active={style===k} accent={ac} onClick={()=>setStyle(k)}>{I[v.i]?.(12,style===k?ac:"var(--t3)")}{tl(UI_STYLES,k)}</Chip>)}</Wrap>
         </Step>
 
         {/* TONE */}
-        <Step ico="speaker" title="Tone">
-          <Wrap>{TONES.map(({v,i:ic})=><Chip key={v} active={tone===v} accent={ac} onClick={()=>setTone(v)}>{I[ic]?.(12,tone===v?ac:"var(--t3)")}{v}</Chip>)}</Wrap>
+        <Step ico="speaker" title={t("toneLabel")}>
+          <Wrap>{TONES.map(({v,i:ic})=><Chip key={v} active={tone===v} accent={ac} onClick={()=>setTone(v)}>{I[ic]?.(12,tone===v?ac:"var(--t3)")}{tl(UI_TONES,v)}</Chip>)}</Wrap>
         </Step>
 
         {/* LENGTH + FORMAT */}
-        <Step ico="ruler" title="Length">
-          <Wrap>{LENGTHS.map(l=><Chip key={l} active={len===l} accent={ac} onClick={()=>setLen(l)} sx={{flexDirection:"column",alignItems:"flex-start",gap:0,padding:"8px 14px"}}><span>{l}</span><span style={{fontSize:10.5,color:"var(--t3)",fontWeight:400}}>{getLenSub(l,fileOutput)}</span></Chip>)}</Wrap>
+        <Step ico="ruler" title={t("lengthLabel")}>
+          <Wrap>{LENGTHS.map(l=><Chip key={l} active={len===l} accent={ac} onClick={()=>setLen(l)} sx={{flexDirection:"column",alignItems:"flex-start",gap:0,padding:"8px 14px"}}><span>{tl(UI_LENGTHS,l)}</span><span style={{fontSize:10.5,color:"var(--t3)",fontWeight:400}}>{getLenSub(l,fileOutput)}</span></Chip>)}</Wrap>
         </Step>
 
-        <Step ico="layout" title="Response format" sub="Select one or more  -  they combine in the prompt">
-          <Wrap>{Object.entries(FMTS).map(([k,v])=><Chip key={k} active={fmt.includes(k)} accent={ac} onClick={()=>tf(k)}>{I[v.i]?.(12,fmt.includes(k)?ac:"var(--t3)")}{v.l}</Chip>)}</Wrap>
+        <Step ico="layout" title={t("responseFormat")} sub={t("responseFormatSub")}>
+          <Wrap>{Object.entries(FMTS).map(([k,v])=><Chip key={k} active={fmt.includes(k)} accent={ac} onClick={()=>tf(k)}>{I[v.i]?.(12,fmt.includes(k)?ac:"var(--t3)")}{tl(UI_FMTS,k)}</Chip>)}</Wrap>
         </Step>
 
         {/* LANGUAGE */}
-        <Step ico="lang" title="Language">
+        <Step ico="lang" title={t("languageLabel")}>
           <Wrap>{LANGS.map(l=><Chip key={l} active={language===l} accent={ac} onClick={()=>setLanguage(l)}>{l}</Chip>)}</Wrap>
         </Step>
 
         {/* INCLUDES */}
-        <Step ico="checkList" title="Include sections" sub="Select specific sections that must appear in the response">
-          <Wrap>{Object.entries(INCLUDES).map(([k,v])=><Chip key={k} active={includes.includes(k)} accent={ac} onClick={()=>ti(k)}>{I[v.i]?.(12,includes.includes(k)?ac:"var(--t3)")}{v.l}</Chip>)}</Wrap>
+        <Step ico="checkList" title={t("includeSections")} sub={t("includeSectionsSub")}>
+          <Wrap>{Object.entries(INCLUDES).map(([k,v])=><Chip key={k} active={includes.includes(k)} accent={ac} onClick={()=>ti(k)}>{I[v.i]?.(12,includes.includes(k)?ac:"var(--t3)")}{tl(UI_INCLUDES,k)}</Chip>)}</Wrap>
         </Step>
 
         {/* EXPERT SECTIONS */}
-        {isExp&&<Step ico="brain" title="Advanced techniques" sub="Each adds a dedicated instruction block to the prompt">
-          <Wrap>{Object.entries(TECHS).map(([k,v])=><Chip key={k} active={techs.includes(k)} accent={ac} onClick={()=>tt(k)}>{I[v.i]?.(12,techs.includes(k)?ac:"var(--t3)")}{v.l}</Chip>)}</Wrap>
+        {isExp&&<Step ico="brain" title={t("advTechniques")} sub={t("advTechniquesSub")}>
+          <Wrap>{Object.entries(TECHS).map(([k,v])=><Chip key={k} active={techs.includes(k)} accent={ac} onClick={()=>tt(k)}>{I[v.i]?.(12,techs.includes(k)?ac:"var(--t3)")}{tl(UI_TECHS,k)}</Chip>)}</Wrap>
         </Step>}
 
-        {isExp&&<Step ico="users" title="Target audience" sub="Override smart audience detection with a specific audience">
-          <input value={aud} onChange={e=>setAud(e.target.value)} placeholder="e.g. Finance students, senior developers" style={inp()} />
+        {isExp&&<Step ico="users" title={t("targetAudience")} sub={t("targetAudienceSub")}>
+          <input value={aud} onChange={e=>setAud(e.target.value)} placeholder={t("targetAudiencePh")} style={inp()} />
         </Step>}
 
-        {isExp&&<Step ico="plus" title="Additional instructions" sub="Added verbatim as a final section">
+        {isExp&&<Step ico="plus" title={t("addInstructions")} sub={t("addInstructionsSub")}>
           <div style={{position:"relative",marginBottom:extra.trim()?0:8}}>
-            <textarea value={extra} onChange={e=>setExtra(e.target.value)} placeholder="e.g. Compare at least 3 competitors side by side" rows={2} style={inp({resize:"vertical"})} />
+            <textarea value={extra} onChange={e=>setExtra(e.target.value)} placeholder={t("addInstructionsPh")} rows={2} style={inp({resize:"vertical"})} />
             {extra.trim()&&(
-              <button onClick={()=>setExtra("")} style={{position:"absolute",top:10,right:10,padding:"5px 10px",borderRadius:6,border:"1px solid #fca5a5",background:"#fee2e2",color:"#dc2626",cursor:"pointer",fontSize:11,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",display:"flex",alignItems:"center",gap:4}}>{I.trash(11,"#dc2626")} Clear</button>
+              <button onClick={()=>setExtra("")} style={{position:"absolute",top:10,right:10,padding:"5px 10px",borderRadius:6,border:"1px solid #fca5a5",background:"#fee2e2",color:"#dc2626",cursor:"pointer",fontSize:11,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",display:"flex",alignItems:"center",gap:4}}>{I.trash(11,"#dc2626")} {t("clear")}</button>
             )}
           </div>
-          {!extra.trim()&&(
-            <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-              {["Add real-world examples","Include a step-by-step walkthrough","Show calculations with formulas","Add a SWOT analysis","Compare 3+ options side by side"].map((s,i)=>(
-                <button key={i} onClick={()=>setExtra(prev=>prev?prev+", "+s:s)} style={{padding:"4px 10px",borderRadius:6,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",cursor:"pointer",fontSize:10.5,fontFamily:"var(--f)",fontWeight:500,transition:"all .15s"}}>{s}</button>
-              ))}
-            </div>
-          )}
+          <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+            {[t("chipRealExamples"),t("chipWalkthrough"),t("chipCalc"),t("chipSWOT"),t("chipCompare")].map((s,i)=>(
+              <button key={i} onClick={()=>setExtra(prev=>prev?prev+(prev.endsWith(s)?"":prev?", "+s:s):s)} style={{padding:"4px 10px",borderRadius:6,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",cursor:"pointer",fontSize:10.5,fontFamily:"var(--f)",fontWeight:500,transition:"all .15s"}}>{s}</button>
+            ))}
+          </div>
         </Step>}
 
-        <Step ico="info" title="Special requests (optional)" sub="Format, style, or content constraints">
+        <Step ico="info" title={t("specialReq")} sub={t("specialReqSub")}>
           <div style={{position:"relative",marginBottom:special.trim()?0:8}}>
-            <textarea value={special} onChange={e=>setSpecial(e.target.value)} placeholder="e.g. Use bullet points, keep it under 500 words" rows={2} style={inp({resize:"vertical"})} />
+            <textarea value={special} onChange={e=>setSpecial(e.target.value)} placeholder={t("specialReqPh")} rows={2} style={inp({resize:"vertical"})} />
             {special.trim()&&(
-              <button onClick={()=>setSpecial("")} style={{position:"absolute",top:10,right:10,padding:"5px 10px",borderRadius:6,border:"1px solid #fca5a5",background:"#fee2e2",color:"#dc2626",cursor:"pointer",fontSize:11,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",display:"flex",alignItems:"center",gap:4}}>{I.trash(11,"#dc2626")} Clear</button>
+              <button onClick={()=>setSpecial("")} style={{position:"absolute",top:10,right:10,padding:"5px 10px",borderRadius:6,border:"1px solid #fca5a5",background:"#fee2e2",color:"#dc2626",cursor:"pointer",fontSize:11,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",display:"flex",alignItems:"center",gap:4}}>{I.trash(11,"#dc2626")} {t("clear")}</button>
             )}
           </div>
-          {!special.trim()&&(
-            <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-              {["No emojis","Bullet points only","Under 500 words","Include sources","Use tables"].map((s,i)=>(
-                <button key={i} onClick={()=>setSpecial(prev=>prev?prev+", "+s:s)} style={{padding:"4px 10px",borderRadius:6,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",cursor:"pointer",fontSize:10.5,fontFamily:"var(--f)",fontWeight:500,transition:"all .15s"}}>{s}</button>
-              ))}
-            </div>
-          )}
+          <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+            {[t("chipNoEmoji"),t("chipBullets"),t("chip500"),t("chipSources"),t("chipTables"),t("chipConcise"),t("chipJargon"),t("chipVisuals")].map((s,i)=>(
+              <button key={i} onClick={()=>setSpecial(prev=>prev?prev+(prev.endsWith(s)?"":prev?", "+s:s):s)} style={{padding:"4px 10px",borderRadius:6,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",cursor:"pointer",fontSize:10.5,fontFamily:"var(--f)",fontWeight:500,transition:"all .15s"}}>{s}</button>
+            ))}
+          </div>
         </Step>
 
         {/* ATTACHMENT CHECKBOX */}
@@ -1998,14 +2241,14 @@ function App(){
             {hasAttachment&&<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4.5L3.86 7.36L9.58 1.64" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
           </div>
           <div style={{flex:1}}>
-            <div style={{fontSize:13,fontWeight:620,color:"var(--t1)",fontFamily:"var(--f)",lineHeight:1.3}}>I will attach files with this prompt</div>
-            <div style={{fontSize:11,color:"var(--t3)",fontFamily:"var(--f)",lineHeight:1.5,marginTop:3}}>{hasAttachment?"The prompt will instruct the AI to use your attached files as the primary data source. Recommended for best results with documents, spreadsheets, or datasets.":"The prompt will focus entirely on generating content from the task description. Check this if you plan to upload files alongside the prompt in your AI tool."}</div>
+            <div style={{fontSize:13,fontWeight:620,color:"var(--t1)",fontFamily:"var(--f)",lineHeight:1.3}}>{t("attachTitle")}</div>
+            <div style={{fontSize:11,color:"var(--t3)",fontFamily:"var(--f)",lineHeight:1.5,marginTop:3}}>{hasAttachment?t("attachOn"):t("attachOff")}</div>
           </div>
         </div>
 
         {/* GENERATE */}
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:12,paddingTop:12,borderTop:"1px solid var(--bd)",marginTop:8}}>
-          <button onClick={go} disabled={!topic.trim()} style={{display:"flex",alignItems:"center",gap:8,padding:"14px 44px",borderRadius:12,border:"none",background:topic.trim()?(canGenerate?`linear-gradient(135deg, ${ac}, #2563EB)`:"#94a3b8"):"var(--s2)",color:topic.trim()?"#fff":"var(--t3)",fontSize:15,fontWeight:660,fontFamily:"var(--f)",cursor:topic.trim()?"pointer":"not-allowed",transition:"all .2s",boxShadow:topic.trim()&&canGenerate?"0 6px 28px "+ac+"35":"none"}}>{I.sparkle(16,topic.trim()?"#fff":"var(--t3)")} {canGenerate?"Generate Prompt":"Upgrade to Generate"}</button>
+          <button onClick={go} disabled={!topic.trim()} style={{display:"flex",alignItems:"center",gap:8,padding:"14px 44px",borderRadius:12,border:"none",background:topic.trim()?(canGenerate?`linear-gradient(135deg, ${ac}, #2563EB)`:"#94a3b8"):"var(--s2)",color:topic.trim()?"#fff":"var(--t3)",fontSize:15,fontWeight:660,fontFamily:"var(--f)",cursor:topic.trim()?"pointer":"not-allowed",transition:"all .2s",boxShadow:topic.trim()&&canGenerate?"0 6px 28px "+ac+"35":"none"}}>{I.sparkle(16,topic.trim()?"#fff":"var(--t3)")} {canGenerate?t("generateBtn"):t("upgradeGenerate")}</button>
           {user&&!usage.is_paid&&usage.subscription_status!=="active"&&(
             <div style={{fontSize:12,color:"var(--t3)",display:"flex",gap:14}}>
               <span>Simple: {remainingSimple}/{FREE_SIMPLE} free</span>
@@ -2013,7 +2256,7 @@ function App(){
               <span>Expert: {remainingExpert}/{FREE_EXPERT} free</span>
             </div>
           )}
-          {!user&&<div style={{fontSize:12,color:"var(--t3)"}}>Create a free account to start generating</div>}
+          {!user&&<div style={{fontSize:12,color:"var(--t3)"}}>{t("createAccount")}</div>}
         </div>
       </div>
 
@@ -2024,29 +2267,29 @@ function App(){
             <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
               <MM id={model} size={18}/>
               <span style={{fontWeight:640,fontSize:13}}>{MODELS[model].name}</span>
-              <span style={{fontSize:11,color:ac,background:ac+"14",padding:"2px 8px",borderRadius:5,fontWeight:600}}>{INDUSTRIES[industry].l}</span>
+              <span style={{fontSize:11,color:ac,background:ac+"14",padding:"2px 8px",borderRadius:5,fontWeight:600}}>{tl(UI_INDUSTRIES,industry)}</span>
               <span style={{fontSize:11,color:"var(--t3)",background:"var(--s2)",padding:"2px 8px",borderRadius:5}}>{isExp?"Expert":"Simple"}</span>
-              {enhancements.length>0&&<span style={{fontSize:11,color:"#10B981",background:"#10B98114",padding:"2px 8px",borderRadius:5,fontWeight:600,display:"flex",alignItems:"center",gap:3}}>{I.wand(10,"#10B981")} {enhancements.length} smart boost{enhancements.length!==1?"s":""}</span>}
+              {enhancements.length>0&&<span style={{fontSize:11,color:"#10B981",background:"#10B98114",padding:"2px 8px",borderRadius:5,fontWeight:600,display:"flex",alignItems:"center",gap:3}}>{I.wand(10,"#10B981")} {enhancements.length} {enhancements.length!==1?t("smartBoosts"):t("smartBoost")}</span>}
             </div>
             <div style={{display:"flex",gap:6}}>
-              <button onClick={sharePrompt} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 12px",borderRadius:7,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{I.share(12,"var(--t2)")} Share</button>
+              <button onClick={sharePrompt} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 12px",borderRadius:7,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{I.share(12,"var(--t2)")} {t("shareBtn")}</button>
               <button onClick={exportTxt} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 12px",borderRadius:7,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{I.download(12,"var(--t2)")} .txt</button>
-              <button onClick={cp} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 14px",borderRadius:7,border:"none",background:copied?"#10A37F":ac,color:"#fff",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{copied?I.check(12,"#fff"):I.copy(12,"#fff")}{copied?"Copied":"Copy"}</button>
-              <button onClick={()=>setShowResetConfirm(true)} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 12px",borderRadius:7,border:"1px solid #fca5a5",background:"#fff5f5",color:"#dc2626",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{I.plus(12,"#dc2626")} New</button>
+              <button onClick={cp} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 14px",borderRadius:7,border:"none",background:copied?"#10A37F":ac,color:"#fff",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{copied?I.check(12,"#fff"):I.copy(12,"#fff")}{copied?t("copiedBtn"):t("copyBtn")}</button>
+              <button onClick={()=>setShowResetConfirm(true)} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 12px",borderRadius:7,border:"1px solid #fca5a5",background:"#fff5f5",color:"#dc2626",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{I.plus(12,"#dc2626")} {t("newBtn")}</button>
             </div>
           </div>
           <pre style={{padding:"20px 22px",margin:0,whiteSpace:"pre-wrap",wordWrap:"break-word",fontSize:12,lineHeight:1.8,fontFamily:"var(--m)",color:"var(--t2)",background:"var(--bg)",maxHeight:600,overflow:"auto"}}>{prompt}</pre>
           <div style={{padding:"10px 20px",borderTop:"1px solid var(--bd)",display:"flex",gap:14,flexWrap:"wrap",fontSize:11,color:"var(--t3)"}}>
             <span style={{display:"flex",alignItems:"center",gap:3}}>{I.hash(10,"var(--t3)")} {prompt.length} chars</span>
             <span style={{display:"flex",alignItems:"center",gap:3}}>{I.fileText(10,"var(--t3)")} ~{Math.ceil(prompt.split(/\s+/).length/0.75)} tokens</span>
-            <span style={{display:"flex",alignItems:"center",gap:3}}>{I[TASKS[task].i]?.(10,"var(--t3)")} {TASKS[task].l}</span>
+            <span style={{display:"flex",alignItems:"center",gap:3}}>{I[TASKS[task].i]?.(10,"var(--t3)")} {tl(UI_TASKS,task)}</span>
             <span style={{display:"flex",alignItems:"center",gap:3}}>{I.target(10,"var(--t3)")} {tone}</span>
-            <span style={{display:"flex",alignItems:"center",gap:3}}>{I.file(10,"var(--t3)")} {OUTPUTS[output].l}</span>
-            <span style={{display:"flex",alignItems:"center",gap:3}}>{I.download(10,"var(--t3)")} {FILE_OUTPUTS[fileOutput]?.l||"PDF"}</span>
+            <span style={{display:"flex",alignItems:"center",gap:3}}>{I.file(10,"var(--t3)")} {tl(UI_OUTPUTS,output)}</span>
+            <span style={{display:"flex",alignItems:"center",gap:3}}>{I.download(10,"var(--t3)")} {tl(UI_FILE_OUTPUTS,fileOutput)}</span>
             {language!=="English"&&<span style={{display:"flex",alignItems:"center",gap:3}}>{I.lang(10,"var(--t3)")} {language}</span>}
           </div>
           <div style={{padding:"16px 20px",background:"var(--bg)",borderTop:"1px solid var(--bd)",fontSize:12,color:"var(--t3)",lineHeight:1.6}}>
-            <p style={{margin:0}}>This prompt has been enhanced with smart audience targeting, reasoning strategies, and domain expertise based on your inputs. Copy it to Claude, ChatGPT, Gemini, or any AI model and paste it directly. The AI will understand the context and deliver better results than a generic prompt.</p>
+            <p style={{margin:0}}>{t("resultInfo")}</p>
             {isFree&&<p style={{margin:"10px 0 0",fontSize:11,color:ac,fontWeight:500}}>Copies include "Generated with Prompt Architect" attribution. <span style={{textDecoration:"underline",cursor:"pointer"}} onClick={()=>setShowPaywall(true)}>Upgrade to Pro</span> to remove it.</p>}
           </div>
           {!user&&promptGenerated&&(
@@ -2279,10 +2522,10 @@ function App(){
     {/* COOKIE CONSENT */}
     {showCookies&&(
       <div style={{position:"fixed",bottom:0,left:0,right:0,background:"var(--s1)",borderTop:"1px solid var(--bd)",padding:"14px 24px",display:"flex",alignItems:"center",justifyContent:"center",gap:16,flexWrap:"wrap",zIndex:3000,boxShadow:"0 -2px 12px rgba(0,0,0,.06)",animation:"up .3s ease"}}>
-        <p style={{margin:0,fontSize:12,color:"var(--t2)",lineHeight:1.5,maxWidth:600}}>We use cookies for analytics to improve your experience. By continuing to use this site, you agree to our use of cookies.</p>
+        <p style={{margin:0,fontSize:12,color:"var(--t2)",lineHeight:1.5,maxWidth:600}}>{t("cookieMsg")}</p>
         <div style={{display:"flex",gap:8}}>
-          <button onClick={()=>{localStorage.setItem("pa_cookies","1");setShowCookies(false);}} style={{padding:"7px 18px",borderRadius:7,border:"none",background:ac,color:"#fff",fontSize:12,fontWeight:600,fontFamily:"var(--f)",cursor:"pointer",whiteSpace:"nowrap"}}>Accept</button>
-          <button onClick={()=>{localStorage.setItem("pa_cookies","0");setShowCookies(false);window['ga-disable-G-TMC03JP6HJ']=true;}} style={{padding:"7px 18px",borderRadius:7,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",fontSize:12,fontWeight:600,fontFamily:"var(--f)",cursor:"pointer",whiteSpace:"nowrap"}}>Decline</button>
+          <button onClick={()=>{localStorage.setItem("pa_cookies","1");setShowCookies(false);}} style={{padding:"7px 18px",borderRadius:7,border:"none",background:ac,color:"#fff",fontSize:12,fontWeight:600,fontFamily:"var(--f)",cursor:"pointer",whiteSpace:"nowrap"}}>{t("cookieAccept")}</button>
+          <button onClick={()=>{localStorage.setItem("pa_cookies","0");setShowCookies(false);window['ga-disable-G-TMC03JP6HJ']=true;}} style={{padding:"7px 18px",borderRadius:7,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",fontSize:12,fontWeight:600,fontFamily:"var(--f)",cursor:"pointer",whiteSpace:"nowrap"}}>{t("cookieDecline")}</button>
         </div>
       </div>
     )}
