@@ -232,6 +232,8 @@ const UI={
   upgradePro:{en:"Upgrade to Pro",no:"Oppgrader til Pro"},
   referFriend:{en:"Refer a friend",no:"Inviter en venn"},
   manageSubscription:{en:"Manage subscription",no:"Administrer abonnement"},
+  welcomeOffer:{en:"Use code WELCOME30 for 30% off your first month",no:"Bruk koden WELCOME30 for 30% avslag på første måned"},
+  limitedOffer:{en:"Limited offer",no:"Begrenset tilbud"},
   promptHistory:{en:"Prompt History",no:"Prompthistorikk"},
 
   // Hero
@@ -2026,6 +2028,12 @@ function App(){
               <span style={{width:1,height:14,background:"var(--bd)"}} className="hero-art"/>
               <span style={{display:"flex",alignItems:"center",gap:4}} className="hero-art">{I.sparkle(13,"var(--t3)")} {t("modelsSupported")}</span>
             </div>
+            {(!user||!usage.is_paid)&&<div style={{marginTop:14,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
+              <div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"6px 16px",borderRadius:8,background:"var(--s1)",border:"1px solid "+ac+"25",fontSize:12,color:"var(--t2)"}}>
+                <span style={{fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:5,background:ac+"14",color:ac,letterSpacing:.5}}>{t("limitedOffer")}</span>
+                <span>{t("welcomeOffer")}</span>
+              </div>
+            </div>}
           </div>
 
           {/* HOW IT WORKS — horizontal, seamless, no box */}
@@ -2634,6 +2642,11 @@ function App(){
                 <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 0",fontSize:12.5,color:"var(--t2)"}}>{I.check(14,"#10B981")}{f}</div>
               ))}
             </div>
+            {/* Welcome offer nudge */}
+            {!promoCode.trim()&&<div onClick={()=>setPromoCode("WELCOME30")} style={{margin:"0 0 12px",padding:"10px 14px",borderRadius:8,background:ac+"08",border:"1px dashed "+ac+"30",display:"flex",alignItems:"center",justifyContent:"space-between",cursor:"pointer",transition:"all .15s"}}>
+              <div style={{fontSize:12,color:"var(--t2)"}}><span style={{fontWeight:700,color:ac}}>WELCOME30</span> -- {uiLang==="no"?"30% avslag på første betaling":"30% off your first payment"}</div>
+              <div style={{fontSize:11,color:ac,fontWeight:600,whiteSpace:"nowrap"}}>{uiLang==="no"?"Bruk kode":"Apply"}</div>
+            </div>}
             {/* CTA */}
             <button disabled={checkoutLoading} onClick={handleCheckout} style={{width:"100%",padding:14,borderRadius:10,border:"none",background:checkoutLoading?ac+"80":ac,color:"#fff",fontSize:14,fontWeight:700,fontFamily:"var(--f)",cursor:checkoutLoading?"not-allowed":"pointer",transition:"all .2s",boxShadow:"0 4px 20px "+ac+"35"}}>{checkoutLoading?"Redirecting to checkout...":"Upgrade Now"}</button>
             {/* Promo / discount code */}
