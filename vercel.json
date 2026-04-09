@@ -1,46 +1,32 @@
 {
   "outputDirectory": "static",
+  "cleanUrls": true,
   "functions": {
     "api/*.js": {
       "memory": 256,
       "maxDuration": 10
     }
   },
-  "routes": [
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/api/:path*" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "headers": [
     {
-      "src": "/api/(.*)",
-      "headers": {
-        "Access-Control-Allow-Origin": "https://www.proarch.tech",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type"
-      },
-      "continue": true
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "https://www.proarch.tech" },
+        { "key": "Access-Control-Allow-Methods", "value": "POST, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type" }
+      ]
     },
     {
-      "src": "/(.*)",
-      "headers": {
-        "X-Content-Type-Options": "nosniff",
-        "X-Frame-Options": "DENY",
-        "Referrer-Policy": "strict-origin-when-cross-origin"
-      },
-      "continue": true
-    },
-    { "handle": "filesystem" },
-    {
-      "src": "/promptperfect-alternative",
-      "dest": "/promptperfect-alternative.html"
-    },
-    {
-      "src": "/blog/promptperfect-alternatives-2026",
-      "dest": "/blog/promptperfect-alternatives-2026.html"
-    },
-    {
-      "src": "/blog/how-to-write-ai-prompts-that-work",
-      "dest": "/blog/how-to-write-ai-prompts-that-work.html"
-    },
-    {
-      "src": "/((?!api/).*)",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
     }
   ]
 }
