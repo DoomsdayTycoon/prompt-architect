@@ -2238,10 +2238,12 @@ function App(){
 
         {/* TOPIC */}
         <Step ico="pen" title={t("describeGoal")} sub={t("describeGoalSub")}>
-          <div style={{position:"relative",marginBottom:12}}>
+          <div style={{marginBottom:12}}>
             <textarea value={topic} onChange={e=>{setTopic(e.target.value);setShow(false);}} placeholder={t("describeGoalPh")} rows={3} style={inp({resize:"vertical"})} />
             {topic.trim()&&(
-              <button onClick={()=>{setTopic("");setShow(false);}} style={{position:"absolute",top:10,right:10,padding:"5px 10px",borderRadius:6,border:"1px solid #fca5a5",background:"#fee2e2",color:"#dc2626",cursor:"pointer",fontSize:11,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",display:"flex",alignItems:"center",gap:4}}>{I.trash(11,"#dc2626")} {t("clear")}</button>
+              <div style={{display:"flex",justifyContent:"flex-end",marginTop:6}}>
+                <button onClick={()=>{setTopic("");setShow(false);}} style={{padding:"4px 10px",borderRadius:6,border:"1px solid #fca5a5",background:"#fee2e2",color:"#dc2626",cursor:"pointer",fontSize:11,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",display:"flex",alignItems:"center",gap:4}}>{I.trash(11,"#dc2626")} {t("clear")}</button>
+              </div>
             )}
           </div>
 
@@ -2408,10 +2410,12 @@ function App(){
         </Step>}
 
         {isExp&&<Step ico="plus" title={t("addInstructions")} sub={t("addInstructionsSub")}>
-          <div style={{position:"relative",marginBottom:extra.trim()?0:8}}>
+          <div style={{marginBottom:extra.trim()?0:8}}>
             <textarea value={extra} onChange={e=>setExtra(e.target.value)} placeholder={t("addInstructionsPh")} rows={2} style={inp({resize:"vertical"})} />
             {extra.trim()&&(
-              <button onClick={()=>setExtra("")} style={{position:"absolute",top:10,right:10,padding:"5px 10px",borderRadius:6,border:"1px solid #fca5a5",background:"#fee2e2",color:"#dc2626",cursor:"pointer",fontSize:11,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",display:"flex",alignItems:"center",gap:4}}>{I.trash(11,"#dc2626")} {t("clear")}</button>
+              <div style={{display:"flex",justifyContent:"flex-end",marginTop:6}}>
+                <button onClick={()=>setExtra("")} style={{padding:"4px 10px",borderRadius:6,border:"1px solid #fca5a5",background:"#fee2e2",color:"#dc2626",cursor:"pointer",fontSize:11,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",display:"flex",alignItems:"center",gap:4}}>{I.trash(11,"#dc2626")} {t("clear")}</button>
+              </div>
             )}
           </div>
           <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
@@ -2422,10 +2426,12 @@ function App(){
         </Step>}
 
         <Step ico="info" title={t("specialReq")} sub={t("specialReqSub")}>
-          <div style={{position:"relative",marginBottom:special.trim()?0:8}}>
+          <div style={{marginBottom:special.trim()?0:8}}>
             <textarea value={special} onChange={e=>setSpecial(e.target.value)} placeholder={t("specialReqPh")} rows={2} style={inp({resize:"vertical"})} />
             {special.trim()&&(
-              <button onClick={()=>setSpecial("")} style={{position:"absolute",top:10,right:10,padding:"5px 10px",borderRadius:6,border:"1px solid #fca5a5",background:"#fee2e2",color:"#dc2626",cursor:"pointer",fontSize:11,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",display:"flex",alignItems:"center",gap:4}}>{I.trash(11,"#dc2626")} {t("clear")}</button>
+              <div style={{display:"flex",justifyContent:"flex-end",marginTop:6}}>
+                <button onClick={()=>setSpecial("")} style={{padding:"4px 10px",borderRadius:6,border:"1px solid #fca5a5",background:"#fee2e2",color:"#dc2626",cursor:"pointer",fontSize:11,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",display:"flex",alignItems:"center",gap:4}}>{I.trash(11,"#dc2626")} {t("clear")}</button>
+              </div>
             )}
           </div>
           <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
