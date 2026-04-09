@@ -739,7 +739,7 @@ const EXAMPLES=[
 function analyzeInput(topic){
   const t=topic.toLowerCase();
   const words=t.split(/\s+/);
-  const signals={vague:false,missingAudience:true,missingScope:true,missingDeliverable:true,hasNumbers:false,hasComparison:false,hasTimeframe:false,short:words.length<12};
+  const signals={vague:false,missingAudience:true,missingScope:true,missingDeliverable:true,hasNumbers:false,hasComparison:false,hasTimeframe:false,short:words.length<12,multiGoal:false};
 
   if(/\b(about|regarding|on the topic of|related to|something about)\b/.test(t)&&words.length<15)signals.vague=true;
   if(/\b(for|targeting|aimed at|audience|readers?|users?|students?|managers?|developers?|executives?|beginners?|seniors?|juniors?)\b/.test(t))signals.missingAudience=false;
@@ -748,6 +748,7 @@ function analyzeInput(topic){
   if(/\d/.test(t))signals.hasNumbers=true;
   if(/\b(vs\.?|versus|compar|against|between|differ|better|worse|alternative)\b/.test(t))signals.hasComparison=true;
   if(/\b(q[1-4]|202[0-9]|timeline|deadline|by |until |before |after |this (week|month|quarter|year))\b/.test(t))signals.hasTimeframe=true;
+  if(/\b(and also|plus also|additionally|as well as|on top of that|also need|also create|also write|also build)\b/.test(t)||(t.match(/\b(create|build|write|analyze|design|develop|make)\b/g)||[]).length>=3)signals.multiGoal=true;
 
   return signals;
 }
@@ -781,6 +782,11 @@ function getSmartEnhancements(topic,taskType,industry,output){
   // Missing scope — add intelligent scoping
   if(signals.missingScope&&!signals.short){
     enhancements.push({type:"scope",label:"Intelligent scoping",text:"Prioritize the most decision-relevant aspects. If the topic is broad, identify the 3-5 most critical dimensions and go deep on those rather than attempting exhaustive coverage."});
+  }
+
+  // Multi-goal detected — enforce task decomposition
+  if(signals.multiGoal){
+    enhancements.push({type:"decomposition",label:"Multi-goal decomposition",text:"This request contains multiple objectives. Address each one as a distinct numbered section with its own deliverable. Complete each section fully before moving to the next. Do not blend objectives together."});
   }
 
   // Comparison detected — add structured comparison framework
@@ -827,6 +833,39 @@ function getSmartEnhancements(topic,taskType,industry,output){
 }
 
 /* ═══════════════════════════════════════════════════════
+   ANTI-VAGUE PASS — Replace vague words with precise alternatives
+   ═══════════════════════════════════════════════════════ */
+const VAGUE_REPLACEMENTS=[
+  [/\bgood\b/gi,"high-quality"],
+  [/\bbad\b/gi,"substandard"],
+  [/\bnice\b/gi,"well-structured"],
+  [/\bprofessional\b/gi,"executive-grade"],
+  [/\bdetailed\b/gi,"granular and specific"],
+  [/\bbetter\b/gi,"measurably improved"],
+  [/\bimprove\b/gi,"optimize"],
+  [/\binteresting\b/gi,"analytically significant"],
+  [/\bhelpful\b/gi,"actionable"],
+  [/\bimportant\b/gi,"high-priority"],
+  [/\ba lot\b/gi,"substantial"],
+  [/\bvery\b/gi,"notably"],
+  [/\breally\b/gi,"demonstrably"],
+  [/\bsome\b/gi,"specific"],
+  [/\bthings\b/gi,"components"],
+  [/\bstuff\b/gi,"material"],
+  [/\bdo something about\b/gi,"address and resolve"],
+  [/\blook into\b/gi,"investigate and assess"],
+  [/\bfigure out\b/gi,"diagnose and determine"],
+  [/\bwork on\b/gi,"develop and implement"],
+];
+function sharpenTopic(text){
+  let result=text;
+  for(const [pattern,replacement] of VAGUE_REPLACEMENTS){
+    result=result.replace(pattern,replacement);
+  }
+  return result;
+}
+
+/* ═══════════════════════════════════════════════════════
    PROMPT BUILD ENGINE
    ═══════════════════════════════════════════════════════ */
 function buildPrompt(p){
@@ -854,13 +893,14 @@ function buildPrompt(p){
 
   // TASK + SMART ENHANCEMENT (adjusted by model tier)
   const enhancements=getSmartEnhancements(topic,taskType,industry,output);
-  const smartContext=enhancements.filter(e=>e.type==="specificity"||e.type==="scope").map(e=>e.text).join("\n\n");
+  const smartContext=enhancements.filter(e=>e.type==="specificity"||e.type==="scope"||e.type==="decomposition").map(e=>e.text).join("\n\n");
   const tierSuffix=tier==="flagship"
     ?"\n\nYour response must be thorough, well-structured, and demonstrate expert-level depth. Deliver genuine professional value  -  not a surface-level overview."
     :tier==="balanced"
     ?"\n\nBe thorough but efficient. Cover all key points with clear structure. Prioritize actionable insights over exhaustive detail."
     :"\n\nBe concise and direct. Focus on the most important points. Use short paragraphs and clear structure. Skip preamble.";
-  const taskBlock=topic+(smartContext?"\n\n"+smartContext:"")+tierSuffix;
+  const sharpTopic=sharpenTopic(topic);
+  const taskBlock=sharpTopic+(smartContext?"\n\n"+smartContext:"")+tierSuffix;
   sec("task",taskBlock);
 
   // ATTACHMENT CONTEXT
