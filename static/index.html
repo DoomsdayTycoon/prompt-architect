@@ -15,6 +15,9 @@
 <meta name="twitter:description" content="Your AI is only as smart as your prompt. Describe any goal, get expert-level results. Free to start.">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='23' stroke='%230891B2' stroke-width='1.8' fill='%230891B208'/%3E%3Cpath d='M12 24h6l3-6 4.5 12 3-6H35' stroke='%230891B2' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='12' cy='24' r='2' fill='%230891B2'/%3E%3Ccircle cx='35' cy='24' r='2' fill='%230891B2'/%3E%3C/svg%3E">
 <style>body{margin:0;background:#f8fafc;}</style>
+<!-- GA4: Replace G-XXXXXXXXXX with your Measurement ID -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
 </head>
 <body>
 <div id="root"></div>
@@ -32,9 +35,9 @@ const SUPABASE_URL="https://whfdtdcplkneviumgrkz.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndoZmR0ZGNwbGtuZXZpdW1ncmt6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2Mzk0MzQsImV4cCI6MjA5MTIxNTQzNH0.xmk6ZPvxt9dmezmDESMI8w6AmL3zErcjWb0T7iNHQAE";
 const supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
-// Analytics: push events to dataLayer for GTM/GA4 (safe no-op if GTM not loaded)
+// Analytics: push events to GA4 via gtag + dataLayer
 window.dataLayer=window.dataLayer||[];
-const trackEvent=(name,params={})=>{window.dataLayer.push({event:name,...params});};
+const trackEvent=(name,params={})=>{if(typeof gtag==="function")gtag("event",name,params);else window.dataLayer.push({event:name,...params});};
 
 const validateEmail=(e)=>typeof e==="string"&&e.length<=254&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 const validatePassword=(p)=>typeof p==="string"&&p.length>=8&&/[A-Z]/.test(p)&&/[a-z]/.test(p)&&/[0-9]/.test(p);
@@ -83,6 +86,8 @@ const I={
   clock:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
   trash:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>,
   wand:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8 19 13M17.8 6.2 19 5M3 21l9-9M12.2 6.2 11 5"/></svg>,
+  share:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>,
+  gift:(s=18,c="currentColor")=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></svg>,
 };
 
 const MM=({id,size=22})=>{const s=size;
@@ -1096,6 +1101,9 @@ function App(){
   const [showResetConfirm,setShowResetConfirm]=useState(false);
   const [showExamples,setShowExamples]=useState(false);
   const [showProfileDD,setShowProfileDD]=useState(false);
+  const [nlEmail,setNlEmail]=useState("");
+  const [nlStatus,setNlStatus]=useState("");
+  const [showReferral,setShowReferral]=useState(false);
   const ref=useRef(null);
   const isExp=mode==="expert";
   const ac=MODELS[model].col;
@@ -1189,9 +1197,35 @@ function App(){
     setTimeout(()=>ref.current?.scrollIntoView({behavior:"smooth",block:"start"}),120);
   },[topic,task,industry,output,model,fileOutput,prompt,user,isExp,usage]);
 
-  const cp=useCallback(()=>{try{navigator.clipboard.writeText(prompt).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2200);});}catch(e){const ta=document.createElement("textarea");ta.value=prompt;ta.style.cssText="position:fixed;left:-9999px;top:-9999px";document.body.appendChild(ta);ta.focus();ta.select();document.execCommand("copy");document.body.removeChild(ta);setCopied(true);setTimeout(()=>setCopied(false),2200);}},[prompt]);
+  const isFree=!usage.is_paid&&usage.subscription_status!=="active";
+  const watermark="\n\n---\nGenerated with Prompt Architect | proarch.tech";
+  const copyText=isFree?prompt+watermark:prompt;
 
-  const exportTxt=useCallback(()=>{const blob=new Blob([prompt],{type:"text/plain"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="prompt-"+(task)+"-"+Date.now()+".txt";a.click();URL.revokeObjectURL(url);},[prompt,task]);
+  const cp=useCallback(()=>{try{navigator.clipboard.writeText(copyText).then(()=>{setCopied(true);trackEvent("prompt_copied",{mode:isExp?"expert":"simple",watermarked:isFree});setTimeout(()=>setCopied(false),2200);});}catch(e){const ta=document.createElement("textarea");ta.value=copyText;ta.style.cssText="position:fixed;left:-9999px;top:-9999px";document.body.appendChild(ta);ta.focus();ta.select();document.execCommand("copy");document.body.removeChild(ta);setCopied(true);setTimeout(()=>setCopied(false),2200);}},[copyText,isExp,isFree]);
+
+  const exportTxt=useCallback(()=>{const blob=new Blob([copyText],{type:"text/plain"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="prompt-"+(task)+"-"+Date.now()+".txt";a.click();URL.revokeObjectURL(url);},[copyText,task]);
+
+  const sharePrompt=useCallback(()=>{
+    const shareText=`Check out this ${TASKS[task].l.toLowerCase()} prompt I built with Prompt Architect:\n\n${topic}\n\nhttps://www.proarch.tech`;
+    if(navigator.share){navigator.share({title:"Prompt Architect",text:shareText,url:"https://www.proarch.tech"}).catch(()=>{});trackEvent("prompt_shared",{method:"native"});}
+    else{navigator.clipboard.writeText(shareText).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2200);});trackEvent("prompt_shared",{method:"clipboard"});}
+  },[task,topic]);
+
+  const handleNewsletter=useCallback(async(e)=>{
+    e.preventDefault();
+    if(!nlEmail||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(nlEmail)){setNlStatus("error");return;}
+    try{
+      const {error}=await supabase.from("newsletter").insert({email:nlEmail.toLowerCase().trim()});
+      if(error&&error.code==="23505"){setNlStatus("exists");return;}
+      if(error)throw error;
+      setNlStatus("success");trackEvent("newsletter_signup");setNlEmail("");
+    }catch(err){setNlStatus("error");}
+  },[nlEmail]);
+
+  const referralLink=user?`https://www.proarch.tech?ref=${user.id.slice(0,8)}`:"";
+  const copyReferral=useCallback(()=>{
+    navigator.clipboard.writeText(referralLink).then(()=>{trackEvent("referral_link_copied");setShowReferral(false);});
+  },[referralLink]);
 
   const loadExample=useCallback((ex)=>{setTopic(ex.topic);setTask(ex.task);setIndustry(ex.industry);setOutput(ex.output);setModel(ex.model);setSelectedFirm("");setSelectedRole("");setShow(false);},[]);
 
@@ -1342,6 +1376,7 @@ function App(){
                   {user&&history.length>0&&(
                     <button onClick={()=>{setShowHistory(!showHistory);setShowProfileDD(false);}}>{I.clock(14,"var(--t2)")} Prompt History ({history.length})</button>
                   )}
+                  <button onClick={()=>{setShowReferral(true);setShowProfileDD(false);}}>{I.gift(14,"var(--t2)")} Refer a friend</button>
                   {!usage.is_paid&&usage.subscription_status!=="active"&&(
                     <button onClick={()=>{setShowPaywall(true);setShowProfileDD(false);}} style={{color:ac+"!important"}}>{I.sparkle(14,ac)} Upgrade to Pro</button>
                   )}
@@ -1634,6 +1669,7 @@ function App(){
               {enhancements.length>0&&<span style={{fontSize:11,color:"#10B981",background:"#10B98114",padding:"2px 8px",borderRadius:5,fontWeight:600,display:"flex",alignItems:"center",gap:3}}>{I.wand(10,"#10B981")} {enhancements.length} smart boost{enhancements.length!==1?"s":""}</span>}
             </div>
             <div style={{display:"flex",gap:6}}>
+              <button onClick={sharePrompt} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 12px",borderRadius:7,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{I.share(12,"var(--t2)")} Share</button>
               <button onClick={exportTxt} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 12px",borderRadius:7,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{I.download(12,"var(--t2)")} .txt</button>
               <button onClick={cp} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 14px",borderRadius:7,border:"none",background:copied?"#10A37F":ac,color:"#fff",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{copied?I.check(12,"#fff"):I.copy(12,"#fff")}{copied?"Copied":"Copy"}</button>
               <button onClick={()=>setShowResetConfirm(true)} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 12px",borderRadius:7,border:"1px solid #fca5a5",background:"#fff5f5",color:"#dc2626",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{I.plus(12,"#dc2626")} New</button>
@@ -1651,6 +1687,7 @@ function App(){
           </div>
           <div style={{padding:"16px 20px",background:"var(--bg)",borderTop:"1px solid var(--bd)",fontSize:12,color:"var(--t3)",lineHeight:1.6}}>
             <p style={{margin:0}}>This prompt has been enhanced with smart audience targeting, reasoning strategies, and domain expertise based on your inputs. Copy it to Claude, ChatGPT, Gemini, or any AI model and paste it directly. The AI will understand the context and deliver better results than a generic prompt.</p>
+            {isFree&&<p style={{margin:"10px 0 0",fontSize:11,color:ac,fontWeight:500}}>Copies include "Generated with Prompt Architect" attribution. <span style={{textDecoration:"underline",cursor:"pointer"}} onClick={()=>setShowPaywall(true)}>Upgrade to Pro</span> to remove it.</p>}
           </div>
           {!user&&promptGenerated&&(
             <div style={{padding:"20px",background:"var(--s2)",borderTop:"1px solid var(--bd)",textAlign:"center"}}>
@@ -1673,6 +1710,25 @@ function App(){
           </div>
         </section>
       )}
+
+      {/* EMAIL CAPTURE */}
+      <section style={{background:"var(--s1)",borderTop:"1px solid var(--bd)",padding:"40px 24px"}}>
+        <div style={{maxWidth:480,margin:"0 auto",textAlign:"center"}}>
+          <div style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:40,height:40,borderRadius:10,background:ac+"10",marginBottom:12}}>{I.mail(20,ac)}</div>
+          <h3 style={{fontSize:18,fontWeight:700,margin:"0 0 6px",color:"var(--t1)"}}>Get prompt engineering tips</h3>
+          <p style={{fontSize:13,color:"var(--t3)",margin:"0 0 16px",lineHeight:1.5}}>Weekly insights on writing better AI prompts. No spam, unsubscribe anytime.</p>
+          {nlStatus==="success"?(
+            <div style={{padding:"12px 20px",borderRadius:10,background:"#10B98114",color:"#10B981",fontSize:13,fontWeight:600}}>{I.check(14,"#10B981")} You are on the list.</div>
+          ):(
+            <form onSubmit={handleNewsletter} style={{display:"flex",gap:8,maxWidth:400,margin:"0 auto"}}>
+              <input type="email" value={nlEmail} onChange={e=>setNlEmail(e.target.value)} placeholder="Your email" style={{flex:1,padding:"11px 14px",borderRadius:9,border:"1.5px solid "+(nlStatus==="error"?"#ef4444":"var(--bd)"),background:"var(--bg)",color:"var(--t1)",fontSize:13,fontFamily:"var(--f)",outline:"none"}}/>
+              <button type="submit" style={{padding:"11px 20px",borderRadius:9,border:"none",background:ac,color:"#fff",fontSize:13,fontWeight:600,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s",whiteSpace:"nowrap"}}>Subscribe</button>
+            </form>
+          )}
+          {nlStatus==="exists"&&<p style={{fontSize:11,color:ac,marginTop:8}}>This email is already subscribed.</p>}
+          {nlStatus==="error"&&<p style={{fontSize:11,color:"#ef4444",marginTop:8}}>Please enter a valid email address.</p>}
+        </div>
+      </section>
 
       {/* FOOTER */}
       <footer style={{borderTop:"1px solid var(--bd)",background:"var(--s1)",padding:"36px 24px 32px"}}>
@@ -1736,6 +1792,28 @@ function App(){
           <div style={{marginTop:authMode==="signup"?14:20,textAlign:"center",fontSize:13,color:"var(--t2)"}}>
             {authMode==="signup"?(<>Already have an account? <button onClick={()=>{setAuthMode("login");setAuthErr("");}} style={{border:"none",background:"none",color:ac,cursor:"pointer",fontWeight:700,fontFamily:"var(--f)"}}>Sign in</button></>):(<>Don't have an account? <button onClick={()=>{setAuthMode("signup");setAuthErr("");}} style={{border:"none",background:"none",color:ac,cursor:"pointer",fontWeight:700,fontFamily:"var(--f)"}}>Sign up free</button></>)}
           </div>
+        </div>
+      </div>
+    )}
+
+    {/* REFERRAL MODAL */}
+    {showReferral&&(
+      <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,.5)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:2000,padding:20}} onClick={()=>setShowReferral(false)}>
+        <div style={{background:"var(--s1)",borderRadius:16,padding:32,maxWidth:420,width:"100%",boxShadow:"0 20px 60px rgba(0,0,0,.15)",animation:"slideDown .25s ease"}} onClick={(e)=>e.stopPropagation()}>
+          <div style={{display:"flex",justifyContent:"center",marginBottom:16}}>
+            <div style={{width:52,height:52,borderRadius:14,background:ac+"10",display:"flex",alignItems:"center",justifyContent:"center"}}>{I.gift(26,ac)}</div>
+          </div>
+          <h3 style={{fontSize:20,fontWeight:700,margin:"0 0 8px",textAlign:"center",color:"var(--t1)"}}>Give 30 days, get 30 days</h3>
+          <p style={{fontSize:13,color:"var(--t2)",margin:"0 0 20px",textAlign:"center",lineHeight:1.6}}>Share your referral link. When someone signs up and subscribes, you both get 30 days of Pro for free.</p>
+          <div style={{background:"var(--bg)",border:"1px solid var(--bd)",borderRadius:10,padding:"12px 14px",display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
+            <code style={{flex:1,fontSize:12,color:"var(--t2)",fontFamily:"var(--m)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{referralLink}</code>
+            <button onClick={copyReferral} style={{padding:"6px 14px",borderRadius:7,border:"none",background:ac,color:"#fff",fontSize:12,fontWeight:600,fontFamily:"var(--f)",cursor:"pointer",whiteSpace:"nowrap"}}>{I.copy(12,"#fff")} Copy</button>
+          </div>
+          <div style={{display:"flex",gap:8}}>
+            <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent("I use Prompt Architect to turn vague ideas into expert AI prompts. Try it free:")}&url=${encodeURIComponent(referralLink)}`} target="_blank" rel="noopener" style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:6,padding:"10px",borderRadius:8,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",fontSize:12,fontWeight:600,fontFamily:"var(--f)",textDecoration:"none",cursor:"pointer"}}>Share on X</a>
+            <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(referralLink)}`} target="_blank" rel="noopener" style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:6,padding:"10px",borderRadius:8,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",fontSize:12,fontWeight:600,fontFamily:"var(--f)",textDecoration:"none",cursor:"pointer"}}>Share on LinkedIn</a>
+          </div>
+          <button onClick={()=>setShowReferral(false)} style={{width:"100%",marginTop:14,padding:"10px",borderRadius:8,border:"1px solid var(--bd)",background:"transparent",color:"var(--t3)",fontSize:12,fontWeight:500,fontFamily:"var(--f)",cursor:"pointer"}}>Close</button>
         </div>
       </div>
     )}
