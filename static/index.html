@@ -1307,7 +1307,7 @@ function App(){
     supabase.auth.getSession().then(({data:{session}})=>{
       if(session?.user){
         const u=session.user;
-        setUser({name:u.user_metadata?.name||u.email?.split("@")[0]||"User",email:u.email});
+        setUser({id:u.id,name:u.user_metadata?.name||u.email?.split("@")[0]||"User",email:u.email});
         loadHistoryFromDB().then(h=>setHistory(h));
         supabase.rpc("get_usage_status").then(({data})=>{if(data&&!data.error)setUsage(data);});
       }
@@ -1316,7 +1316,7 @@ function App(){
     const {data:{subscription}}=supabase.auth.onAuthStateChange((event,session)=>{
       if(event==="SIGNED_IN"&&session?.user){
         const u=session.user;
-        setUser({name:u.user_metadata?.name||u.email?.split("@")[0]||"User",email:u.email});
+        setUser({id:u.id,name:u.user_metadata?.name||u.email?.split("@")[0]||"User",email:u.email});
         loadHistoryFromDB().then(h=>setHistory(h));
         supabase.rpc("get_usage_status").then(({data})=>{if(data&&!data.error)setUsage(data);});
       }else if(event==="SIGNED_OUT"){
@@ -1406,7 +1406,7 @@ function App(){
     }catch(err){setNlStatus("error");}
   },[nlEmail]);
 
-  const referralLink=user?`https://www.proarch.tech?ref=${user.id.slice(0,8)}`:"";
+  const referralLink=user?.id?`https://www.proarch.tech?ref=${user.id.slice(0,8)}`:"";
   const copyReferral=useCallback(()=>{
     navigator.clipboard.writeText(referralLink).then(()=>{trackEvent("referral_link_copied");setShowReferral(false);});
   },[referralLink]);
