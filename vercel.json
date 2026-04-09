@@ -10,6 +10,9 @@
     { "source": "/api/checkout", "destination": "/api/checkout" },
     { "source": "/api/redeem", "destination": "/api/redeem" },
     { "source": "/api/webhook", "destination": "/api/webhook" },
+    { "source": "/promptperfect-alternative", "destination": "/promptperfect-alternative.html" },
+    { "source": "/blog/promptperfect-alternatives-2026", "destination": "/blog-promptperfect-alternatives.html" },
+    { "source": "/blog/how-to-write-ai-prompts-that-work", "destination": "/blog-how-to-write-ai-prompts.html" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "headers": [
