@@ -1880,7 +1880,7 @@ function App(){
       const res=await fetch("/api/checkout",{
         method:"POST",
         headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({plan:paywallPlan,email:user.email,userId:session?.user?.id})
+        body:JSON.stringify({plan:paywallPlan,email:user.email,userId:session?.user?.id,promoCode:promoCode.trim()||undefined})
       });
       const data=await res.json();
       if(data.url){trackEvent("subscription_started",{plan:paywallPlan});window.location.href=data.url;}
@@ -2632,13 +2632,13 @@ function App(){
             </div>
             {/* CTA */}
             <button disabled={checkoutLoading} onClick={handleCheckout} style={{width:"100%",padding:14,borderRadius:10,border:"none",background:checkoutLoading?ac+"80":ac,color:"#fff",fontSize:14,fontWeight:700,fontFamily:"var(--f)",cursor:checkoutLoading?"not-allowed":"pointer",transition:"all .2s",boxShadow:"0 4px 20px "+ac+"35"}}>{checkoutLoading?"Redirecting to checkout...":"Upgrade Now"}</button>
-            {/* Promo code section */}
+            {/* Promo / discount code */}
             <div style={{marginTop:16,padding:"14px 0 0",borderTop:"1px solid var(--bd)"}}>
               <div style={{display:"flex",gap:8,alignItems:"center"}}>
-                <input value={promoCode} onChange={(e)=>{setPromoCode(e.target.value.toUpperCase());setPromoMsg("");}} placeholder="Promo code" maxLength={14} style={{flex:1,padding:"10px 12px",borderRadius:8,border:"1.5px solid var(--bd)",background:"var(--bg)",color:"var(--t1)",fontSize:13,fontFamily:"'IBM Plex Mono',monospace",letterSpacing:1,outline:"none",textTransform:"uppercase"}} />
-                <button disabled={promoLoading||!promoCode.trim()} onClick={handlePromoRedeem} style={{padding:"10px 16px",borderRadius:8,border:"none",background:promoCode.trim()?"var(--t1)":"var(--bd)",color:promoCode.trim()?"#fff":"var(--t3)",fontSize:12,fontWeight:700,fontFamily:"var(--f)",cursor:promoCode.trim()?"pointer":"not-allowed",transition:"all .2s"}}>{promoLoading?"...":"Apply"}</button>
+                <input value={promoCode} onChange={(e)=>{setPromoCode(e.target.value.toUpperCase());}} placeholder={uiLang==="no"?"Rabattkode":"Discount code"} maxLength={20} style={{flex:1,padding:"10px 12px",borderRadius:8,border:"1.5px solid "+(promoCode.trim()?"#10B981":"var(--bd)"),background:promoCode.trim()?"#10B98108":"var(--bg)",color:"var(--t1)",fontSize:13,fontFamily:"'IBM Plex Mono',monospace",letterSpacing:1,outline:"none",textTransform:"uppercase",transition:"all .15s"}} />
+                {promoCode.trim()&&<div style={{display:"flex",alignItems:"center",gap:4,fontSize:12,color:"#10B981",fontWeight:600,whiteSpace:"nowrap"}}>{I.check(14,"#10B981")}{uiLang==="no"?"Brukes ved betaling":"Applied at checkout"}</div>}
               </div>
-              {promoMsg&&<div style={{fontSize:12,marginTop:8,color:promoMsg.includes("!")||promoMsg.includes("Pro")?"#10B981":"#dc2626",fontWeight:500}}>{promoMsg}</div>}
+              <div style={{fontSize:11,color:"var(--t3)",marginTop:6}}>{uiLang==="no"?"Skriv inn en rabattkode for å få avslag på abonnementet. Koden brukes automatisk ved betaling.":"Enter a discount code to save on your subscription. The code is applied automatically at checkout."}</div>
             </div>
             <button onClick={()=>{setShowPaywall(false);setPromoCode("");setPromoMsg("");}} style={{width:"100%",padding:10,borderRadius:8,border:"none",background:"transparent",color:"var(--t3)",fontSize:12,fontFamily:"var(--f)",cursor:"pointer",marginTop:8}}>Maybe later</button>
           </div>

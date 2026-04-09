@@ -55,7 +55,7 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'Content-Type must be application/json.' });
     }
 
-    const { plan, email, userId } = req.body || {};
+    const { plan, email, userId, promoCode } = req.body || {};
 
     // Validate plan
     if (!plan || typeof plan !== 'string' || !PRICES[plan]) {
@@ -72,7 +72,8 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'Invalid user ID.' });
     }
 
-    const session = await stripe.checkout.sessions.create({
+    // Build checkout session config
+    const sessionConfig = {
       mode: 'subscription',
       payment_method_types: ['card'],
       customer_email: email,
@@ -92,7 +93,31 @@ module.exports = async (req, res) => {
           supabase_user_id: userId,
         },
       },
-    });
+    };
+
+    // Apply Stripe promotion code if provided
+    if (promoCode && typeof promoCode === 'string' && promoCode.trim().length > 0) {
+      try {
+        const promotionCodes = await stripe.promotionCodes.list({
+          code: promoCode.trim().toUpperCase(),
+          active: true,
+          limit: 1,
+        });
+        if (promotionCodes.data.length > 0) {
+          sessionConfig.discounts = [{ promotion_code: promotionCodes.data[0].id }];
+        }
+      } catch (promoErr) {
+        // Promo lookup failed — proceed without discount
+        console.warn('Promo code lookup failed:', promoErr.message);
+      }
+    }
+
+    // Allow user to enter promo on checkout page if none was pre-applied
+    if (!sessionConfig.discounts) {
+      sessionConfig.allow_promotion_codes = true;
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionConfig);
 
     return res.status(200).json({ url: session.url });
   } catch (err) {
