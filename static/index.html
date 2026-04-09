@@ -231,6 +231,7 @@ const UI={
   proMember:{en:"Pro member",no:"Pro-medlem"},
   upgradePro:{en:"Upgrade to Pro",no:"Oppgrader til Pro"},
   referFriend:{en:"Refer a friend",no:"Inviter en venn"},
+  manageSubscription:{en:"Manage subscription",no:"Administrer abonnement"},
   promptHistory:{en:"Prompt History",no:"Prompthistorikk"},
 
   // Hero
@@ -1985,6 +1986,9 @@ function App(){
                   </div>
                   {user&&history.length>0&&(
                     <button onClick={()=>{setShowHistory(!showHistory);setShowProfileDD(false);}}>{I.clock(14,"var(--t2)")} {t("promptHistory")} ({history.length})</button>
+                  )}
+                  {usage.is_paid&&(
+                    <button onClick={async()=>{setShowProfileDD(false);try{const res=await fetch("/api/portal",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:user.email})});const data=await res.json();if(data.url)window.location.href=data.url;else alert(data.error||"Could not open account portal.");}catch(e){alert("Something went wrong.");}}}>{I.sliders(14,"var(--t2)")} {t("manageSubscription")}</button>
                   )}
                   <button onClick={()=>{setShowReferral(true);setShowProfileDD(false);}}>{I.gift(14,"var(--t2)")} {t("referFriend")}</button>
                   {!usage.is_paid&&usage.subscription_status!=="active"&&(
