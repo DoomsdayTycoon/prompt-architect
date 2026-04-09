@@ -13,9 +13,12 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Prompt Architect — Get Expert AI Results Instantly">
 <meta name="twitter:description" content="Your AI is only as smart as your prompt. Describe any goal, get expert-level results. Free to start.">
+<link rel="canonical" href="https://www.proarch.tech">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Prompt Architect","url":"https://www.proarch.tech","applicationCategory":"ProductivityApplication","operatingSystem":"Web","description":"AI prompt generator that turns vague ideas into expert-level prompts with strategy, structure, and domain expertise built in. Works with ChatGPT, Claude, Gemini.","offers":[{"@type":"Offer","price":"0","priceCurrency":"USD","description":"Free tier with limited prompts"},{"@type":"Offer","price":"9","priceCurrency":"USD","description":"Pro monthly plan","billingDuration":"P1M"},{"@type":"Offer","price":"72","priceCurrency":"USD","description":"Pro annual plan","billingDuration":"P1Y"}],"creator":{"@type":"Organization","name":"OpenCraft Labs","url":"https://www.proarch.tech"}}</script>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='23' stroke='%230891B2' stroke-width='1.8' fill='%230891B208'/%3E%3Cpath d='M12 24h6l3-6 4.5 12 3-6H35' stroke='%230891B2' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='12' cy='24' r='2' fill='%230891B2'/%3E%3Ccircle cx='35' cy='24' r='2' fill='%230891B2'/%3E%3C/svg%3E">
 <style>body{margin:0;background:#f8fafc;}</style>
-<!-- GA4: Replace G-TMC03JP6HJ with your Measurement ID -->
+<!-- GA4 -->
+<script>if(localStorage.getItem("pa_cookies")==="0")window['ga-disable-G-TMC03JP6HJ']=true;</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-TMC03JP6HJ"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-TMC03JP6HJ');</script>
 </head>
@@ -1104,6 +1107,8 @@ function App(){
   const [nlEmail,setNlEmail]=useState("");
   const [nlStatus,setNlStatus]=useState("");
   const [showReferral,setShowReferral]=useState(false);
+  const [showCookies,setShowCookies]=useState(()=>!localStorage.getItem("pa_cookies"));
+  const [refCode]=useState(()=>{const p=new URLSearchParams(window.location.search).get("ref");if(p&&/^[a-f0-9]{8}$/i.test(p)){window.history.replaceState({},"",window.location.pathname);return p;}return null;});
   const ref=useRef(null);
   const isExp=mode==="expert";
   const ac=MODELS[model].col;
@@ -1250,10 +1255,11 @@ function App(){
         if(!cleanName||cleanName.length<2||cleanName.length>100){setAuthErr("Name must be 2-100 characters");setAuthSubmitting(false);return;}
         if(!validateEmail(authEmail)){setAuthErr("Invalid email");setAuthSubmitting(false);return;}
         if(!validatePassword(authPassword)){setAuthErr("Password must be 8+ characters with uppercase, lowercase, and a number");setAuthSubmitting(false);return;}
-        const {data,error}=await supabase.auth.signUp({email:authEmail,password:authPassword,options:{data:{name:cleanName}}});
+        const meta={name:cleanName};if(refCode)meta.referred_by=refCode;
+        const {data,error}=await supabase.auth.signUp({email:authEmail,password:authPassword,options:{data:meta}});
         if(error){setAuthErr(error.message);setAuthSubmitting(false);return;}
         if(data.user&&!data.session){setAuthErr("Check your email for a confirmation link");setAuthSubmitting(false);return;}
-        trackEvent("account_created");
+        trackEvent("account_created",{referred:!!refCode});
         setShowAuth(false);setAuthEmail("");setAuthPassword("");setAuthName("");
       }else{
         const {data,error}=await supabase.auth.signInWithPassword({email:authEmail,password:authPassword});
@@ -1405,6 +1411,13 @@ function App(){
             <div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"5px 14px",borderRadius:20,background:ac+"10",marginBottom:16,fontSize:12,fontWeight:600,color:ac}}>Smart Prompt Engineering</div>
             <h1 style={{fontSize:"clamp(26px, 3.5vw, 40px)",fontWeight:800,margin:"0 0 14px",lineHeight:1.15,color:"var(--t1)",letterSpacing:"-.4px"}}>Stop struggling with AI. <span style={{color:ac}}>Start getting expert results.</span></h1>
             <p style={{fontSize:"clamp(14px, 1.4vw, 17px)",color:"var(--t2)",margin:"0 auto",lineHeight:1.65,maxWidth:600}}>Your AI is only as smart as your prompt. Describe any goal and we inject strategy, structure, and domain expertise automatically -- so every AI interaction delivers.</p>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:16,marginTop:16,fontSize:12,color:"var(--t3)"}}>
+              <span style={{display:"flex",alignItems:"center",gap:4}}>{I.users(13,"var(--t3)")} Trusted by professionals</span>
+              <span style={{width:1,height:14,background:"var(--bd)"}}/>
+              <span style={{display:"flex",alignItems:"center",gap:4}}>{I.bolt(13,"var(--t3)")} 15 industry contexts</span>
+              <span style={{width:1,height:14,background:"var(--bd)"}} className="hero-art"/>
+              <span style={{display:"flex",alignItems:"center",gap:4}} className="hero-art">{I.sparkle(13,"var(--t3)")} 5 AI models supported</span>
+            </div>
           </div>
 
           {/* HOW IT WORKS — horizontal, seamless, no box */}
@@ -1890,6 +1903,17 @@ function App(){
             </div>
             <button onClick={()=>{setShowPaywall(false);setPromoCode("");setPromoMsg("");}} style={{width:"100%",padding:10,borderRadius:8,border:"none",background:"transparent",color:"var(--t3)",fontSize:12,fontFamily:"var(--f)",cursor:"pointer",marginTop:8}}>Maybe later</button>
           </div>
+        </div>
+      </div>
+    )}
+
+    {/* COOKIE CONSENT */}
+    {showCookies&&(
+      <div style={{position:"fixed",bottom:0,left:0,right:0,background:"var(--s1)",borderTop:"1px solid var(--bd)",padding:"14px 24px",display:"flex",alignItems:"center",justifyContent:"center",gap:16,flexWrap:"wrap",zIndex:3000,boxShadow:"0 -2px 12px rgba(0,0,0,.06)",animation:"up .3s ease"}}>
+        <p style={{margin:0,fontSize:12,color:"var(--t2)",lineHeight:1.5,maxWidth:600}}>We use cookies for analytics to improve your experience. By continuing to use this site, you agree to our use of cookies.</p>
+        <div style={{display:"flex",gap:8}}>
+          <button onClick={()=>{localStorage.setItem("pa_cookies","1");setShowCookies(false);}} style={{padding:"7px 18px",borderRadius:7,border:"none",background:ac,color:"#fff",fontSize:12,fontWeight:600,fontFamily:"var(--f)",cursor:"pointer",whiteSpace:"nowrap"}}>Accept</button>
+          <button onClick={()=>{localStorage.setItem("pa_cookies","0");setShowCookies(false);window['ga-disable-G-TMC03JP6HJ']=true;}} style={{padding:"7px 18px",borderRadius:7,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",fontSize:12,fontWeight:600,fontFamily:"var(--f)",cursor:"pointer",whiteSpace:"nowrap"}}>Decline</button>
         </div>
       </div>
     )}
