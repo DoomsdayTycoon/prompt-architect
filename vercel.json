@@ -1,6 +1,6 @@
 {
   "outputDirectory": "static",
-  "cleanUrls": true,
+  "cleanUrls": false,
   "functions": {
     "api/*.js": {
       "memory": 256,
@@ -9,6 +9,9 @@
   },
   "rewrites": [
     { "source": "/api/:path*", "destination": "/api/:path*" },
+    { "source": "/promptperfect-alternative", "destination": "/promptperfect-alternative.html" },
+    { "source": "/blog/promptperfect-alternatives-2026", "destination": "/blog/promptperfect-alternatives-2026.html" },
+    { "source": "/blog/how-to-write-ai-prompts-that-work", "destination": "/blog/how-to-write-ai-prompts-that-work.html" },
     { "source": "/:path((?!api/)(?!blog/)(?!promptperfect-alternative)(?!robots\\.txt)(?!sitemap\\.xml).*)", "destination": "/index.html" }
   ],
   "headers": [
