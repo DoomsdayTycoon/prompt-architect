@@ -1887,7 +1887,7 @@ function App(){
       else{alert(data.error||"Something went wrong. Please try again.");}
     }catch(err){alert("Failed to start checkout. Please try again.");}
     setCheckoutLoading(false);
-  },[user,paywallPlan]);
+  },[user,paywallPlan,promoCode]);
 
   const handlePromoRedeem=useCallback(async()=>{
     if(!user||!promoCode.trim())return;
