@@ -2012,8 +2012,12 @@ function App(){
       .profile-dd button{display:flex;align-items:center;gap:10px;width:100%;padding:10px 14px;border:none;background:transparent;color:var(--t2);font-size:13px;font-family:var(--f);cursor:pointer;border-radius:8px;transition:background .15s}
       .profile-dd button:hover{background:var(--s2)}
     `}</style>
+    {/* TOP OFFER BANNER */}
+    {(!user||!usage.is_paid)&&<div style={{position:"fixed",top:0,left:0,right:0,zIndex:1001,background:ac,color:"#fff",textAlign:"center",padding:"6px 16px",fontSize:12,fontWeight:500,letterSpacing:.2}}>
+      {t("welcomeOffer")}
+    </div>}
     {/* STICKY NAV */}
-    <nav style={{position:"fixed",top:0,left:0,right:0,background:"rgba(255,255,255,.85)",backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)",borderBottom:"1px solid var(--bd)",zIndex:1000,padding:"0 24px"}}>
+    <nav style={{position:"fixed",top:(!user||!usage.is_paid)?28:0,left:0,right:0,background:"rgba(255,255,255,.85)",backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)",borderBottom:"1px solid var(--bd)",zIndex:1000,padding:"0 24px",transition:"top .2s"}}>
       <div style={{maxWidth:1200,margin:"0 auto",display:"flex",justifyContent:"space-between",alignItems:"center",height:56}}>
         <div style={{display:"flex",alignItems:"center",gap:10}}>
           <svg width="30" height="30" viewBox="0 0 48 48" fill="none">
@@ -2068,7 +2072,7 @@ function App(){
       </div>
     </nav>
 
-    <div style={{minHeight:"100vh",background:"var(--bg)",color:"var(--t1)",fontFamily:"var(--f)",paddingTop:56}}>
+    <div style={{minHeight:"100vh",background:"var(--bg)",color:"var(--t1)",fontFamily:"var(--f)",paddingTop:(!user||!usage.is_paid)?84:56}}>
 
       {/* COMPACT HERO + HOW IT WORKS — all one seamless section */}
       <section style={{background:"linear-gradient(180deg, #f0f9ff 0%, var(--bg) 100%)",padding:"clamp(20px,4vw,32px) clamp(12px,3vw,24px) 0",position:"relative",overflow:"hidden"}}>
@@ -2086,12 +2090,6 @@ function App(){
               <span style={{width:1,height:14,background:"var(--bd)"}} className="hero-art"/>
               <span style={{display:"flex",alignItems:"center",gap:4}} className="hero-art">{I.sparkle(13,"var(--t3)")} {t("modelsSupported")}</span>
             </div>
-            {(!user||!usage.is_paid)&&<div style={{marginTop:14,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
-              <div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"6px 16px",borderRadius:8,background:"var(--s1)",border:"1px solid "+ac+"25",fontSize:12,color:"var(--t2)"}}>
-                <span style={{fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:5,background:ac+"14",color:ac,letterSpacing:.5}}>{t("limitedOffer")}</span>
-                <span>{t("welcomeOffer")}</span>
-              </div>
-            </div>}
           </div>
 
           {/* HOW IT WORKS — horizontal, seamless, no box */}
