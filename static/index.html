@@ -615,344 +615,470 @@ function buildPrompt(p){
 
   // FILE OUTPUT FORMAT — Professional-grade formatting standards per file type
   const FILE_INST={
-    pdf:`Design as a professional, print-ready PDF document. Follow these strict formatting standards:
+    pdf:`Design as a Goldman Sachs / J.P. Morgan quality PDF document suitable for C-suite presentation. Every element must be precisely formatted with zero visual defects.
 
 DOCUMENT STRUCTURE:
-- Title page: document title (bold, 24pt), subtitle, author name, date, classification level, and organization placeholder
-- Table of contents with page numbers for documents longer than 3 pages
-- Numbered sections and subsections (1.0, 1.1, 1.2) with consistent heading hierarchy
-- Page numbers in footer, document title in header
-- Clear page breaks between major sections
+- Title page: document title (bold, 28pt Helvetica Neue or Arial), subtitle (16pt, regular weight, 8pt below title), author/team name, date (format: Month DD, YYYY), classification ("Confidential" or "For Discussion Purposes Only"), organization logo placeholder top-right
+- Table of contents for any document over 3 pages, with right-aligned page numbers connected by dot leaders
+- Numbered sections (1.0, 1.1, 1.2) with consistent heading hierarchy throughout
+- Page numbers centered in footer (9pt), document title left-aligned in header (8pt, gray #999)
+- Hard page breaks before every major section (never start a major section mid-page)
+- Footer: thin 0.5pt navy rule above footer content
 
 TYPOGRAPHY & LAYOUT:
-- Body text: serif font (Times New Roman 11pt or Georgia 11pt), 1.15 line spacing
-- Headings: sans-serif font (Arial or Helvetica), bold  -  H1: 18pt, H2: 14pt, H3: 12pt
-- Margins: 1 inch all sides (standard professional)
-- Paragraphs: justified alignment, 6pt spacing after each paragraph
-- Pull quotes or key findings in indented, bordered callout boxes
+- Body text: 10.5pt Arial or Helvetica, #333333, 1.35 line spacing, left-aligned (not justified -- prevents uneven word spacing)
+- H1: 20pt Arial Bold, #1B2A4A, 24pt space before, 8pt space after, with 1pt navy rule below spanning full text width
+- H2: 14pt Arial Bold, #1B2A4A, 18pt space before, 6pt space after
+- H3: 11pt Arial Bold, #333333, 12pt space before, 4pt space after
+- Margins: 0.75 inch top/bottom, 1 inch left/right (standard IB layout)
+- Paragraph spacing: 6pt after each paragraph, never use double line breaks
+- Key findings: light blue (#EBF5FB) background callout box with 10px internal padding, 1pt left border in navy, 10pt body text
+- Bullet points: 9.5pt, 6pt spacing between bullets, em dash style (--) not round dots
 
-TABLE FORMATTING:
-- Header row: bold white text on dark navy background (#1B2A4A)
-- Alternating row shading: white and light gray (#F5F5F5)
-- All borders: thin, consistent gray lines  -  no thick or colored borders
-- Numbers right-aligned, text left-aligned, headers center-aligned
-- Table title above each table in bold, table source/notes below in italic 9pt
-- Column widths proportional to content  -  no truncation, no excessive whitespace
-- Negative values in parentheses: ($12.4M)
-- Percentages with 1 decimal, currencies with 2 decimals, commas for thousands
+TABLE FORMATTING (CRITICAL -- this determines document quality):
+- Table width: 100% of text area, never overflow margins
+- Header row: 10pt Arial Bold, white (#FFFFFF) text on navy (#1B2A4A) background, 10px cell padding top/bottom, 12px left/right padding
+- Sub-header rows (if needed): 10pt Arial Bold on medium gray (#E8E8E8)
+- Data rows: 9.5pt Arial Regular, 8px cell padding top/bottom, 12px left/right padding
+- Alternating row shading: white (#FFFFFF) and very light gray (#F8F9FA) -- subtle, never strong contrast
+- Borders: 0.5pt solid #D0D5DD on all cell borders, 1pt solid #1B2A4A on header bottom border
+- Column alignment: text LEFT-aligned, numbers RIGHT-aligned, headers match their column data alignment
+- Number formatting: right-align all numbers, use commas for thousands (1,234,567), 1 decimal for percentages (12.3%), 2 decimals for currencies ($1,234.56), negative values in parentheses with no minus sign: ($12.4M)
+- Column widths: calculate proportional to longest content in each column PLUS 24px padding -- NEVER allow text truncation, wrapping to more than 2 lines, or column overlap
+- Table title: 10pt Bold above table with 4pt space below, format "Table N: [Descriptive Title]"
+- Table notes/source: 8pt Italic below table with 4pt space above, format "Source: [source]. Note: [any caveats]"
+- Minimum column width: 60px -- no column should be narrower
+- If table exceeds page width: switch to landscape orientation for that page, or split into two tables
+- NEVER place two tables adjacent horizontally -- always stack vertically with 16pt space between
 
 FIGURES & CHARTS:
-- Numbered sequentially (Figure 1, Figure 2)
-- Title above stating the analytical conclusion  -  not just the topic
-- Source line below in italic
-- Color scheme: navy (#1B2A4A), steel blue (#4472C4), accent gray (#A5A5A5)  -  no bright or clashing colors
+- Figure title above: "Figure N: [Insight statement, not just topic]" in 10pt Bold
+- Charts: clean axes with 8pt labels, no gridlines unless essential (then light gray dashed 0.25pt)
+- Color palette: navy (#1B2A4A), steel blue (#4472C4), teal (#0891B2), medium gray (#A5A5A5), light gray (#D9D9D9) -- max 5 colors per chart
+- Data labels directly on bars/lines in 8pt, minimize legend usage
+- Source line below: 8pt Italic gray, 4pt above
+- White space: 12pt above figure title, 16pt below source line
 
-PROFESSIONAL STANDARDS:
-- Executive summary on page 1 or 2 (before the detailed analysis)
-- Appendices for supporting data, methodology notes, and source citations
-- Footnotes for caveats and clarifications  -  not inline parentheticals
-- Consistent date format throughout (e.g., April 8, 2026 or 2026-04-08)
-- All claims traceable to data or cited source`,
+CRITICAL DO-NOT RULES:
+- NEVER overlap text, columns, rows, or visual elements -- if content is too wide, restructure or paginate
+- NEVER truncate numbers, labels, or headers -- expand column width or abbreviate with a footnote
+- NEVER use bright colors, decorative fonts, clip art, or stock photography
+- NEVER leave orphan/widow lines (single line at top/bottom of page)
+- NEVER hardcode line breaks inside table cells to force-fit content
+- NEVER use font sizes below 8pt for any element
+- Every number must be formatted consistently within its column -- no mixing of formats
+- Every table and figure must have both a title above and source below`,
 
-    word:`Design as a professional Word/DOCX document ready for corporate distribution. Follow these strict formatting standards:
+    word:`Design as a professional Word/DOCX document at the quality standard of a Big 4 consulting deliverable or top-tier law firm memo. Zero formatting inconsistencies allowed.
 
 DOCUMENT STRUCTURE:
-- Title page with document title, subtitle, author, date, version, and confidentiality level
-- Auto-generated Table of Contents using Word heading styles (Heading 1, 2, 3)
-- Section numbering (1.0, 1.1, 1.2) using Word's built-in numbering
-- Headers: document title left, page number right
-- Footers: confidentiality notice or organization name
+- Title page: document title (Calibri 26pt Bold, #1B2A4A), subtitle (14pt Regular, #555), author/team, date (Month DD, YYYY), version number, confidentiality marking, thin navy rule separating title from metadata
+- Auto-generated Table of Contents using Word Heading styles (Heading 1, 2, 3) with dot leaders and right-aligned page numbers
+- Section numbering (1.0, 1.1, 1.2) using Word built-in multilevel list linked to Heading styles
+- Header: document title left (8pt Calibri, gray #999), thin 0.5pt rule below
+- Footer: "Page X of Y" centered (8pt Calibri), confidentiality notice right-aligned (8pt, gray)
+- Hard page breaks before every Heading 1 section
 
 STYLES & TYPOGRAPHY:
-- Body: Calibri 11pt, 1.15 spacing, justified alignment
-- Heading 1: Calibri 16pt bold, dark navy (#1B2A4A), 18pt space before
-- Heading 2: Calibri 13pt bold, dark gray (#333333), 12pt space before
-- Heading 3: Calibri 11pt bold italic, 6pt space before
-- Bullet lists: consistent indentation, round bullets for L1, dashes for L2
-- Numbered lists: Arabic numerals, consistent indentation
-- Captions: Calibri 9pt italic for tables and figures
+- Body: Calibri 11pt, #333333, 1.25 line spacing, left-aligned (not justified), 6pt space after paragraphs
+- Heading 1: Calibri 18pt Bold, #1B2A4A, 24pt space before, 8pt space after, 1pt navy bottom border spanning full width
+- Heading 2: Calibri 14pt Bold, #1B2A4A, 16pt space before, 6pt space after
+- Heading 3: Calibri 11.5pt Bold, #333333, 12pt space before, 4pt space after
+- Bullet lists: Calibri 10.5pt, em dash (--) style, 4pt space between items, 12pt left indent, 6pt hanging indent
+- Numbered lists: Arabic numerals, same spacing as bullets, bold number with regular text
+- Captions: Calibri 9pt Italic, #666, 4pt above/below
+- Key findings callout: light blue (#EBF5FB) shaded paragraph, 1pt navy left border, 10pt internal padding all sides
 
-TABLE FORMATTING:
-- Use Word's "Grid Table 4 - Accent 1" style or equivalent professional style
-- Header row: bold white text on navy background, repeated on each page
-- Alternating row banding in light gray
-- Numbers right-aligned with consistent formatting (commas, decimals, currency symbols)
-- Negative values: red font in parentheses
-- Table title above in bold, source/notes below in italic 9pt
-- Ensure tables do not break awkwardly across pages
+TABLE FORMATTING (CRITICAL):
+- Table width: 100% of text area between margins
+- Header row: Calibri 10pt Bold, white text on navy (#1B2A4A), 8px cell padding all sides, "Repeat as header row" enabled for multi-page tables
+- Data rows: Calibri 10pt Regular, 6px cell padding top/bottom, 8px left/right
+- Alternating row banding: white and #F8F9FA (very subtle)
+- Borders: 0.5pt #D0D5DD all cells, 1.5pt navy below header row
+- Numbers: RIGHT-aligned, commas for thousands, 1 decimal for percentages, 2 for currencies, negatives in parentheses ($12.4M)
+- Text columns: LEFT-aligned, headers match column alignment
+- Column widths: auto-fit to content with minimum 60px per column, NEVER truncate or overlap
+- Table title above: "Table N: [Title]" in Calibri 10pt Bold, 4pt below
+- Table source below: "Source: [source]" in Calibri 8pt Italic, 4pt above
+- Tables MUST NOT break mid-row across pages -- keep rows together, allow page break only between rows
+- If table is wider than margins: switch to landscape section break for that page only
 
-PROFESSIONAL STANDARDS:
-- Track Changes ready  -  use proper styles, not manual formatting
-- Cross-references for figures and tables (Figure 1, Table 2)
-- Consistent date format, number format, and terminology throughout
-- Document properties filled: title, author, subject, keywords
-- Print-ready: proper margins (1 inch), no orphan/widow lines`,
+CRITICAL DO-NOT RULES:
+- NEVER overlap table columns or truncate cell content
+- NEVER use manual formatting (direct font changes) -- everything must use defined Styles
+- NEVER leave orphan/widow lines
+- NEVER mix number formats within a column
+- NEVER use font below 8pt for any element
+- All tables and figures must have title above and source below`,
 
-    excel:`Design as a professional investment-bank-grade Excel workbook (Goldman Sachs / Morgan Stanley style). Follow these strict formatting and structural standards:
+    excel:`Design as an investment-bank-grade Excel workbook at the standard of Goldman Sachs TMT / J.P. Morgan M&A advisory. This workbook must be ready to present to a board of directors or IPO steering committee. Zero tolerance for formatting inconsistencies.
 
 WORKBOOK STRUCTURE:
-- Organize across clearly named tabs (e.g., "1. Exec Summary", "2. Revenue Analysis", "3. Valuation", "4. Sensitivity", "5. KPIs")
-- First tab must be an executive summary with key findings, thesis, and navigation to other tabs
-- Each tab serves one analytical purpose  -  never mix unrelated analyses on the same sheet
+- Tab naming: numbered with clear labels ("1. Summary", "2. Revenue Build", "3. DCF Valuation", "4. Comps", "5. Sensitivity", "6. Sources & Assumptions")
+- First tab: Executive Summary with key metrics dashboard, investment thesis, and hyperlinked navigation to all other tabs
+- Each tab: ONE analytical purpose only -- never mix unrelated analyses on the same sheet
+- Tab order: narrative flow from summary > analysis > valuation > sensitivity > appendix
 
-CELL & LAYOUT FORMATTING:
-- Row 1-3: Title block with company name, report title, date, classification, and analyst placeholder
-- Use alternating row shading (light gray / white) for readability
-- Header rows: bold white text on dark navy/black background (#1B2A4A or similar)
-- Sub-headers: bold text on medium gray background
-- All data cells: consistent font (Calibri 10pt or Arial 10pt), right-aligned numbers, left-aligned text
-- Number formatting: use commas for thousands, 1 decimal for percentages, 2 decimals for ratios
-- Currency cells must include $ symbol and consistent decimal places
-- Negative values in parentheses and red font, e.g., ($31.2M)
-- Input/assumption cells: highlighted with yellow or light blue background to distinguish from calculated cells
-- Column widths: uniform and generous enough to show all data without truncation
+CELL & LAYOUT FORMATTING (CRITICAL -- defines workbook quality):
+- Row 1: Company name, bold 12pt Calibri, navy (#1B2A4A), merged across data width
+- Row 2: Report title, bold 10pt, #333333
+- Row 3: Date (Month DD, YYYY), analyst name, classification -- 9pt, #666
+- Row 4: Empty spacer row (height 6px)
+- Row 5+: Data begins with header row
+
+- Header rows: 10pt Calibri Bold, white (#FFF) text on navy (#1B2A4A) background, center-aligned, 22px row height, bottom border 1.5pt navy
+- Sub-header rows: 10pt Calibri Bold, #1B2A4A text on light gray (#E8E8E8) background
+- Data rows: 9.5pt Calibri Regular, 18px row height, alternating white/#F8F9FA shading
+- Category/label column: LEFT-aligned, bold for section totals, regular for line items, 4px left indent
+- All number columns: RIGHT-aligned, 8px right padding
+- Column widths: auto-fit to widest content + 20px padding minimum -- NEVER allow ### overflow or truncation
+- Minimum column width: 55px for numbers, 100px for text labels
+- Borders: 0.5pt #D0D5DD horizontal lines between rows, 1pt navy below headers, light vertical borders only on outer edges
+- Gridlines: HIDE default gridlines -- use explicit borders only
+
+NUMBER FORMATTING (IB standard -- non-negotiable):
+- Revenue/costs in millions: one decimal, dollar sign on first and last row only: $1,234.5 (first row), 1,234.5 (middle rows), $1,234.5 (total row)
+- Percentages: one decimal with % symbol, right-aligned: 12.3%
+- Multiples: one decimal with "x" suffix: 8.4x
+- Per-share values: two decimals: $45.67
+- Large numbers: always use commas: 1,234,567
+- Negative values: parentheses, red font (#CC0000), no minus sign: ($12.4M)
+- Zero values: show as dash (--) centered, not "0" or blank
+- Dates: MMM-YY for column headers (Jan-26, Feb-26), full date in title block
+- Growth rates: show with + prefix for positive: +8.3%, negative in red parentheses: (4.2%)
+
+INPUT VS CALCULATION DISTINCTION:
+- Input/assumption cells: light blue (#DCE6F1) background -- user can modify these
+- Calculated cells: no special background -- formulas only, never hardcoded
+- Linked cells (from other tabs): green font (#006100) to show data flows from elsewhere
+- Hard-coded overrides: orange font (#E26B0A) with comment explaining why
 
 FORMULAS & CALCULATIONS:
-- Show all formulas explicitly  -  never hardcode values that should be calculated
-- Use named ranges for key assumptions so sensitivity analysis works
-- Include formula audit notes (e.g., "=C12*D12  // Revenue = Units x Price")
-- Build formula chains that allow scenario toggling (Bull / Base / Bear)
-- Include error handling where appropriate (IFERROR wrappers)
+- Every calculated cell MUST use formulas -- zero hardcoded values in calculated areas
+- Named ranges for all key assumptions (growth_rate, discount_rate, tax_rate, terminal_multiple)
+- Formula audit trail: add a comment on complex formulas explaining the logic
+- Scenario toggles: Bull / Base / Bear using data validation dropdown linked to named ranges
+- IFERROR wrappers on all division operations and lookups
+- Circular reference protection: use iterative calculation settings note if needed
 
 ANALYTICAL COMPONENTS:
-- Waterfall analysis for sequential changes (QoQ, YoY)
-- Sensitivity tables with two-variable data tables where applicable
-- Decision trees or scoring matrices using conditional formatting
-- Risk assessment matrices with likelihood/impact scoring
-- KPI tracking with baseline, current, target, and status indicators (use conditional formatting: green/yellow/red)
+- Revenue bridge / waterfall: show sequential drivers (price, volume, mix, FX) with subtotals
+- Sensitivity tables: two-variable data tables (e.g., growth rate vs. discount rate) with current case highlighted in bold border
+- Comparable company analysis: show company name, ticker, market cap, EV, revenue, EBITDA, margins, and trading multiples in standard comps table format
+- DCF components: explicit WACC build, unlevered FCF projection, terminal value (both perpetuity growth and exit multiple), enterprise value bridge to equity value
+- Returns analysis: IRR and MOIC calculations with entry/exit assumptions
 
-CHARTS & VISUALS (describe for each):
-- Specify chart type (waterfall, bar, line, scatter, combo dual-axis)
-- Define axis labels, data series, and color coding
-- Include chart title stating the analytical conclusion (not just the topic)
+CHARTS (describe precisely for each):
+- Chart type: specify (clustered bar, stacked bar, line, combo dual-axis, waterfall)
+- Dimensions: 500x300px approximate, positioned below or right of source data
+- Axis labels: 8pt Calibri, #666, no gridlines unless essential (then 0.25pt dashed #E0E0E0)
+- Data labels: 8pt, directly on bars/lines, formatted to match number format of source data
+- Colors: navy (#1B2A4A) primary, steel blue (#4472C4) secondary, teal (#0891B2) tertiary, gray (#A5A5A5) for benchmarks
+- Title: 10pt Bold, states the analytical conclusion ("Revenue grew 23% YoY driven by pricing"), NOT just the topic
 
 PROFESSIONAL STANDARDS:
-- Include a sources/assumptions tab documenting all data sources and key assumptions
-- Add print area settings and page break suggestions
-- Freeze panes on header rows
-- Include data validation dropdowns for scenario selectors
-- Every number must trace to a source or formula  -  zero unexplained hardcodes`,
+- Freeze panes: lock Row 5 (header) and Column A (labels) on every data tab
+- Print area: defined on every tab, landscape orientation for wide tables, fit to 1 page wide
+- Sources & Assumptions tab: document every data source, retrieval date, and key assumption with rationale
+- Data validation dropdowns for scenario selectors and input fields
+- Conditional formatting: use for KPI status (green #00B050 / yellow #FFC000 / red #FF0000), data bars for relative comparison
+- Protection: suggest which cells to lock (all except blue input cells)
 
-    ppt:`Design as a professional executive presentation (McKinsey / Goldman Sachs style). Follow these strict formatting standards:
+CRITICAL DO-NOT RULES:
+- NEVER show ### in any cell -- auto-fit or manually widen columns
+- NEVER mix number formats within a column
+- NEVER leave blank rows in the middle of a data table (use spacer formatting instead)
+- NEVER use merged cells in data ranges (breaks sorting and formulas) -- merge only in title block
+- NEVER hardcode a value that should be calculated
+- NEVER use more than 5 colors in a single chart
+- Every number must trace to a source, formula, or clearly marked assumption`,
+
+    ppt:`Design as a Goldman Sachs / McKinsey quality executive presentation (pitchbook standard). Every slide must look like it was reviewed by a Managing Director before a $5B+ deal meeting. Zero tolerance for misaligned elements, inconsistent formatting, or visual clutter.
 
 SLIDE STRUCTURE:
-- Title slide: presentation title (bold, 28pt), subtitle with context, presenter name, date, confidentiality marking
-- Agenda slide after title  -  numbered list of sections
-- Section divider slides: bold section title on navy background
-- Content slides: one key insight per slide  -  use Assertion-Evidence format (title states the conclusion, body proves it)
-- Summary/recommendation slide at the end with clear next steps
+- Title slide: presentation title (28pt Arial Bold, white on navy #1B2A4A full-bleed background), subtitle (16pt Regular, white 70% opacity), presenter name and title, date (Month YYYY), confidentiality line bottom ("Goldman Sachs Confidential" or similar placeholder), logo placeholder top-right
+- Agenda slide: numbered list (max 6 items), each item hyperlinked to its section divider
+- Section divider slides: navy (#1B2A4A) full background, section number (72pt, white 20% opacity) top-left, section title (28pt Bold, white) center-left, one-line section description (14pt, white 60% opacity) below
+- Content slides: Assertion-Evidence format MANDATORY -- slide title IS the key insight/conclusion (not a topic label), body PROVES the assertion with data
+- Summary slide: "Key Takeaways" with 3-5 bold assertions, then "Recommended Next Steps" with numbered actions, owners, and timelines
+- Appendix slides: labeled "Appendix [letter]:" with supporting detail
 
-SLIDE LAYOUT & TYPOGRAPHY:
-- Title text: 24-28pt bold, dark navy (#1B2A4A), left-aligned
-- Body text: 16-18pt, dark gray (#333333), left-aligned
-- Maximum 5 bullet points per slide, each 1-2 lines
-- No full sentences in bullets  -  use telegraphic style (action verb + key point)
-- Consistent margins and text placement across all slides
-- Slide numbers in bottom-right corner
+MASTER LAYOUT (every content slide):
+- Slide dimensions: 16:9 widescreen (13.33" x 7.5")
+- Title area: top 1.1 inches, left-aligned at 0.5" from left edge
+- Title text: 20pt Arial Bold, #1B2A4A, max 2 lines
+- Content area: 0.5" left margin, 0.5" right margin, starts at 1.3" from top, ends at 6.8" from top
+- Footer bar: thin 0.5pt navy rule at 7.0" from top, below it: source text left (8pt Italic, #999), slide number right (8pt, #999), company name center (8pt, #999)
+- Logo placeholder: top-right corner, 0.3" from edges, max 0.6" height
+
+TYPOGRAPHY:
+- Title: 20pt Arial Bold, #1B2A4A, left-aligned, max 2 lines -- if it doesn't fit in 2 lines, sharpen the wording
+- Body text: 14pt Arial Regular, #333333, left-aligned, 1.2 line spacing
+- Bullet points: 13pt, em dash (--) style, 4pt space between bullets, max 5 bullets per slide, max 2 lines per bullet
+- Bullet style: telegraphic (action verb + key metric + insight) -- NEVER full sentences
+- Sub-bullets: 11pt, 16pt left indent from parent, circle marker, lighter gray #555
+- Callout numbers: 36pt Bold for hero metrics (e.g., "$4.2B" or "+23%"), navy or accent color, with 11pt descriptor below
+- Small print: 8pt minimum for source lines and footnotes
+
+TABLE FORMATTING ON SLIDES (CRITICAL):
+- Maximum visible: 7 rows x 6 columns -- if more data, split across slides or move to appendix
+- Header row: 10pt Arial Bold, white on navy (#1B2A4A), 6px cell padding
+- Data rows: 9.5pt Arial Regular, 5px cell padding, alternating white/#F8F9FA
+- Borders: 0.5pt #D0D5DD horizontal only (no vertical borders for cleaner look), 1.5pt navy below header
+- Numbers: RIGHT-aligned, same IB formatting (commas, parentheses for negatives, 1 decimal %)
+- Text: LEFT-aligned, 4px left padding
+- Column widths: proportional to content, NEVER allow overlap or truncation -- if table is too wide, reduce columns or use abbreviations with a footnote
+- Total/summary row: bold text, 1pt top border, light navy (#E8EEF4) background
+- Table must be horizontally centered on slide with equal margins left and right
 
 DATA VISUALIZATION:
-- Charts preferred over tables  -  if table is necessary, max 5 rows visible
-- Chart titles state the insight ("Revenue declined 18% QoQ" not "Revenue Chart")
-- Color palette: navy (#1B2A4A), steel blue (#4472C4), light gray (#D9D9D9), accent red for emphasis
-- Clean axis labels, no gridlines unless essential
-- Data labels directly on chart elements  -  minimize legend usage
-- Source line at bottom of every data slide in 8pt gray italic
+- Charts ALWAYS preferred over tables for trends, comparisons, and compositions
+- Chart size: fill content area (approximately 11" wide x 4.5" tall for full-width charts)
+- Chart title: 11pt Bold, states the CONCLUSION not the topic ("Revenue grew 23% driven by pricing power" NOT "Revenue Overview")
+- Axis labels: 8pt Arial, #666, clean readable values (use $M, $B abbreviations)
+- Gridlines: none or very light (0.25pt dashed #E8E8E8, horizontal only)
+- Data labels: 8pt, directly on bars/points, formatted consistently, no overlapping
+- Colors: navy (#1B2A4A) primary, steel blue (#4472C4) secondary, teal (#0891B2) tertiary, light gray (#D9D9D9) for context/benchmark, red (#DC2626) for emphasis only -- max 5 colors
+- Legend: only if 3+ data series, placed below chart in 8pt, horizontal layout
+- Source line: 8pt Italic #999, bottom-left of chart, format "Source: [name], [date]"
 
-SPEAKER NOTES:
-- Include detailed speaker notes for every content slide
-- Notes should contain: key talking point, supporting data, anticipated questions, transition to next slide
-- 3-5 bullet points per slide in notes
+SPEAKER NOTES (every content slide):
+- Opening line: the key message in one sentence
+- 3-4 supporting data points with specific numbers
+- Anticipated pushback/question and your response
+- Transition phrase to next slide
+- Format: bullet points, 11pt, complete sentences allowed in notes
 
-PROFESSIONAL STANDARDS:
-- Consistent template across all slides (same fonts, colors, logo placement)
-- No decorative clip art, stock photos, or unnecessary graphics
-- Animation: none or minimal (appear only, no fly-ins or spins)
-- Every number cited must have a source noted in speaker notes`,
+CRITICAL DO-NOT RULES:
+- NEVER misalign elements across slides -- titles, content areas, and footers must be at identical positions on every slide
+- NEVER exceed 5 bullets or 7 table rows on a single slide
+- NEVER use animations, transitions, sound effects, or decorative graphics
+- NEVER use clip art, stock photos, or WordArt
+- NEVER let data labels overlap each other or chart elements
+- NEVER use font below 8pt for any visible element
+- NEVER place text directly against a slide edge without margin
+- NEVER present a number without a source (in footer or speaker notes)
+- Every chart, table, and data point must have a source attribution`,
 
-    markdown:`Design as clean, professional Markdown optimized for rendering in GitHub, Notion, Confluence, or any standard Markdown viewer. Follow these strict formatting standards:
+    markdown:`Design as clean, professional Markdown optimized for rendering in GitHub, Notion, Confluence, or any standard Markdown viewer. Quality standard: technical documentation at Stripe or Vercel level.
 
 DOCUMENT STRUCTURE:
-- H1 (#) for document title only  -  used once at the top
-- H2 (##) for major sections, H3 (###) for subsections, H4 (####) sparingly for sub-subsections
-- Table of contents at top using linked headings for documents with 4+ sections
+- H1 (#) for document title only -- used exactly once at the top
+- H2 (##) for major sections, H3 (###) for subsections, H4 (####) sparingly
+- YAML frontmatter block: title, date, author, status, version (if appropriate for platform)
+- Table of contents at top using linked headings: "- [Section Name](#section-name)" for documents with 4+ sections
 - Horizontal rules (---) between major sections for visual separation
-- Metadata block at top: title, date, author, status (can use YAML frontmatter if appropriate)
+- One blank line before and after every heading, code block, table, and blockquote
 
 TEXT FORMATTING:
-- **Bold** for key terms, findings, and emphasis  -  use sparingly
-- *Italic* for citations, definitions, and secondary emphasis
-- Inline code backticks for technical terms, file names, commands, variables
-- Blockquotes (>) for key findings, callouts, or important notes
-- Ordered lists for sequential steps, unordered lists for non-sequential items
-- Nested lists indented consistently (2 or 4 spaces)
+- **Bold** for key terms, findings, and emphasis only -- never bold entire sentences
+- *Italic* for citations, definitions, tool names, and secondary emphasis
+- Inline code backticks for: file names, function names, CLI commands, variables, API endpoints, config keys
+- Blockquotes (>) for: key findings, important callouts, or quoted material -- prefix with "> **Note:**" or "> **Important:**" for clarity
+- Ordered lists (1. 2. 3.) for sequential steps only
+- Unordered lists (- ) for non-sequential items
+- Nested lists: 2-space indent, max 2 levels deep
+- Paragraphs: single blank line between, max 3-4 sentences per paragraph
 
 TABLE FORMATTING:
-- Header row separated by |---|---|
-- Align columns: :--- left, :---: center, ---: right
-- Keep tables concise  -  max 6-7 columns for readability
-- Numbers right-aligned, text left-aligned
-- Use consistent decimal places and number formatting within each column
+- Header: | Column A | Column B | Column C | separated by |---|---|---|
+- Alignment: | :--- | left, | :---: | center, | ---: | right
+- Numbers: RIGHT-aligned (---:), text LEFT-aligned (:---), headers center-aligned (:---:)
+- Max 6 columns for readability -- if more needed, split into multiple tables
+- Consistent decimal places and number formatting within each column
+- Negative values in parentheses: ($12.4M)
+- Empty cells: use -- (dash), never leave blank
+- Table caption above as bold text: **Table 1: [Description]**
 
 CODE BLOCKS:
-- Always specify language tag after opening triple backticks
-- Include brief comment at top explaining what the code does
-- Keep code blocks focused  -  one concept per block
+- Always specify language tag after opening triple backticks: python, javascript, sql, etc.
+- Opening comment: brief description of what the code does
+- Max 30 lines per block -- break into multiple blocks with explanatory text between
+- One concept per code block
 
 PROFESSIONAL STANDARDS:
-- Links use descriptive text, never raw URLs in body text
-- Images include alt text describing the content
-- Consistent terminology and capitalization throughout
-- No trailing whitespace, no double blank lines
-- Render-test ready  -  no HTML workarounds unless Markdown cannot achieve the layout`,
+- Links: descriptive text [API Reference](url), never raw URLs in body
+- Images: include alt text describing content and analytical meaning
+- Consistent American English spelling and terminology throughout
+- No trailing whitespace, no double blank lines, no tabs (spaces only)
+- No HTML workarounds unless Markdown cannot achieve the layout
+- Every claim backed by data, link, or explicit reasoning`,
 
-    html:`Design as semantic, accessible HTML ready for professional web publishing. Follow these strict formatting standards:
+    html:`Design as semantic, accessible HTML at the quality standard of Stripe's documentation or Linear's marketing pages. Production-ready, responsive, WCAG AA compliant.
 
 DOCUMENT STRUCTURE:
-- Semantic HTML5 elements: header, nav, main, article, section, aside, footer
-- Single h1 for page title, h2 for sections, h3 for subsections  -  never skip heading levels
-- Meta tags: charset, viewport, description, author
-- Logical section ordering that makes sense when CSS is disabled
+- Semantic HTML5: <header>, <nav>, <main>, <article>, <section>, <aside>, <footer>
+- Single <h1> for page title, <h2> for sections, <h3> for subsections -- NEVER skip heading levels
+- Meta tags: charset UTF-8, viewport (width=device-width, initial-scale=1), description, author, theme-color
+- Logical section ordering that reads correctly with CSS disabled
+- Landmark roles on all major sections
 
 TYPOGRAPHY & STYLING:
-- Suggest CSS class names for every styled element (e.g., .report-header, .data-table, .callout-box)
-- Font stack: system fonts or professional web fonts (Inter, Source Sans Pro)
-- Body text: 16px, 1.6 line-height, max-width 720px for readability
-- Color system: define primary (#1B2A4A), secondary (#4472C4), text (#333), muted (#666), border (#E2E8F0)
-- Responsive considerations noted (fluid widths, stackable columns)
+- CSS class names: BEM-style (.report__header, .data-table__cell--numeric, .callout--warning)
+- Font stack: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif
+- Monospace: "JetBrains Mono", "Fira Code", "SF Mono", monospace
+- Body: font-size 16px, line-height 1.65, max-width 720px, color #333333
+- Headings: font-weight 700, color #1B2A4A, letter-spacing -0.02em
+- Color system as CSS custom properties: --color-primary: #1B2A4A; --color-accent: #4472C4; --color-text: #333; --color-muted: #666; --color-border: #E2E8F0; --color-bg-subtle: #F8F9FA
+- Responsive: fluid widths, CSS Grid for layouts, stack to single column below 768px
 
 TABLE FORMATTING:
-- Use proper thead, tbody, th, td elements
-- Suggest striped rows via CSS (nth-child alternating)
-- Header cells: bold, dark background, white text
-- Numeric cells: text-align right, tabular-nums font-feature
-- Include caption element for table title
-- Responsive tables: suggest overflow-x scroll wrapper for mobile
+- Structure: <table>, <caption>, <thead>, <tbody>, <tfoot> with proper <th scope="col/row">
+- Wrapper: <div class="table-wrapper" style="overflow-x: auto"> for mobile scroll
+- Header: font-weight 700, background var(--color-primary), color white, padding 10px 14px
+- Data cells: padding 8px 14px, border-bottom 1px solid var(--color-border)
+- Striped rows: tbody tr:nth-child(even) { background: var(--color-bg-subtle) }
+- Numeric cells: text-align right, font-variant-numeric: tabular-nums
+- <caption>: font-weight 700, text-align left, margin-bottom 8px, font-size 0.9rem
+- Footnotes below table: font-size 0.8rem, color var(--color-muted)
+- Column widths: no fixed widths unless necessary -- let content determine, with min-width on numeric columns
 
-ACCESSIBILITY:
-- Alt text for all images
-- ARIA labels for interactive elements
-- Sufficient color contrast (WCAG AA minimum)
-- Logical tab order
-- Screen reader friendly table markup (scope attributes on th)
+ACCESSIBILITY (WCAG AA mandatory):
+- All images: descriptive alt text explaining analytical meaning, not just visual description
+- Interactive elements: visible focus styles (outline: 2px solid var(--color-accent), offset 2px)
+- Color contrast: minimum 4.5:1 for body text, 3:1 for large text and UI components
+- ARIA: aria-label on icon buttons, aria-describedby for complex tables, aria-live for dynamic content
+- Logical tab order matching visual order
+- Tables: scope="col" on column headers, scope="row" on row headers
+- Skip-to-content link as first focusable element
+- Reduced motion: @media (prefers-reduced-motion: reduce) respecting user preference
 
 PROFESSIONAL STANDARDS:
-- No inline styles  -  all styling via suggested CSS classes
-- Clean, indented, readable HTML structure
-- No deprecated elements (center, font, b for styling)
-- Print stylesheet considerations noted where relevant`,
+- Zero inline styles -- all styling via CSS classes or custom properties
+- Clean 2-space indented HTML, readable without tooling
+- No deprecated elements (<center>, <font>, <b> for styling -- use <strong> for semantic emphasis)
+- Print stylesheet: @media print with hidden nav/footer, optimized margins, page-break rules
+- Performance: suggest lazy-loading for images, minimal CSS, system fonts where possible`,
 
-    json:`Design as clean, well-structured JSON suitable for production APIs and data interchange. Follow these strict formatting standards:
+    json:`Design as production-grade JSON at the quality of a Stripe API response or Bloomberg data feed. Parseable, self-documenting, and schema-consistent.
 
 STRUCTURE:
-- Root object with clear top-level keys: metadata, data, summary (or domain-appropriate equivalents)
-- Metadata object: type, version, generated_at (ISO 8601), author, description
-- Consistent nesting depth  -  max 4 levels deep, flatten where possible
-- Arrays for collections of similar items, objects for named properties
+- Root object with clear top-level keys: "metadata", "data", "summary" (or domain-appropriate equivalents)
+- Metadata object: "schemaVersion", "generatedAt" (ISO 8601), "source", "description", "recordCount"
+- Consistent nesting: max 4 levels deep, flatten when possible
+- Arrays for collections of same-type items (identical key shapes), objects for named properties
+- Pagination-ready: include "total", "offset", "limit" in metadata when applicable
 
 NAMING CONVENTIONS:
-- camelCase for all keys (e.g., totalRevenue, createdAt, riskScore)
-- Descriptive names  -  never abbreviate (use customerLifetimeValue not clv)
-- Boolean keys prefixed with is/has/can (e.g., isActive, hasRisk)
-- Plural names for arrays (items, metrics, risks)
+- camelCase for all keys: totalRevenue, createdAt, riskScore, netIncomeMargin
+- Descriptive names -- NEVER abbreviate: customerLifetimeValue not clv, annualRecurringRevenue not arr
+- Boolean keys: is/has/can prefix (isActive, hasRisk, canExecute)
+- Arrays: plural nouns (items, metrics, risks, transactions)
+- Enum values: lowercase_snake_case ("high_risk", "in_progress", "pending_review")
 
 DATA TYPES & VALUES:
-- Numbers: no quotes around numeric values, use null for missing data (not 0 or "N/A")
-- Dates: ISO 8601 format ("2026-04-08T14:30:00Z")
-- Enums: lowercase with underscores (e.g., "high_risk", "in_progress")
-- Currency: object with amount (number) and currency (string) fields
-- Percentages: decimal form (0.15 not 15 or "15%")
+- Numbers: raw numeric, never quoted -- 1234567.89 not "1,234,567.89"
+- Missing data: null (never 0, "", "N/A", or "null")
+- Dates: ISO 8601 with timezone: "2026-04-09T14:30:00Z"
+- Currency: { "amount": 1234.56, "currency": "USD" } -- never "$1,234.56"
+- Percentages: decimal form: 0.153 not 15.3 or "15.3%"
+- Booleans: true/false (never "true", 1, "yes")
+- IDs: string type even if numeric (prevents integer overflow in JS)
 
 PROFESSIONAL STANDARDS:
-- Valid JSON  -  parseable by any standard JSON parser
-- 2-space indentation for readability
-- No trailing commas
-- No comments (use description fields within objects instead)
-- Include a schema reference or type field so consumers know the structure
-- Every object in an array must have the same shape (consistent keys)`,
+- Valid JSON -- parseable by JSON.parse() with zero errors
+- 2-space indentation, consistent throughout
+- No trailing commas, no comments
+- Self-documenting: include "description" or "_comment" fields in metadata (never inline)
+- Schema reference: include "$schema" or "type" field so consumers know the structure
+- Every object in an array MUST have identical key sets (no missing keys -- use null for absent values)
+- Sorted keys within objects for deterministic output`,
 
-    csv:`Design as clean, production-ready CSV suitable for data import and analysis. Follow these strict formatting standards:
+    csv:`Design as clean, production-ready CSV suitable for direct import into Excel, Python/pandas, R, or any BI tool. Data engineering quality standard.
 
 STRUCTURE:
-- Header row first  -  descriptive, unique column names in snake_case or Title Case
-- One record per row, consistent column count across all rows
-- Sort by the most analytically useful column (typically date or primary key)
-- Group related data logically if multiple datasets  -  use separate CSV files or clearly marked sections
+- Row 1: header row with descriptive, unique column names in snake_case (revenue_usd, growth_rate_pct, report_date)
+- One record per row, identical column count across ALL rows (no ragged rows)
+- Sort by primary analytical axis (typically date descending, or primary key ascending)
+- Column order: identifiers first (id, name, ticker), then dimensions (date, region, segment), then measures (revenue, margin, growth)
+- If multiple datasets needed: use separate CSV outputs, never mix schemas in one file
 
 DATA FORMATTING:
-- Strings: quote fields containing commas, newlines, or special characters
-- Numbers: no thousand separators in raw data, use decimal points (not commas)
-- Dates: ISO 8601 format (YYYY-MM-DD) for unambiguous parsing
-- Currency: numeric only (no $ symbol)  -  note currency in column header (e.g., revenue_usd)
-- Percentages: decimal form (0.15 not 15%)  -  note in column header (e.g., growth_rate_pct)
-- Missing values: leave empty (not "N/A", "null", or 0)
-- Boolean: TRUE/FALSE or 1/0  -  consistent throughout
+- Strings: double-quote any field containing commas, newlines, or double quotes. Escape internal quotes with "" (RFC 4180 compliant)
+- Numbers: raw numeric only, no thousand separators, decimal point (not comma): 1234567.89
+- Dates: ISO 8601 (YYYY-MM-DD) for unambiguous parsing: 2026-04-09
+- Timestamps: ISO 8601 with timezone: 2026-04-09T14:30:00Z
+- Currency: numeric only, currency noted in column header: revenue_usd, cost_eur
+- Percentages: decimal form, noted in header: growth_rate_pct (0.153 means 15.3%)
+- Missing values: empty field (two adjacent commas) -- NEVER use "N/A", "null", "NULL", "-", or 0 for missing data
+- Boolean: 1/0 (most tool-compatible) or TRUE/FALSE -- consistent throughout, noted in header comment
 
 PROFESSIONAL STANDARDS:
-- UTF-8 encoding
+- Encoding: UTF-8 with no BOM
 - Line endings: LF (Unix) for cross-platform compatibility
-- No trailing commas or whitespace
-- Include a metadata comment or accompanying README describing: column definitions, data types, source, date range, and any transformations applied
-- Column order: identifiers first, then dimensions, then measures`,
+- No trailing commas, no trailing whitespace on any line
+- No blank rows (including at end of file)
+- First line of output: brief comment block describing the dataset: # Source: [source], Date range: [range], Generated: [date], Columns: [count], Rows: [count]
+- Column definitions appendix: for each column state name, data type, unit, description, and example value
+- Data validation: no duplicate primary keys, no orphan foreign keys, all required fields populated`,
 
-    plaintext:`Design as clean, professional plain text optimized for readability in any text editor, terminal, or email client. Follow these strict formatting standards:
+    plaintext:`Design as professional plain text readable in any text editor, terminal, email client, or printed monospaced output. Quality standard: a well-formatted internal memo at a top-tier firm.
 
 STRUCTURE:
-- Title block: centered title in CAPS, date, author, separator line (====)
-- Section headers in CAPS or Title Case, preceded by blank line and followed by underline (----)
-- Numbered sections (1.0, 1.1) for hierarchical documents
-- Clear visual separation between sections using blank lines and separator lines
+- Title block: centered title in CAPS, date (Month DD, YYYY), author, thin separator (======)
+- Section headers: numbered (1.0, 1.1) in CAPS or Title Case, blank line before, underline (------) after
+- Clear visual hierarchy: section > subsection > paragraph > list
+- Document length marker at bottom: "--- END OF DOCUMENT ---"
 
 LAYOUT:
-- Line width: max 80 characters for universal compatibility
-- Body text: left-aligned, single-spaced within paragraphs, double-spaced between paragraphs
-- Lists: dash (-) or asterisk (*) with 2-space indent for sub-items
-- Numbered steps: Arabic numerals with period (1. 2. 3.)
-- Tables: aligned using spaces, header row with dashes below
-  Example:
-  Item          Value     Status
-  ----------    ------    --------
-  Revenue       $12.4M    Up 8%
+- Line width: STRICT 80 characters maximum for universal compatibility
+- Body text: left-aligned, single-spaced within paragraphs, one blank line between paragraphs
+- Lists: dash (-) for unordered, 2-space indent for sub-items
+- Numbered steps: Arabic numerals with period (1. 2. 3.), 3-space indent for continuation lines
+- Tables: column-aligned using spaces, header row with dashes below, right-align numbers:
+  Category        Revenue     Growth    Status
+  -----------     ----------  ------    --------
+  North America   $12.4M      +8.3%    On track
+  Europe          $8.1M       +3.1%    Monitor
+  TOTAL           $20.5M      +6.2%    On track
+
+  Ensure columns never overlap -- add 4+ spaces between columns. Right-pad text columns to uniform width. Right-align all numeric columns.
 
 EMPHASIS:
-- *asterisks* for emphasis (renders in some viewers)
-- CAPS for critical warnings or section headers only
-- Indentation (4 spaces) for quoted text or callouts
-- Brackets [NOTE] or [IMPORTANT] for inline callouts
+- CAPS for section headers and critical warnings ONLY -- never for emphasis in body text
+- *asterisks* for emphasis (renders in many viewers)
+- Indentation (4 spaces) for quoted text, callouts, or subordinate information
+- Brackets for inline labels: [NOTE], [IMPORTANT], [ACTION REQUIRED]
 
 PROFESSIONAL STANDARDS:
-- No special characters that might not render (use -- not em-dash, use ASCII quotes)
-- Consistent spacing and indentation throughout
-- Print-friendly  -  reads well on paper at monospaced font
-- Include section references ("see Section 3.2") for longer documents`,
+- ASCII only: use -- not em-dash, use " not smart quotes, use ... not ellipsis character
+- Consistent spacing: never mix tabs and spaces, use spaces only
+- Cross-references: "see Section 3.2" for longer documents
+- Print-friendly: reads well on paper at any monospaced font
+- NEVER let table columns overlap or misalign
+- NEVER exceed 80 characters per line including indentation`,
 
-    codeFile:`Design as a complete, production-ready code file following industry best practices. Follow these strict formatting standards:
+    codeFile:`Design as a complete, production-ready code file at the quality standard of an open-source library by Google, Stripe, or Vercel. Runs without modification, fully typed, thoroughly documented.
 
 FILE STRUCTURE:
-- File header comment: filename, description, author, date, version, license
-- Imports/dependencies grouped and ordered: standard library, third-party, local
-- Constants and configuration at top, below imports
-- Main logic in well-named functions/classes  -  no loose code at module level
-- Entry point / main block at bottom (if applicable)
+- File header: filename, one-line description, author, date, version, license identifier (SPDX format)
+- Imports grouped and ordered: (1) standard library, (2) third-party, (3) local -- blank line between groups, alphabetical within groups
+- Constants and configuration immediately below imports, with explanatory comments
+- Type definitions / interfaces next (if applicable)
+- Helper/utility functions (private, prefixed _ in Python)
+- Main public functions/classes
+- Entry point / main block at bottom (if __name__ == "__main__" or equivalent)
 
 CODE QUALITY:
-- Follow the official style guide for the specified language (PEP 8, Google Style, Airbnb, etc.)
-- Type annotations/hints on all function signatures
-- Docstrings on all public functions: description, parameters, return type, example usage
-- Error handling: specific exception types, meaningful error messages, proper cleanup
-- Input validation at function boundaries
-- No magic numbers  -  use named constants with comments explaining the value
+- Follow the canonical style guide for the language: PEP 8 (Python), Google Style (Go/Java), Airbnb (JS/TS), rustfmt (Rust)
+- Type annotations on ALL function signatures -- parameters and return types
+- Docstrings/JSDoc on ALL public functions: description, @param with type and meaning, @returns, @throws, @example
+- Error handling: specific exception types, meaningful messages including context (what failed, with what input), proper resource cleanup (try/finally, context managers, defer)
+- Input validation at all public function boundaries with clear error messages
+- No magic numbers -- use named constants with comments explaining derivation or source
 
 NAMING CONVENTIONS:
-- Functions/methods: verb_noun (calculate_revenue, fetch_user_data)
-- Classes: PascalCase with descriptive names
-- Constants: UPPER_SNAKE_CASE
-- Variables: descriptive, no single-letter names except loop counters
+- Functions: verb_noun pattern (calculate_revenue, fetch_user_data, validate_input)
+- Classes: PascalCase, noun-based (RevenueCalculator, UserRepository)
+- Constants: UPPER_SNAKE_CASE (MAX_RETRY_COUNT, DEFAULT_TIMEOUT_MS)
+- Variables: descriptive snake_case or camelCase per language convention, no single-letter names except i/j/k loop counters
+- Boolean variables: is_/has_/can_/should_ prefix (is_valid, has_permission)
 
 DOCUMENTATION:
-- Module-level docstring explaining purpose, usage, and dependencies
-- Inline comments for non-obvious logic only  -  code should be self-documenting
-- Usage examples in docstrings or a dedicated examples section at bottom
-- Dependencies noted with version requirements
+- Module-level docstring: purpose, usage example, dependencies, key assumptions
+- Inline comments: only for non-obvious logic, business rules, or workarounds -- code should be self-documenting
+- Usage examples: in docstrings and/or a dedicated "if __name__" or examples block at bottom
+- Dependencies: noted with version constraints (>=, ~=, ^)
 
 PROFESSIONAL STANDARDS:
 - Runs without modification  -  all imports resolvable, no placeholder code
