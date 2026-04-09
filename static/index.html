@@ -535,7 +535,7 @@ function getSmartEnhancements(topic,taskType,industry,output){
    PROMPT BUILD ENGINE
    ═══════════════════════════════════════════════════════ */
 function buildPrompt(p){
-  const {topic,taskType,model,tone,length,format,techniques,audience,extra,special,mode,industry,output,style,includes,language,fileOutput,selectedFirm,selectedRole}=p;
+  const {topic,taskType,model,tone,length,format,techniques,audience,extra,special,mode,industry,output,style,includes,language,fileOutput,selectedFirm,selectedRole,hasAttachment}=p;
   const mfmt=MODELS[model]?.fmt||"md";const isXml=mfmt==="xml";const isExp=mode==="expert";const lines=[];
   const sec=(tag,content)=>{
     if(mfmt==="xml")lines.push("<"+tag+">\n"+content+"\n</"+tag+">");
@@ -562,6 +562,13 @@ function buildPrompt(p){
   const smartContext=enhancements.filter(e=>e.type==="specificity"||e.type==="scope").map(e=>e.text).join("\n\n");
   const taskBlock=topic+(smartContext?"\n\n"+smartContext:"")+"\n\nYour response must be thorough, well-structured, and demonstrate expert-level depth. Deliver genuine professional value  -  not a surface-level overview.";
   sec("task",taskBlock);
+
+  // ATTACHMENT CONTEXT
+  if(hasAttachment){
+    sec("attached_files","IMPORTANT: Files are attached alongside this prompt. Use the attached files as your PRIMARY data source.\n\n- Extract all relevant data, figures, tables, and context directly from the attached files\n- Ground your analysis, calculations, and conclusions in the actual data from the attachments\n- Reference specific data points, page numbers, or sections from the attachments when making claims\n- If the attachments contain tables or datasets, use those exact figures in your response -- do not fabricate or approximate\n- If the attachments are incomplete or missing data needed for the task, explicitly state what is missing and what assumptions you are making\n- Structure your output to complement the attachments -- do not repeat information verbatim, instead analyze, synthesize, and build upon it");
+  }else{
+    sec("source_guidance","No files are attached with this prompt. Generate all content, data, analysis, and examples based on your knowledge and the task description above.\n\n- Use realistic, well-researched figures and data points appropriate to the topic\n- When presenting financial figures, market data, or statistics, use plausible estimates and clearly label them as illustrative or estimated\n- Focus entirely on the stated goal -- provide maximum depth and specificity within your knowledge\n- If the task would benefit from specific source data you do not have, note what data sources would strengthen the analysis");
+  }
 
   // CONTEXT
   const fmtLabels=(Array.isArray(format)?format:[format]).map(f=>FMTS[f]?.l||f).join(", ");
@@ -595,7 +602,7 @@ function buildPrompt(p){
     prose:"Use flowing, well-structured paragraphs with clear topic sentences and logical transitions. Use subheadings to organize major sections.",
     bullets:"Use concise bullet points grouped under clear section headers. Each bullet should be a complete thought (1-2 sentences). Lead with the most important information in each bullet.",
     numbered:"Present key sequences as clearly numbered steps. Start each step with a bold action verb. Include brief explanations under each step when needed.",
-    table:"Organize comparative or multi-variable information into well-labeled tables with clear column headers. CRITICAL TABLE RULES: (1) Every cell must display complete content -- no truncation, overflow, or mid-word breaking. (2) Column widths must auto-adjust to fit the longest value plus generous padding. (3) If a label is too long, use a standard abbreviation and define it in a footnote -- never break a word across lines. (4) Numbers are always right-aligned and never wrap to a second line. (5) Maximum 2 lines per cell -- shorten wording if needed. (6) Use consistent number formatting within each column (commas for thousands, 1 decimal for %, negatives in parentheses). Add a narrative summary before and after each table highlighting key takeaways.",
+    table:"Organize comparative or multi-variable information into well-labeled tables with clear column headers. BEFORE CREATING ANY TABLE: (1) List all column headers and the widest value in each column. (2) Verify total width fits the output format -- if not, abbreviate headers (Rev., Gr., Mgn., FY25E) or split into multiple tables. (3) Pre-select abbreviations and define them in a footnote. TABLE RULES: (1) Every cell displays complete content -- zero truncation, overflow, or mid-word breaking. (2) Column widths auto-adjust to the longest value plus generous padding. (3) Numbers are right-aligned and never wrap. (4) Maximum 2 lines per cell. (5) Consistent number formatting per column (commas for thousands, 1 decimal for %, negatives in parentheses). (6) Financial tables use short year labels (FY24A, FY25E), $ on first/total rows only, right-aligned values. Add a narrative summary before and after each table highlighting key takeaways.",
     qa:"Structure appropriate sections as specific questions followed by thorough answers. Order from foundational to advanced. Make each Q&A pair self-contained.",
     headers:"Use a clear hierarchy of section headers (H2 for major sections, H3 for subsections). Every section should be scannable independently. Include a table of contents for longer responses.",
     tldr:"Begin with a TL;DR section (3-5 sentences capturing the absolute essence), then follow with the full detailed response. The TL;DR must be useful on its own.",
@@ -603,7 +610,7 @@ function buildPrompt(p){
     flowchart:"Include text-based decision trees or flowcharts (using arrows and branching) to illustrate processes, decisions, or workflows. Label each decision point and outcome clearly.",
     before_after:"Where applicable, use Before / After comparisons to illustrate transformations, improvements, or changes. Show concrete examples of the current state vs. the recommended state.",
     pros_cons:"For any recommendation or option, include a structured Pros & Cons analysis. Be specific and quantify where possible.",
-    scorecard:"Evaluate options using a structured scorecard or rating matrix. Define clear criteria, use a consistent scale (e.g., 1-5 or Low/Med/High), and include weighted totals if appropriate. MATRIX RULES: Equal-width columns for all rating columns, wider column for labels/criteria. Every cell fully visible with no overlap or truncation. Center-align ratings, left-align criteria names. Use consistent formatting across all cells in each column.",
+    scorecard:"Evaluate options using a structured scorecard or rating matrix. Define clear criteria, use a consistent scale (e.g., 1-5 or H/M/L), and include weighted totals if appropriate. BEFORE BUILDING: count columns and verify they fit the output width -- use H/M/L instead of High/Medium/Low, abbreviate criteria names if needed. MATRIX RULES: Equal-width columns for rating columns, wider column for labels/criteria. Every cell fully visible with no overlap or truncation. Center-align ratings, left-align criteria names. Consistent formatting across all cells in each column.",
     annotated:"Include annotated examples that walk through real or realistic scenarios step by step, with inline commentary explaining why each element matters and what to watch for."
   };
   const fmtL=[];
@@ -659,29 +666,58 @@ FIGURES & CHARTS:
 - Source line below: 8pt Italic gray, 4pt above
 - White space: 12pt above figure title, 16pt below source line
 
-CONTENT-FITTING RULES (applies to every table, matrix, and structured element):
-- Every cell must display its COMPLETE content without truncation, overflow, or word-breaking mid-word
-- Column widths MUST auto-adjust to fit the longest value in that column plus 24px padding on each side
-- If a text label is too long for its column: use a standard abbreviation AND define it in a footnote below the table (e.g., "Rev." for Revenue, "YoY" for Year-over-Year, "EBITDA" for full term) -- NEVER break a word across two lines
-- Maximum 2 lines per cell. If content exceeds 2 lines, shorten the wording or move detail to a footnote
-- Numbers NEVER wrap to a second line -- if a number column is too narrow, widen it
-- Header text may use abbreviations freely but must have a footnote defining each abbreviation on first use
-- When a table has more than 7 columns: either (a) split into two tables stacked vertically, (b) rotate to landscape orientation, or (c) use a smaller font (minimum 8pt) with tighter padding (6px)
-- Row heights must be uniform within each section (all data rows same height, all header rows same height)
-- White space between tables: minimum 20pt vertical gap -- tables must never touch or visually merge
-- Matrix/scorecard layouts: use equal column widths for rating columns, wider column for the label column, and ensure cell content is centered both horizontally and vertically
-- Before finalizing any table: mentally verify that every column header aligns with its data, no columns overlap, and no cell content is cut off
+TABLE PLANNING PHASE (MANDATORY -- do this BEFORE writing any table):
+For EVERY table in the document, you MUST complete these planning steps before generating the table content:
+
+Step 1 -- INVENTORY: List every column header and the widest value that will appear in that column. Include units, signs, and formatting (e.g., "($1,234.5M)" is 12 characters, "FY2025E" is 7 characters).
+
+Step 2 -- FIT TEST: Count total character width across all columns. A portrait PDF fits approximately 90-100 characters across (at 9.5pt). If your total exceeds this:
+  (a) Shorten headers using standard abbreviations: "Rev." for Revenue, "Gr." for Growth, "Mgn." for Margin, "FY25E" instead of "FY2025E", "EV/Rev" not "Enterprise Value / Revenue"
+  (b) If still too wide, remove lower-priority columns and move that data to a separate table
+  (c) If the data genuinely needs 8+ columns (e.g., multi-year projections), switch to landscape orientation for that page
+  (d) NEVER squeeze columns to the point where any value wraps or breaks
+
+Step 3 -- ABBREVIATION GLOSSARY: Collect every abbreviation used across all tables. Place a single consolidated footnote section at the end of the document: "Abbreviations: Rev. = Revenue; Gr. = Growth; E = Estimated; A = Actual; ..." This is defined ONCE, not repeated per table.
+
+Step 4 -- STRUCTURE DECISION: For each table, decide:
+  - Orientation: portrait (default) or landscape (if 7+ data columns)
+  - Column count: maximum 7 in portrait, 10 in landscape
+  - Font size: 9.5pt default, 8.5pt minimum for wide tables
+  - Whether to split into multiple tables (preferred over cramming)
+
+Step 5 -- CONTENT-SPECIFIC ADAPTATION: Design each table for the specific data it contains:
+  - Financial projections: use short fiscal year labels (FY24A, FY25E, FY26E), right-align all numbers, $ sign on first and total rows only
+  - Comparable company tables: company names in first column (widest), multiples in narrow right-aligned columns with 1 decimal + "x"
+  - Risk matrices: use "H/M/L" or color indicators instead of spelling out "High/Medium/Low" in cells
+  - DCF tables: label column left, all value columns right-aligned, use consistent $M or $B notation
+  - Sensitivity tables: highlight base case with bold border, keep inputs on axes clearly labeled
+
+CONTENT-FITTING RULES:
+- Every cell displays COMPLETE content -- zero truncation, zero overflow, zero mid-word breaks
+- Column widths auto-adjust to the widest value plus 24px padding per side
+- Numbers NEVER wrap to a second line
+- Maximum 2 lines per cell -- if more needed, shorten wording or footnote
+- Row heights uniform within each section
+- Minimum 20pt vertical gap between tables
+- Matrix layouts: equal-width rating columns, wider label column, centered content
+
+PAGE FLOW RULES (prevents blank pages):
+- Before placing a table, verify it fits on the current page. If less than 30% of the page remains, start the table on the next page
+- NEVER place a table title on one page and the table body on the next
+- NEVER let a table split with fewer than 2 data rows on either side of a page break
+- If a section has a short paragraph followed by a table, keep them together on the same page
+- Source lines must appear directly below their table on the same page, never orphaned
 
 CRITICAL DO-NOT RULES:
 - NEVER allow a word to break mid-syllable across lines (no hyphenation in table cells)
-- NEVER overlap text, columns, rows, or visual elements -- if content is too wide, restructure or paginate
-- NEVER truncate numbers, labels, or headers -- expand column width or abbreviate with a footnote
+- NEVER overlap text, columns, rows, or visual elements
+- NEVER truncate numbers, labels, or headers
 - NEVER use bright colors, decorative fonts, clip art, or stock photography
-- NEVER leave orphan/widow lines (single line at top/bottom of page)
+- NEVER leave orphan/widow lines
 - NEVER hardcode line breaks inside table cells to force-fit content
 - NEVER use font sizes below 8pt for any element
-- NEVER let adjacent columns have less than 12px visual gap between their content
-- Every number must be formatted consistently within its column -- no mixing of formats
+- NEVER let adjacent columns have less than 12px visual gap
+- Every number formatted consistently within its column
 - Every table and figure must have both a title above and source below`,
 
     word:`Design as a professional Word/DOCX document at the quality standard of a Big 4 consulting deliverable or top-tier law firm memo. Zero formatting inconsistencies allowed.
@@ -718,16 +754,27 @@ TABLE FORMATTING (CRITICAL):
 - Tables MUST NOT break mid-row across pages -- keep rows together, allow page break only between rows
 - If table is wider than margins: switch to landscape section break for that page only
 
-CONTENT-FITTING RULES (applies to every table and matrix):
-- Every cell must show its COMPLETE text -- no truncation, no overflow, no mid-word breaks
-- Auto-fit column widths to longest cell value plus 16px padding per side
-- If text is too long: use standard abbreviations with a footnote defining them (e.g., "Rev." = Revenue) -- NEVER split a word across two lines
-- Maximum 2 lines per data cell. If content needs more, shorten wording or move to footnote
+TABLE PLANNING PHASE (MANDATORY -- do this BEFORE writing any table):
+Step 1 -- INVENTORY: List every column header and the widest value expected. Include formatting characters (parentheses, $, %, x).
+Step 2 -- FIT TEST: A portrait Word doc fits ~95-105 characters across at 10pt Calibri. If total column width exceeds this: (a) abbreviate headers (Rev., Gr., Mgn., FY25E), (b) remove low-priority columns to a separate table, (c) switch to landscape section break.
+Step 3 -- ABBREVIATION GLOSSARY: Define all abbreviations once at the end of the document.
+Step 4 -- CONTENT-SPECIFIC ADAPTATION: Design table structure for the actual data -- financial projections use short year labels (FY24A, FY25E), comps tables put company names in the widest column, risk matrices use H/M/L not spelled out.
+
+CONTENT-FITTING RULES:
+- Every cell shows COMPLETE text -- no truncation, no overflow, no mid-word breaks
+- Auto-fit column widths to longest value plus 16px padding per side
 - Numbers NEVER wrap -- widen the column instead
-- Uniform row heights within each table section (data rows equal, header rows equal)
-- Minimum 12px visual gap between adjacent column content -- columns must never touch
-- Tables wider than margins: use landscape section break for that page, or split vertically
+- Maximum 2 lines per data cell
+- Uniform row heights within each table section
+- Minimum 12px visual gap between adjacent column content
+- Tables wider than margins: landscape section break or split vertically
 - Matrices/scorecards: equal-width rating columns, wider label column, centered cell content
+
+PAGE FLOW RULES:
+- Verify each table fits on the current page before placing it -- if less than 30% remains, start on next page
+- Table title and table body must be on the same page
+- Source lines must appear directly below their table, never orphaned on next page
+- Never split a table with fewer than 2 data rows on either side of a page break
 
 CRITICAL DO-NOT RULES:
 - NEVER allow word-breaking (hyphenation) inside table cells
@@ -812,14 +859,18 @@ PROFESSIONAL STANDARDS:
 - Conditional formatting: use for KPI status (green #00B050 / yellow #FFC000 / red #FF0000), data bars for relative comparison
 - Protection: suggest which cells to lock (all except blue input cells)
 
+TABLE PLANNING PHASE (MANDATORY -- do this BEFORE writing any data table):
+Step 1 -- INVENTORY: For each tab, list every column header and its widest expected value including formatting ($, commas, parentheses, x suffix, % sign).
+Step 2 -- FIT TEST: A landscape Excel printout fits ~130-150 characters at 9.5pt. If columns exceed this: (a) abbreviate headers, (b) split into multiple tabs, (c) use narrower number formats ($1.2B instead of $1,234.5M).
+Step 3 -- CONTENT-SPECIFIC ADAPTATION: Financial models use FY24A/FY25E short labels, comps tables show ticker symbols not full names in header, sensitivity tables use 2-variable grid with clear axis labels, DCF models separate assumptions from calculations with visual dividers.
+
 CONTENT-FITTING RULES:
-- Every cell must display COMPLETE content with zero truncation -- no ### symbols, no cut-off text, no hidden overflow
-- Auto-fit all columns to widest content plus 20px padding. Then verify no column shows ### or clipped text
-- Text labels: if too long for column, abbreviate with a comment or footnote explaining the abbreviation -- NEVER break a word across lines within a cell
-- Numbers NEVER wrap -- if a number column is too narrow, widen it immediately
-- Row heights: uniform within data sections. Header rows: 22px. Data rows: 18px. Never let content overflow vertically
-- Merged cells: ONLY in title block (rows 1-3). NEVER merge cells in data ranges -- breaks sorting, filtering, and formulas
-- Between separate data tables on the same sheet: minimum 3 empty rows as visual separator
+- Every cell displays COMPLETE content -- no ### symbols, no cut-off text, no hidden overflow
+- Auto-fit all columns to widest content plus 20px padding
+- Numbers NEVER wrap -- widen immediately if needed
+- Row heights: uniform within sections (headers 22px, data 18px)
+- Merged cells: ONLY in title block (rows 1-3), NEVER in data ranges
+- Between separate tables on same sheet: minimum 3 empty rows as separator
 
 CRITICAL DO-NOT RULES:
 - NEVER show ### in any cell -- auto-fit or manually widen columns
@@ -887,17 +938,22 @@ SPEAKER NOTES (every content slide):
 - Transition phrase to next slide
 - Format: bullet points, 11pt, complete sentences allowed in notes
 
-CONTENT-FITTING RULES (applies to every table, matrix, and text element on slides):
-- Every table cell must show COMPLETE text -- no truncation, no overflow outside cell boundaries, no word-breaking
-- Table column widths: proportional to content, auto-adjusted so the widest value fits with 8px padding per side
-- If a label is too long: use standard abbreviations with a footnote row or source note defining them -- NEVER split a word across lines
-- Slide tables: max 7 rows x 6 columns. If data exceeds this, split across slides or move to appendix
-- Numbers in tables NEVER wrap -- if column is too narrow, widen it or abbreviate units ($M, $B)
-- Bullet text: must fit on 1-2 lines maximum. If a bullet needs 3+ lines, split into two bullets or shorten
-- Slide titles: must fit on exactly 1-2 lines. If longer, sharpen the wording -- do not shrink font
-- All text boxes and tables must have at least 0.3" margin from slide edges and from other elements
-- Charts and tables must be horizontally centered on the slide with equal left/right margins
-- Verify: no element on any slide overlaps another element, extends beyond slide boundaries, or clips against an edge
+TABLE PLANNING PHASE (MANDATORY -- do this BEFORE creating any slide table):
+Step 1 -- INVENTORY: List every column and the widest value. A 16:9 slide fits approximately 70-80 characters across at 9.5pt in the content area.
+Step 2 -- FIT TEST: If total column width exceeds slide width: (a) abbreviate all headers aggressively (Rev., EBITDA, EV/Rev, FY25E), (b) reduce to max 6 columns, (c) move excess columns to a second slide or appendix. NEVER cram -- split instead.
+Step 3 -- CONTENT-SPECIFIC ADAPTATION: Financial summary slides show only 3-5 key metrics with large callout numbers, comps tables max 5 companies x 5 metrics, DCF summary shows only enterprise value bridge (not full model), risk matrices use 3x3 grid with color coding instead of text.
+Step 4 -- SLIDE BUDGET: Each content slide gets ONE table OR ONE chart, never both. If you need both, use two slides.
+
+CONTENT-FITTING RULES:
+- Every table cell shows COMPLETE text -- no truncation, no overflow, no word-breaking
+- Column widths proportional to content with 8px padding per side
+- Slide tables: max 7 rows x 6 columns -- split or appendix if more
+- Numbers NEVER wrap -- widen column or abbreviate units ($M, $B)
+- Bullet text: 1-2 lines max, split or shorten if longer
+- Slide titles: exactly 1-2 lines, sharpen wording instead of shrinking font
+- All elements have at least 0.3" margin from slide edges and each other
+- Charts and tables horizontally centered with equal left/right margins
+- No element overlaps another or extends beyond slide boundaries
 
 CRITICAL DO-NOT RULES:
 - NEVER allow any word to break mid-syllable in tables, bullets, or titles
@@ -1141,6 +1197,12 @@ PROFESSIONAL STANDARDS:
   };
   if(fileOutput&&FILE_INST[fileOutput]){
     sec("file_output_format","Target file format: "+(FILE_OUTPUTS[fileOutput]?.l||fileOutput)+".\n\n"+FILE_INST[fileOutput]);
+
+    // Content-aware document planning directive
+    const docTypes=["pdf","word","ppt","excel"];
+    if(docTypes.includes(fileOutput)){
+      sec("document_planning","BEFORE writing any content, complete this document planning phase:\n\n1. CONTENT OUTLINE: Based on the task above, list every section and subsection you will create. For each section that contains a table, note: (a) the table's purpose, (b) exact column headers, (c) the widest value expected in each column, (d) total number of rows.\n\n2. TABLE DESIGN: For every table identified above:\n   - Calculate total character width of all columns (header + widest value + padding)\n   - If it exceeds the page/slide width, restructure NOW: abbreviate headers, reduce columns, split into multiple tables, or switch orientation\n   - Choose the right abbreviation scheme for the content type: fiscal years (FY24A, FY25E), financial terms (Rev., EBITDA, EV/EBITDA), ratings (H/M/L), units ($M, $B, bps)\n   - Pre-define all abbreviations in a glossary you will place at the end\n\n3. PAGE BUDGET: Estimate how many pages/slides the content will fill. Allocate space so no page is less than 40% filled. If a section would leave a mostly-blank page, either extend the content or merge with the next section.\n\n4. THEN WRITE: Only after completing steps 1-3, begin writing the actual document. Follow your plan exactly -- do not add unplanned tables or change column structures mid-document.\n\n5. FINAL VERIFICATION: After writing, review every table and confirm: (a) no cell content is truncated or broken across lines, (b) no page is mostly blank, (c) every abbreviation is defined, (d) number formatting is consistent within each column.");
+    }
   }
 
   // INCLUDES
@@ -1187,6 +1249,12 @@ PROFESSIONAL STANDARDS:
 
   // SPECIAL REQUESTS
   if(special)sec("special_requests_and_constraints",special);
+
+  // DOCUMENT QUALITY GATE — final check for file outputs
+  const docFileTypes=["pdf","word","ppt","excel"];
+  if(fileOutput&&docFileTypes.includes(fileOutput)){
+    sec("quality_gate","BEFORE delivering your final response, perform this quality gate check on every table, matrix, and structured element:\n\n1. CELL INTEGRITY: Read every cell in every table. Does any cell contain a word that is split across two lines? If yes, abbreviate the header or widen the column.\n2. COLUMN FIT: Is any column so narrow that its content wraps? If yes, redistribute column widths.\n3. PAGE UTILIZATION: Is any page less than 40% filled with content? If yes, merge sections or extend content to fill it.\n4. NUMBER CONSISTENCY: Within each column, are all numbers formatted identically (same decimal places, same unit notation, same alignment)? Fix any inconsistency.\n5. ABBREVIATION COVERAGE: Is every abbreviation defined in the glossary or a footnote? Add any missing definitions.\n\nIf ANY check fails, fix it before delivering. The document must look like it was prepared by a senior analyst at a top-tier investment bank for a board presentation.");
+  }
 
   // ANTI-PATTERNS
   sec("avoid","- Do not open with filler phrases like \"Sure!\" or \"Great question!\"  -  begin directly with substance\n- Do not use vague hedging like \"it depends\" without explaining what it depends on specifically\n- Do not pad with generic background the audience already knows\n- Do not end with empty cliches  -  close with actionable specifics\n- Do not repeat the same point in different words to inflate length");
@@ -1255,6 +1323,7 @@ function App(){
   const [aud,setAud]=useState("");
   const [extra,setExtra]=useState("");
   const [special,setSpecial]=useState("");
+  const [hasAttachment,setHasAttachment]=useState(false);
   const [language,setLanguage]=useState("English");
   const [fileOutput,setFileOutput]=useState("pdf");
   const [selectedFirm,setSelectedFirm]=useState("");
@@ -1293,7 +1362,7 @@ function App(){
   const ac=MODELS[model].col;
   const acRgb={"#0891B2":"8,145,178","#D97706":"217,119,6","#10A37F":"16,163,127","#0EA5E9":"14,165,233","#4285F4":"66,133,244","#F97316":"249,115,22","#FF6F00":"255,111,0","#8B5CF6":"139,92,246","#22D3EE":"34,211,238","#6366F1":"99,102,241","#64748B":"100,116,139"}[ac];
 
-  const prompt=buildPrompt({topic,taskType:task,model,tone,length:len,format:fmt,techniques:techs,audience:aud,extra,special,mode,industry,output,style,includes,language,fileOutput,selectedFirm,selectedRole});
+  const prompt=buildPrompt({topic,taskType:task,model,tone,length:len,format:fmt,techniques:techs,audience:aud,extra,special,mode,industry,output,style,includes,language,fileOutput,selectedFirm,selectedRole,hasAttachment});
   const enhancements=useMemo(()=>topic.trim()?getSmartEnhancements(topic,task,industry,output):[], [topic,task,industry,output]);
 
   // Load usage status from Supabase
@@ -1496,7 +1565,7 @@ function App(){
     setTopic("");setTask("writing");setIndustry("general");setOutput("document");setModel("claude");
     setStyle("formal");setTone("Professional");setLen("Medium");setFmt(["prose","headers"]);
     setIncludes([]);setTechs([]);setAud("");setExtra("");setSpecial("");setLanguage("English");
-    setFileOutput("pdf");setSelectedFirm("");setSelectedRole("");
+    setFileOutput("pdf");setSelectedFirm("");setSelectedRole("");setHasAttachment(false);
     setShow(false);setShowResetConfirm(false);setPromptGenerated(false);
     window.scrollTo({top:0,behavior:"smooth"});
   },[]);
@@ -1892,7 +1961,19 @@ function App(){
         </Step>}
 
         {isExp&&<Step ico="plus" title="Additional instructions" sub="Added verbatim as a final section">
-          <textarea value={extra} onChange={e=>setExtra(e.target.value)} placeholder="e.g. Include a worked example with real data" rows={2} style={inp({resize:"vertical"})} />
+          <div style={{position:"relative",marginBottom:extra.trim()?0:8}}>
+            <textarea value={extra} onChange={e=>setExtra(e.target.value)} placeholder="e.g. Compare at least 3 competitors side by side" rows={2} style={inp({resize:"vertical"})} />
+            {extra.trim()&&(
+              <button onClick={()=>setExtra("")} style={{position:"absolute",top:10,right:10,padding:"5px 10px",borderRadius:6,border:"1px solid #fca5a5",background:"#fee2e2",color:"#dc2626",cursor:"pointer",fontSize:11,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",display:"flex",alignItems:"center",gap:4}}>{I.trash(11,"#dc2626")} Clear</button>
+            )}
+          </div>
+          {!extra.trim()&&(
+            <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+              {["Add real-world examples","Include a step-by-step walkthrough","Show calculations with formulas","Add a SWOT analysis","Compare 3+ options side by side"].map((s,i)=>(
+                <button key={i} onClick={()=>setExtra(prev=>prev?prev+", "+s:s)} style={{padding:"4px 10px",borderRadius:6,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",cursor:"pointer",fontSize:10.5,fontFamily:"var(--f)",fontWeight:500,transition:"all .15s"}}>{s}</button>
+              ))}
+            </div>
+          )}
         </Step>}
 
         <Step ico="info" title="Special requests (optional)" sub="Format, style, or content constraints">
@@ -1910,6 +1991,17 @@ function App(){
             </div>
           )}
         </Step>
+
+        {/* ATTACHMENT CHECKBOX */}
+        <div style={{display:"flex",alignItems:"flex-start",gap:10,padding:"14px 16px",marginTop:8,borderRadius:10,border:"1px solid "+(hasAttachment?ac+"40":"var(--bd)"),background:hasAttachment?ac+"08":"var(--s2)",cursor:"pointer",transition:"all .2s"}} onClick={()=>setHasAttachment(v=>!v)}>
+          <div style={{width:18,height:18,borderRadius:5,border:"2px solid "+(hasAttachment?ac:"#CBD5E1"),background:hasAttachment?ac:"#fff",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1,transition:"all .2s"}}>
+            {hasAttachment&&<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4.5L3.86 7.36L9.58 1.64" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+          </div>
+          <div style={{flex:1}}>
+            <div style={{fontSize:13,fontWeight:620,color:"var(--t1)",fontFamily:"var(--f)",lineHeight:1.3}}>I will attach files with this prompt</div>
+            <div style={{fontSize:11,color:"var(--t3)",fontFamily:"var(--f)",lineHeight:1.5,marginTop:3}}>{hasAttachment?"The prompt will instruct the AI to use your attached files as the primary data source. Recommended for best results with documents, spreadsheets, or datasets.":"The prompt will focus entirely on generating content from the task description. Check this if you plan to upload files alongside the prompt in your AI tool."}</div>
+          </div>
+        </div>
 
         {/* GENERATE */}
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:12,paddingTop:12,borderTop:"1px solid var(--bd)",marginTop:8}}>
