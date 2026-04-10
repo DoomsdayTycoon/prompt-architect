@@ -2366,21 +2366,21 @@ function App(){
       {/* USE CASES */}
       <section style={{padding:"clamp(28px,5vw,48px) clamp(12px,3vw,24px) 0",background:"var(--bg)"}}>
         <div style={{maxWidth:1200,margin:"0 auto"}}>
-          <h2 style={{fontSize:"clamp(18px,2.2vw,24px)",fontWeight:800,textAlign:"center",margin:"0 0 6px",color:"var(--t1)",letterSpacing:"-.2px"}}>{t("ucTitle")}</h2>
-          <p style={{fontSize:13,color:"var(--t3)",textAlign:"center",margin:"0 auto 24px",maxWidth:460}}>{t("ucSub")}</p>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(220px, 1fr))",gap:14}}>
+          <h2 style={{fontSize:"clamp(20px,2.5vw,26px)",fontWeight:800,textAlign:"center",margin:"0 0 8px",color:"var(--t1)",letterSpacing:"-.3px"}}>{t("ucTitle")}</h2>
+          <p style={{fontSize:13,color:"var(--t3)",textAlign:"center",margin:"0 auto 28px",maxWidth:520}}>{t("ucSub")}</p>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(300px, 1fr))",gap:16}}>
             {[
               {role:t("uc1r"),task:t("uc1t"),ic:"chart"},
               {role:t("uc2r"),task:t("uc2t"),ic:"code"},
               {role:t("uc3r"),task:t("uc3t"),ic:"target"},
               {role:t("uc4r"),task:t("uc4t"),ic:"building"},
             ].map(({role,task,ic},i)=>(
-              <div key={i} style={{background:"var(--s1)",border:"1px solid var(--bd)",borderRadius:12,padding:"18px 16px"}}>
-                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
-                  <div style={{width:28,height:28,borderRadius:7,background:ac+"10",display:"flex",alignItems:"center",justifyContent:"center"}}>{I[ic](14,ac)}</div>
-                  <span style={{fontSize:13,fontWeight:650,color:"var(--t1)"}}>{role}</span>
+              <div key={i} style={{background:"var(--s1)",border:"1px solid var(--bd)",borderRadius:12,padding:"20px 18px"}}>
+                <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+                  <div style={{width:34,height:34,borderRadius:9,background:ac+"10",display:"flex",alignItems:"center",justifyContent:"center"}}>{I[ic](17,ac)}</div>
+                  <span style={{fontSize:14,fontWeight:650,color:"var(--t1)"}}>{role}</span>
                 </div>
-                <p style={{fontSize:12,color:"var(--t3)",margin:0,lineHeight:1.55}}>{task}</p>
+                <p style={{fontSize:12.5,color:"var(--t3)",margin:0,lineHeight:1.55}}>{task}</p>
               </div>
             ))}
           </div>
