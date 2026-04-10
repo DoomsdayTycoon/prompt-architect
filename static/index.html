@@ -2423,20 +2423,6 @@ function App(){
         )}
       </div>
 
-      {/* MODE SWITCH + HINT */}
-      <div className="mobile-stack" style={{display:"flex",gap:8,marginBottom:20,flexWrap:"wrap"}}>
-        {[["amateur","seedling",t("modeSimple"),t("modeSimpleDesc")],["expert","microscope",t("modeExpert"),t("modeExpertDesc")]].map(([m,ic,lb,desc])=>(
-          <div key={m} onClick={()=>setMode(m)} style={{flex:1,minWidth:200,padding:"10px 14px",borderRadius:9,border:mode===m?"1.5px solid "+ac:"1px solid var(--bd)",background:mode===m?ac+"05":"var(--s1)",cursor:"pointer",transition:"all .15s"}}>
-            <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3}}>
-              {I[ic](13,mode===m?ac:"var(--t3)")}
-              <span style={{fontSize:12.5,fontWeight:700,color:mode===m?ac:"var(--t1)"}}>{lb}</span>
-              {m==="expert"&&mode!=="expert"&&<span style={{fontSize:9,fontWeight:700,padding:"1px 6px",borderRadius:5,background:ac,color:"#fff",marginLeft:2}}>PRO</span>}
-            </div>
-            <div style={{fontSize:11,color:"var(--t3)",lineHeight:1.5}}>{desc}</div>
-          </div>
-        ))}
-      </div>
-
       {/* HISTORY PANEL */}
       {showHistory&&history.length>0&&(
         <div style={{background:"var(--s1)",borderRadius:14,border:"1px solid var(--bd)",padding:20,marginBottom:24,animation:"fadeIn .2s ease",boxShadow:"0 1px 4px rgba(0,0,0,.04)"}}>
@@ -2455,6 +2441,20 @@ function App(){
 
       {/* FORM */}
       <div style={{background:"var(--s1)",borderRadius:16,border:"1px solid var(--bd)",padding:"clamp(16px,4vw,32px) clamp(14px,3.5vw,28px)",marginBottom:24,boxShadow:"0 1px 4px rgba(0,0,0,.04)"}}>
+
+        {/* MODE SWITCH */}
+        <div className="mobile-stack" style={{display:"flex",gap:8,marginBottom:24,flexWrap:"wrap"}}>
+          {[["amateur","seedling",t("modeSimple"),t("modeSimpleDesc")],["expert","microscope",t("modeExpert"),t("modeExpertDesc")]].map(([m,ic,lb,desc])=>(
+            <div key={m} onClick={()=>setMode(m)} style={{flex:1,minWidth:200,padding:"10px 14px",borderRadius:9,border:mode===m?"1.5px solid "+ac:"1px solid var(--bd)",background:mode===m?ac+"05":"var(--bg)",cursor:"pointer",transition:"all .15s"}}>
+              <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3}}>
+                {I[ic](13,mode===m?ac:"var(--t3)")}
+                <span style={{fontSize:12.5,fontWeight:700,color:mode===m?ac:"var(--t1)"}}>{lb}</span>
+                {m==="expert"&&mode!=="expert"&&<span style={{fontSize:9,fontWeight:700,padding:"1px 6px",borderRadius:5,background:ac,color:"#fff",marginLeft:2}}>PRO</span>}
+              </div>
+              <div style={{fontSize:11,color:"var(--t3)",lineHeight:1.5}}>{desc}</div>
+            </div>
+          ))}
+        </div>
 
         {/* TOPIC */}
         <Step ico="pen" title={t("describeGoal")} sub={t("describeGoalSub")}>
