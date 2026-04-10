@@ -1,0 +1,33 @@
+# Prompt Architect
+
+> Professional AI prompt generator that transforms goals into expert-level structured prompts.
+
+## About
+
+Prompt Architect is a web-based tool that generates precision-crafted prompts for AI models including ChatGPT, Claude, Gemini, and Llama. Users describe their goal in plain language, configure options (task type, industry, tone, output format), and receive an expert-level prompt with deep domain expertise, structured methodology, and professional formatting built in.
+
+## Features
+
+- 15 task types: strategy, analysis, coding, writing, brainstorming, debugging, review, decision-making, persuasion, and more
+- 15 industries with deep context injection: finance, tech, healthcare, legal, consulting, marketing, education, e-commerce, real estate, media, HR, manufacturing, government, research
+- Smart Enhancement Engine: auto-detects vague input and enriches with audience, scope, and techniques
+- Professional file output formatting: PDF, Word, Excel, PowerPoint, Markdown, HTML, JSON, CSV
+- Industry-standard typography and color palettes based on top firms (Goldman Sachs, McKinsey, CBRE, etc.)
+- Model-specific prompt formatting: XML tags for Claude, markdown for ChatGPT, bold for Gemini
+- 15 advanced techniques: chain of thought, red team analysis, first principles, systems thinking
+- Firm and role selector with 14 sectors, 70 firms, and 350 roles
+- Two modes: Simple (quick prompts) and Expert (full configuration)
+
+## URL
+
+https://www.proarch.tech
+
+## Pricing
+
+- Free: Limited prompts (2 simple + 1 expert)
+- Pro Monthly: $9/month
+- Pro Annual: $72/year ($6/month)
+
+## Contact
+
+Website: https://www.proarch.tech
