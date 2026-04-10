@@ -1,5 +1,5 @@
 {
-  "buildCommand": "",
+  "buildCommand": "npm run build",
   "cleanUrls": true,
   "functions": {
     "api/*.js": {

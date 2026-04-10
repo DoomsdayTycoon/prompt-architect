@@ -2,7 +2,28 @@
   "name": "prompt-architect",
   "private": true,
   "dependencies": {
-    "stripe": "^17.5.0",
-    "@supabase/supabase-js": "^2.49.0"
-  }
+    "@supabase/supabase-js": "^2.49.0",
+    "stripe": "^17.5.0"
+  },
+  "version": "1.0.0",
+  "description": "Professional-grade AI prompt generator with smart enhancement. Your input gets automatically enriched with audience targeting, reasoning strategies, and domain expertise — so the AI gives better output than raw prompting.",
+  "main": "index.js",
+  "devDependencies": {
+    "esbuild": "^0.28.0"
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DoomsdayTycoon/prompt-architect.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DoomsdayTycoon/prompt-architect/issues"
+  },
+  "homepage": "https://github.com/DoomsdayTycoon/prompt-architect#readme"
 }

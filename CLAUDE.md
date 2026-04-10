@@ -8,11 +8,17 @@ A professional AI prompt generator web app. Users describe a goal, configure opt
 
 ## Architecture
 
-### Single file: `static/index.html`
-Everything lives here — React components, CSS, data constants, prompt engine, auth.
-- ~1100 lines, loads React/ReactDOM/Babel from CDN
-- No build tools, no bundler, no Node.js
-- Deployed as static site to Vercel
+### Source: `src/app.jsx`
+All React components, CSS, data constants, prompt engine, and auth live in this JSX file.
+- Compiled to `static/app.js` via esbuild (`npm run build`)
+- Loads React/ReactDOM/Supabase from CDN (no Babel in production)
+- Deployed as static site to Vercel (build step: `npm run build`)
+
+### Shell: `static/index.html`
+Lightweight HTML shell (~11KB) containing:
+- Meta tags, structured data, Open Graph, Twitter cards
+- SEO fallback content (880+ words, hidden when React mounts)
+- Script tags for CDN deps + compiled `app.js`
 
 ### Key sections in index.html (in order):
 1. **Auth functions** (lines ~24-31) — signup, login, logout (currently localStorage, migrating to Supabase)
@@ -28,7 +34,8 @@ Everything lives here — React components, CSS, data constants, prompt engine, 
 
 ### Supporting files:
 - `app.py` — Flask dev server (serves static/)
-- `vercel.json` — Vercel deployment config
+- `build.mjs` — esbuild script: compiles `src/app.jsx` to `static/app.js`
+- `vercel.json` — Vercel deployment config (build step: `npm run build`)
 - `.env` — Supabase credentials (NEVER committed, in .gitignore)
 
 ## Design system
@@ -73,17 +80,19 @@ Everything lives here — React components, CSS, data constants, prompt engine, 
 
 ## Development
 ```bash
+# Build (required after editing src/app.jsx)
+npm run build  # compiles src/app.jsx -> static/app.js via esbuild
+
 # Local dev
-cd /Users/olaslettebak/Documents/prompt-architect
 python app.py  # serves on http://localhost:5001
 
 # Deploy
-git push origin main  # Vercel auto-deploys
+git push origin main  # Vercel runs npm run build, then deploys static/
 ```
 
 ## Rules
 - No emojis anywhere in the project
-- No build tools — everything stays in one HTML file
+- Source lives in `src/app.jsx`, compiled to `static/app.js` — always run `npm run build` after editing
 - Keep it professional, portfolio-quality
 - Firm/Role selector is Expert mode only
 - Payment system is live (Stripe test mode) — never expose secret keys
