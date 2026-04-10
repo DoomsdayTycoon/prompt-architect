@@ -10,7 +10,7 @@
   "description": "Professional-grade AI prompt generator with smart enhancement.",
   "main": "index.js",
   "scripts": {
-    "build": "node build.mjs",
+    "build": "npx esbuild src/app.jsx --outfile=static/app.js --minify --jsx=transform --jsx-factory=React.createElement --jsx-fragment=React.Fragment --target=es2020 --charset=utf8",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
