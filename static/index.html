@@ -1325,281 +1325,269 @@ function buildPrompt(p){
     else lines.push("## "+tag.charAt(0).toUpperCase()+tag.replace(/_/g," ").slice(1)+"\n"+content);
   };
 
-  // ═══ BLOCK 1: SYSTEM — Role + expertise + behavioral constraints ═══
-  const roleParts=[];
-  roleParts.push("You are "+(ROLE_DEEP[taskType]||"a helpful expert assistant")+".");
-  if(industry!=="general"&&IND_CONTEXT[industry])roleParts.push(IND_CONTEXT[industry]);
+  // ═══ BLOCK 1: SYSTEM ═══
+  const sys=[];
+  sys.push("You are "+(ROLE_DEEP[taskType]||"a helpful expert assistant")+".");
+  if(industry!=="general"&&IND_CONTEXT[industry])sys.push(IND_CONTEXT[industry]);
   if(selectedFirm&&SECTOR_FIRMS[industry]?.firms[selectedFirm]){
     const firmData=SECTOR_FIRMS[industry].firms[selectedFirm];
-    roleParts.push("Adopt the methodology, rigor, and deliverable quality of "+firmData.name+".");
-    if(selectedRole)roleParts.push("You are operating as a "+selectedRole+" at "+firmData.name+". Apply this role's expertise and perspective.");
+    sys.push("Adopt the methodology and deliverable quality of "+firmData.name+".");
+    if(selectedRole)sys.push("Role: "+selectedRole+" at "+firmData.name+".");
   }
   const audienceEnhancement=(getSmartEnhancements(topic,taskType,industry,output)).find(e=>e.type==="audience");
-  if(audience)roleParts.push("Target audience: "+audience+".");
-  else if(audienceEnhancement)roleParts.push(audienceEnhancement.text);
-  else roleParts.push("Target audience: knowledgeable professionals who expect depth and precision.");
-  roleParts.push("Tone: "+tone+(TONE_INST[tone]?" -- "+TONE_INST[tone]:"")+".");
-  if(language&&language!=="English")roleParts.push("Respond entirely in "+language+".");
-  sec("system",roleParts.join("\n"));
+  if(audience)sys.push("Audience: "+audience+".");
+  else if(audienceEnhancement)sys.push(audienceEnhancement.text);
+  else sys.push("Audience: knowledgeable professionals who expect depth and precision.");
+  sys.push("Tone: "+tone+(TONE_INST[tone]?" -- "+TONE_INST[tone]:"")+".");
+  if(language&&language!=="English")sys.push("Respond entirely in "+language+".");
+  sec("system",sys.join("\n"));
 
-  // ═══ BLOCK 2: TASK — What to produce, with numbered deliverables ═══
+  // ═══ BLOCK 2: TASK ═══
   const enhancements=getSmartEnhancements(topic,taskType,industry,output);
   const smartContext=enhancements.filter(e=>e.type==="specificity"||e.type==="scope"||e.type==="decomposition").map(e=>e.text).join("\n\n");
-  const sharpTopic=sharpenTopic(topic);
-  const tierSuffix=tier==="flagship"
-    ?"\n\nDeliver expert-level depth and genuine professional value -- not a surface-level overview."
-    :tier==="balanced"
-    ?"\n\nBe thorough but efficient. Prioritize actionable insights over exhaustive detail."
-    :"\n\nBe concise and direct. Focus on the most important points. Skip preamble.";
-  const taskBlock=sharpTopic+(smartContext?"\n\n"+smartContext:"")+tierSuffix;
-  sec("task",taskBlock);
-
-  // Source guidance (compact)
-  if(hasAttachment){
-    sec("sources","Files are attached. Use them as PRIMARY data source. Extract data directly, reference specific figures. State gaps explicitly.");
-  }else{
-    sec("sources","No files attached. Use realistic, well-researched figures. Label estimates clearly. Note what source data would strengthen the analysis.");
-  }
-
-  // Methodology (compact, adapted to tier)
-  const methods=METHODOLOGY[taskType]||METHODOLOGY.writing;
-  if(tier==="fast"){
-    sec("approach","Steps: "+methods.slice(0,3).map((m,i)=>(i+1)+". "+m).join(" "));
-  }else{
-    sec("approach",methods.map((m,i)=>(i+1)+". "+m).join("\n"));
-  }
-
-  // Risk level (only for non-medium)
+  const taskParts=[];
+  taskParts.push(sharpenTopic(topic));
+  if(smartContext)taskParts.push(smartContext);
+  // Source guidance (inline, not a separate section)
+  if(hasAttachment)taskParts.push("Files attached -- use as primary data source. Reference specific figures. State gaps.");
+  else taskParts.push("No files attached. Use realistic figures, label estimates, note what source data would strengthen the analysis.");
+  // Risk level (inline)
   const risk=riskLevel||"medium";
-  if(risk==="high")sec("risk_level","HIGH RISK: Validate every assumption. Flag irreversible actions. Consider edge cases and failure modes. Include rollback procedures.");
-  else if(risk==="low")sec("risk_level","LOW RISK: Optimize for speed. Skip extensive caveats. Be concise and action-oriented.");
+  if(risk==="high")taskParts.push("HIGH RISK: Validate every assumption. Flag irreversible actions. Include rollback procedures.");
+  else if(risk==="low")taskParts.push("LOW RISK: Optimize for speed. Be concise and action-oriented.");
+  // Tier suffix
+  if(tier==="flagship")taskParts.push("Deliver expert-level depth and genuine professional value.");
+  else if(tier==="balanced")taskParts.push("Be thorough but efficient. Prioritize actionable insights.");
+  else taskParts.push("Be concise and direct. Focus on the most important points.");
+  sec("task",taskParts.join("\n\n"));
 
-  // Includes (required sections)
+  // Includes (required sections) -- only if user selected any
   if(includes.length>0){
-    const incInst=[];
-    if(includes.includes("exec_summary"))incInst.push("Executive Summary (3-5 sentences) upfront");
-    if(includes.includes("examples"))incInst.push("2-3 real-world examples with named companies or plausible case studies");
-    if(includes.includes("sources"))incInst.push("Source citations for factual claims -- named reports, studies, publications");
-    if(includes.includes("action_items"))incInst.push("Action Items / Next Steps: numbered, specific, with owners and timelines");
-    if(includes.includes("risks"))incInst.push("Risk Assessment: top 3-5 risks with likelihood, impact, mitigation");
-    if(includes.includes("comparison"))incInst.push("Comparison Table evaluating options on same criteria");
-    if(includes.includes("timeline"))incInst.push("Timeline / Milestones with phases, deliverables, dates");
-    if(includes.includes("metrics"))incInst.push("KPIs / Metrics: baseline, target, measurement method");
-    if(includes.includes("glossary"))incInst.push("Glossary of technical terms and acronyms");
-    if(includes.includes("visuals"))incInst.push("Recommended visuals: chart type, data shown, purpose");
-    sec("required_sections","Must include:\n"+incInst.map((x,i)=>"- "+x).join("\n"));
+    const inc=[];
+    if(includes.includes("exec_summary"))inc.push("Executive summary (3-5 sentences) upfront");
+    if(includes.includes("examples"))inc.push("2-3 real-world examples with named companies");
+    if(includes.includes("sources"))inc.push("Source citations for factual claims");
+    if(includes.includes("action_items"))inc.push("Action items: numbered, specific, with owners and timelines");
+    if(includes.includes("risks"))inc.push("Risk assessment: top 3-5 risks with likelihood, impact, mitigation");
+    if(includes.includes("comparison"))inc.push("Comparison table evaluating options on same criteria");
+    if(includes.includes("timeline"))inc.push("Timeline with phases, deliverables, dates");
+    if(includes.includes("metrics"))inc.push("KPIs: baseline, target, measurement method");
+    if(includes.includes("glossary"))inc.push("Glossary of technical terms and acronyms");
+    if(includes.includes("visuals"))inc.push("Recommended visuals: chart type, data shown, purpose");
+    sec("required_sections",inc.map(x=>"- "+x).join("\n"));
   }
 
-  // Smart enhancements (technique/comparison/precision)
+  // Smart enhancements
   const smartTechniques=enhancements.filter(e=>e.type==="technique"||e.type==="comparison"||e.type==="precision"||e.type==="safety"||e.type==="jurisdiction"||e.type==="production"||e.type==="structure");
   if(smartTechniques.length>0){
     sec("guidance",smartTechniques.map(e=>"- "+e.text).join("\n"));
   }
 
   // Techniques (user-selected)
-  if(techniques.includes("cot"))sec("reasoning","Think through this step by step. Show your reasoning explicitly -- walk through logic, evaluate alternatives, explain each conclusion.");
-  if(techniques.includes("fewshot"))sec("examples_format",isXml?"Model your response after this pattern:\n\n<example>\n  <input>[Describe example input]</input>\n  <ideal_output>[Describe ideal output]</ideal_output>\n</example>":"Model your response after this pattern:\n\n**Example Input:** [Describe example input]\n**Ideal Output:** [Describe ideal output]");
-  if(techniques.includes("constraints"))sec("constraints","1. Never fabricate facts or sources\n2. State uncertainty explicitly with confidence level\n3. Stay focused -- no tangential drift\n4. Distinguish facts from analysis from speculation\n5. Flag incorrect assumptions before proceeding");
-  if(techniques.includes("selfcheck"))sec("self_check","Before submitting, verify: fully addresses task, clear structure, claims supported, tone consistent, no repetition. Revise any section that fails.");
-  if(techniques.includes("compare"))sec("comparative","Present each option with clear label. Evaluate on same criteria. Use structured comparison for 3+ options. State recommendation with reasoning.");
-  if(techniques.includes("iterative"))sec("refinement","After initial draft: re-read as target audience, identify gaps, provide improved version, note what changed.");
-  if(techniques.includes("roleplay"))sec("persona","Embody this role fully. Use vocabulary and reasoning natural to it. Maintain consistent perspective throughout.");
-  if(techniques.includes("redteam"))sec("red_team","After your main response, switch to adversarial mode. Attack your own work: weakest arguments, wrong assumptions, what a smart opponent would say. Then strengthen your response.");
-  if(techniques.includes("firstprinciples"))sec("first_principles","Strip to fundamental truths. Question every assumption. If solving from scratch with no precedent, what would you do? Rebuild from foundations.");
-  if(techniques.includes("inversion"))sec("inversion","Invert the problem: imagine catastrophic failure 12 months out. Top 5 failure modes, early warning signs, prevention actions. Use pre-mortem to strengthen the recommendation.");
-  if(techniques.includes("multiagent"))sec("multi_perspective","Analyze from multiple expert perspectives (e.g., CFO, customer, regulator, engineer). State each role's priorities and risks. Note conflicts. Synthesize into a recommendation.");
-  if(techniques.includes("structured_debate"))sec("debate","Present as structured debate:\n**Position A (FOR):** Strongest case, 3-5 arguments with evidence\n**Position B (AGAINST):** Strongest countercase\n**Verdict:** Which is stronger and why, with nuance.");
-  if(techniques.includes("systems"))sec("systems","Map as a system: key components, feedback loops, leverage points, time delays, unintended side effects. Draw connections narrow analysis would miss.");
-  if(techniques.includes("decompose"))sec("decompose","Break into sub-tasks. Identify dependencies. For each: approach, expected output, success criteria. Solve systematically, integrate, verify against requirements.");
-  if(techniques.includes("meta"))sec("meta","Before diving in: What type of problem is this? Best frameworks? Biggest risk of getting wrong? Likely blind spots? Let this guide your approach.");
+  if(techniques.includes("cot"))sec("reasoning","Think step by step. Show reasoning explicitly -- walk through logic, evaluate alternatives, explain conclusions.");
+  if(techniques.includes("fewshot"))sec("examples_format",isXml?"Model your response after this pattern:\n\n<example>\n  <input>[Example input]</input>\n  <ideal_output>[Ideal output]</ideal_output>\n</example>":"Model your response after this pattern:\n\n**Example Input:** [Example input]\n**Ideal Output:** [Ideal output]");
+  if(techniques.includes("constraints"))sec("constraints","1. Never fabricate facts or sources\n2. State uncertainty with confidence level\n3. Stay focused -- no tangential drift\n4. Distinguish facts from analysis from speculation\n5. Flag incorrect assumptions before proceeding");
+  if(techniques.includes("selfcheck"))sec("self_check","Before submitting, verify: fully addresses task, clear structure, claims supported, tone consistent, no repetition.");
+  if(techniques.includes("compare"))sec("comparative","Present each option with clear label. Evaluate on same criteria. State recommendation with reasoning.");
+  if(techniques.includes("iterative"))sec("refinement","After initial draft: re-read as target audience, identify gaps, provide improved version.");
+  if(techniques.includes("roleplay"))sec("persona","Embody this role fully. Use vocabulary and reasoning natural to it. Maintain consistent perspective.");
+  if(techniques.includes("redteam"))sec("red_team","After your main response, attack your own work: weakest arguments, wrong assumptions, what a smart opponent would say. Then strengthen.");
+  if(techniques.includes("firstprinciples"))sec("first_principles","Strip to fundamental truths. Question every assumption. Rebuild from foundations.");
+  if(techniques.includes("inversion"))sec("inversion","Invert: imagine catastrophic failure 12 months out. Top 5 failure modes, early warning signs, prevention actions.");
+  if(techniques.includes("multiagent"))sec("multi_perspective","Analyze from multiple expert perspectives (CFO, customer, regulator, engineer). Note conflicts. Synthesize.");
+  if(techniques.includes("structured_debate"))sec("debate","Position A (FOR): strongest case. Position B (AGAINST): strongest countercase. Verdict: which is stronger and why.");
+  if(techniques.includes("systems"))sec("systems","Map as a system: components, feedback loops, leverage points, time delays, unintended side effects.");
+  if(techniques.includes("decompose"))sec("decompose","Break into sub-tasks. Identify dependencies. For each: approach, output, success criteria. Solve systematically.");
+  if(techniques.includes("meta"))sec("meta","Before diving in: problem type, best frameworks, biggest risk, likely blind spots. Let this guide your approach.");
 
   // Extra & special
   if(extra)sec("additional_instructions",extra);
   if(special)sec("special_requests",special);
 
-  // ═══ BLOCK 3: CONTRACT — Output format, structure, acceptance criteria ═══
+  // ═══ BLOCK 3: CONTRACT ═══
   const fmtArr=Array.isArray(format)?format:[format];
+  const hasFileInst=fileOutput&&fileOutput!=="none";
   const FMT_INST={
-    prose:"Flowing paragraphs with topic sentences and logical transitions. Subheadings for major sections.",
-    bullets:"Concise bullet points under clear headers. Each bullet: 1-2 sentences, lead with most important info.",
-    numbered:"Numbered steps with bold action verbs. Brief explanations under each step.",
-    table:`Well-labeled tables with clear headers. Rules:
-  - Max 6 columns portrait, abbreviate headers (Rev., Gr., Mgn., FY25E)
-  - Numbers: right-aligned, commas for thousands, 1 decimal %, negatives in ()
-  - Empty cells: em dash (--), never N/A or 0
-  - Units as subtitle below title, never inline
-  - Source line below every table`,
-    qa:"Questions followed by thorough answers. Foundational to advanced order. Self-contained pairs.",
-    headers:"Clear header hierarchy (H2 major, H3 sub). Scannable sections. TOC for longer responses.",
-    tldr:"TL;DR (3-5 sentences) first, then full detail. TL;DR must stand alone.",
-    framework:"Structure around a recognized framework. Name it, explain why it applies, map analysis to its components.",
-    flowchart:"Text-based decision trees with arrows and branching. Label each decision point and outcome.",
-    before_after:"Before / After comparisons showing current state vs. recommended state with concrete examples.",
-    pros_cons:"Structured Pros & Cons for each recommendation. Specific and quantified where possible.",
-    scorecard:"Scorecard/rating matrix. Consistent scale (1-5 or H/M/L). Use abbreviations to fit columns. Equal-width rating columns.",
-    annotated:"Annotated examples walking through scenarios step by step with inline commentary."
+    prose:"Flowing paragraphs with topic sentences and transitions. Subheadings for major sections.",
+    bullets:"Concise bullet points under clear headers. Lead with most important info.",
+    numbered:"Numbered steps with bold action verbs. Brief explanations under each.",
+    table:hasFileInst?"Use tables per the file format spec below.":"Tables: max 6 columns, abbreviate headers. Numbers right-aligned, commas, 1 decimal %, negatives in (). Empty = em dash (--). Units as subtitle, not inline. Source line below every table.",
+    qa:"Questions followed by thorough answers. Self-contained pairs.",
+    headers:"Clear header hierarchy. Scannable sections. TOC for longer responses.",
+    tldr:"TL;DR (3-5 sentences) first, then full detail.",
+    framework:"Structure around a recognized framework. Name it, map analysis to its components.",
+    flowchart:"Text-based decision trees with branching. Label each decision point and outcome.",
+    before_after:"Before / After comparisons with concrete examples.",
+    pros_cons:"Structured Pros & Cons. Specific and quantified where possible.",
+    scorecard:"Scorecard matrix. Consistent scale (1-5 or H/M/L). Equal-width rating columns.",
+    annotated:"Annotated examples with inline commentary."
   };
   const contractParts=[];
 
-  // Output type
-  if(output&&OUTPUT_INST[output])contractParts.push(OUTPUT_INST[output]);
+  // Output type -- skip if FILE_INST will provide more specific structure
+  if(output&&OUTPUT_INST[output]&&!hasFileInst)contractParts.push(OUTPUT_INST[output]);
 
   // Writing style
   contractParts.push("Style: "+(STYLES[style]?.l||style)+(STYLE_INST[style]?" -- "+STYLE_INST[style]:""));
 
-  // Formatting approaches
-  if(fmtArr.length>0){
-    contractParts.push("Format:\n"+fmtArr.map((f,i)=>"- **"+(FMTS[f]?.l||f)+"**: "+(FMT_INST[f]||"")).join("\n"));
+  // Formatting
+  const activeFmts=fmtArr.filter(f=>FMT_INST[f]);
+  if(activeFmts.length>0){
+    contractParts.push("Format:\n"+activeFmts.map(f=>"- "+(FMTS[f]?.l||f)+": "+(FMT_INST[f]||"")).join("\n"));
   }
 
   // Length
   const fileLenSub=getLenSub(length,fileOutput);
-  const lenG={Brief:"200-400 words. Highest-impact only.",Medium:"500-900 words. All major aspects with supporting detail.",Detailed:"1,000-1,800 words. Thorough with examples and nuance.",Comprehensive:"2,000+ words. Exhaustive reference-grade depth."};
+  const lenG={Brief:"Highest-impact only.",Medium:"All major aspects with supporting detail.",Detailed:"Thorough with examples and nuance.",Comprehensive:"Exhaustive reference-grade depth."};
   contractParts.push("Length: "+fileLenSub+". "+(lenG[length]||lenG.Medium));
 
-  // FILE OUTPUT FORMAT — Compressed professional-grade specs
-  const FILE_INST={
-    pdf:`FORMAT: PDF, institutional quality (Goldman Sachs / J.P. Morgan standard)
-STRUCTURE: Title page (title 28pt, subtitle 16pt, date Month DD YYYY, classification) -- TOC -- Numbered sections (1.0, 1.1) -- Glossary
-TYPOGRAPHY: Arial throughout. Body 10.5pt #333. H1 20pt bold #1B2A4A with rule below. H2 14pt bold #1B2A4A. H3 11pt bold #333. Margins 1in L/R, 0.75in T/B. 6pt paragraph spacing. Left-aligned (not justified). Callouts: #EBF5FB bg, 1pt navy left border.
-TABLES:
-  - Header: 10pt bold, white on #1B2A4A, 10px padding
-  - Data: 9.5pt, 8px padding, alternating white/#F8F9FA rows
-  - Borders: 0.5pt #D0D5DD, 1pt navy under header
-  - Max 6 columns portrait, 10 landscape. Split if wider.
-  - Numbers: right-aligned, commas for thousands, 1 decimal %, 2 decimal currency, negatives in ()
-  - Empty = em dash (--). Never N/A, None, or 0. Remove all-empty columns.
-  - Units (NOK '000, USD millions): 8pt italic subtitle below title, never inline
-  - Currency/$: first and total rows only
-  - Title above: "Table N: [Title]". Source below: 8pt italic.
-  - Every cell complete -- no truncation, no word-breaking, max 2 lines
-  - Abbreviate headers (Rev., Gr., Mgn., FY25E). Glossary at end.
-CHARTS: Title as insight statement. Navy/steel blue/teal palette, max 5 colors. 8pt axis labels. Data labels on bars. Source below.
-PAGE FLOW: Hard break before H1. Never split table from title. Min 2 rows per page side. If <30% page left, start table on next page. No page <40% filled.`,
+  // FILE OUTPUT FORMAT — strict professional specs
+  // Shared table rules enforced across ALL file types that use tables
+  const TABLE_RULES=`TABLE RULES (apply to every table in this document):
+- Max 6 columns portrait, 10 landscape. Split wider tables.
+- Numbers: right-aligned, commas for thousands, 1 decimal %, 2 decimal currency, negatives in parentheses ()
+- Empty cells: em dash (--). NEVER use N/A, None, null, or 0 for missing data.
+- Units (NOK '000, USD millions, %): 8pt italic subtitle below table title, never inline with data.
+- Currency symbol ($, NOK): first row and total row only, not every cell.
+- "Table N: [Title]" above every table. Source line 8pt italic below every table.
+- Abbreviate headers aggressively (Rev., Gr., Mgn., FY25E, EV/EBITDA). Define all abbreviations in glossary.
+- Every cell must be complete -- no truncation, no word-breaking, max 2 lines per cell.`;
 
-    word:`FORMAT: DOCX, Big 4 consulting / top-tier law firm standard
-STRUCTURE: Title page (Calibri 26pt, date, version, confidentiality) -- TOC via Heading styles -- Section numbering (1.0, 1.1) -- Hard break before H1
-TYPOGRAPHY: Calibri throughout. Body 11pt #333, 1.25 spacing, 6pt after. H1 18pt bold #1B2A4A with bottom border. H2 14pt bold. H3 11.5pt bold. Callouts: #EBF5FB bg, navy left border.
-TABLES:
-  - Header: 10pt bold, white on #1B2A4A, repeat on multi-page tables
-  - Data: 10pt, 6px padding, alternating white/#F8F9FA
-  - Numbers: right-aligned, commas, 1 decimal %, negatives in ()
-  - Empty = em dash (--). Never N/A or 0. Remove all-empty columns.
-  - Title above, source below. Auto-fit columns, min 60px.
-  - Every cell complete -- no truncation, max 2 lines
-  - Abbreviate headers. Glossary at end.
-  - Landscape section break if wider than margins
+  const FILE_INST={
+    pdf:`PDF, institutional quality (Goldman Sachs / J.P. Morgan standard).
+STRUCTURE: Title page (title 28pt, subtitle 16pt, date Month DD YYYY, classification) -- TOC -- Glossary at end.
+TYPOGRAPHY: Arial throughout. Body 10.5pt #333333. H1 20pt bold #1B2A4A with 1pt rule below. H2 14pt bold #1B2A4A. H3 11pt bold #333333. Margins 1in L/R, 0.75in T/B. 6pt paragraph spacing. Left-aligned (not justified). Callouts: #EBF5FB background, 1pt navy left border.
+TABLES: Header 10pt bold, white (#FFFFFF) on #1B2A4A, 10px padding. Data 9.5pt, 8px padding, alternating white/#F8F9FA rows. Borders 0.5pt #D0D5DD, 1pt navy under header.
+`+TABLE_RULES+`
+CHARTS: Title as insight statement (not generic label). Navy/steel blue/teal palette, max 5 colors. 8pt axis labels. Data labels on bars. Source line below.
+PAGE FLOW: Hard page break before each H1. Never split table from its title. Min 2 rows per page side. If <30% page remaining, start table on next page. No page <40% filled.`,
+
+    word:`DOCX, Big 4 consulting / top-tier law firm standard.
+STRUCTURE: Title page (Calibri 26pt, date, version, confidentiality) -- TOC via Heading styles -- Glossary at end.
+TYPOGRAPHY: Calibri throughout. Body 11pt #333333, 1.25 line spacing, 6pt after paragraph. H1 18pt bold #1B2A4A with bottom border. H2 14pt bold #1B2A4A. H3 11.5pt bold #333333. Callouts: #EBF5FB background, 1pt navy left border.
+TABLES: Header 10pt bold, white on #1B2A4A, repeat header row on multi-page tables. Data 10pt, 6px padding, alternating white/#F8F9FA rows. Auto-fit columns, min 60px. Landscape section break if table exceeds margins.
+`+TABLE_RULES+`
 PAGE FLOW: Table title + body on same page. Never split with <2 rows per side. Source on same page as table.`,
 
-    excel:`FORMAT: XLSX, investment-bank-grade (Goldman Sachs / J.P. Morgan standard)
-STRUCTURE: Numbered tabs ("1. Summary", "2. Revenue Build", etc.). One purpose per tab. Summary tab first with navigation.
-LAYOUT: Row 1-3 title block (company, title, date). Row 5+ data. Freeze Row 5 + Col A. Hide gridlines.
-  - Headers: 10pt bold, white on #1B2A4A, 22px height
-  - Data: 9.5pt, 18px height, alternating white/#F8F9FA
-  - Labels LEFT, numbers RIGHT. Auto-fit + 20px padding. Never allow ###.
-NUMBERS (IB standard):
-  - Millions: 1 decimal, $ on first/total rows only
-  - Percentages: 1 decimal + %. Multiples: 1 decimal + x. Per-share: 2 decimal.
-  - Commas for thousands. Negatives: red () no minus. Growth: +prefix.
-  - Empty = em dash (--). Never N/A, None, or 0.
-  - Units in subtitle cell (8pt italic gray), never inline with title.
-CELL TYPES: Input = blue bg (#DCE6F1). Calculated = formula only, no bg. Linked = green font (#006100). Override = orange (#E26B0A) + comment.
-FORMULAS: Zero hardcoded values. Named ranges for assumptions. IFERROR on divisions. Scenario toggles via dropdown.
-COLORING: Section totals: bold, 1pt navy top, #E8EEF4 bg. Grand totals: double border. Negatives: red #CC0000. Positives: green #006100. KPI status: green/amber/red conditional formatting.
-COMPONENTS: Revenue bridge, sensitivity tables (2-var with base case bold), comps table, DCF (WACC build, FCF, terminal value, EV bridge), IRR/MOIC.
-CHARTS: Insight titles. Navy/steel blue/teal, max 5 colors. 8pt labels. Data labels on bars.`,
+    excel:`XLSX, investment-bank-grade (Goldman Sachs / J.P. Morgan standard).
+STRUCTURE: Named tabs ("Summary", "Revenue Build", etc.). One analytical purpose per tab. Summary tab first with navigation links.
+LAYOUT: Rows 1-3 title block (company, title, date). Row 5+ data. Freeze Row 5 + Col A. Hide gridlines.
+- Headers: 10pt bold, white (#FFFFFF) on #1B2A4A, 22px row height
+- Data: 9.5pt, 18px row height, alternating white/#F8F9FA rows
+- Labels LEFT-aligned, numbers RIGHT-aligned. Auto-fit + 20px padding. Never allow ###.
+NUMBERS: Millions 1 decimal, $ on first/total rows only. Percentages 1 decimal + %. Multiples 1 decimal + x. Per-share 2 decimal. Commas for thousands. Negatives: red (#CC0000) parentheses, no minus sign. Growth: + prefix. Empty = em dash (--). NEVER N/A, None, or 0. Units in 8pt italic gray subtitle cell, never inline.
+CELLS: Input = blue background (#DCE6F1). Calculated = formula only, no background. Linked = green font (#006100). Override = orange (#E26B0A) + comment. ZERO hardcoded values in formulas. Named ranges for assumptions. IFERROR on all divisions. Scenario toggles via dropdown.
+FORMATTING: Section totals: bold, 1pt navy top border, #E8EEF4 background. Grand totals: double border. KPI status: green/amber/red conditional formatting.
+CHARTS: Insight statement titles. Navy/steel blue/teal palette, max 5 colors. 8pt labels. Data labels on bars.`,
 
-    ppt:`FORMAT: PPTX, pitchbook standard (Goldman Sachs / McKinsey quality), 16:9
-STRUCTURE: Title slide (28pt white on navy, subtitle, date, confidentiality) -- Agenda -- Section dividers (navy bg) -- Content slides -- Summary + Next Steps -- Appendix
+    ppt:`PPTX, pitchbook standard (Goldman Sachs / McKinsey quality), 16:9 aspect ratio.
+STRUCTURE: Title slide (28pt white on navy, subtitle, date, confidentiality) -- Agenda -- Section dividers (navy background) -- Content slides -- Summary + Next Steps -- Appendix.
 SLIDE RULES:
-  - Assertion-Evidence format: title IS the conclusion, body proves it with data
-  - Max 5 bullets per slide, max 2 lines per bullet. Telegraphic style (verb + metric + insight).
-  - ONE table OR ONE chart per slide, never both.
-  - Hero metrics: 36pt bold callout numbers with 11pt descriptor below.
-TYPOGRAPHY: Title 20pt bold #1B2A4A, max 2 lines. Body 14pt #333. Bullets 13pt em dash. Sub-bullets 11pt. Min 8pt for sources.
-TABLES ON SLIDES:
-  - Max 7 rows x 6 columns. Split or appendix if more.
-  - Header: 10pt bold, white on navy. Data: 9.5pt, alternating rows.
-  - Horizontal borders only. Numbers right-aligned, IB formatting.
-  - Every cell complete. Abbreviate aggressively. Centered on slide.
+- Assertion-Evidence format: slide title IS the conclusion, body proves it with data.
+- Max 5 bullets per slide, max 2 lines per bullet. Telegraphic style (verb + metric + insight).
+- ONE table OR ONE chart per slide, never both.
+- Hero metrics: 36pt bold callout numbers with 11pt descriptor below.
+TYPOGRAPHY: Title 20pt bold #1B2A4A, max 2 lines. Body 14pt #333333. Bullets 13pt with em dash. Sub-bullets 11pt. Min 8pt for sources/footnotes.
+TABLES: Max 7 rows x 6 columns. Split or move to appendix if more. Header 10pt bold, white on #1B2A4A. Data 9.5pt, alternating rows. Horizontal borders only. Numbers right-aligned. Empty = em dash (--). Abbreviate aggressively. Center table on slide.
 CHARTS: Fill content area. Insight title ("Revenue grew 23% driven by pricing" not "Revenue Overview"). Navy/steel blue/teal, max 5 colors. 8pt labels. Source line below.
-SPEAKER NOTES: Key message, 3-4 data points, anticipated pushback, transition to next slide.
-NEVER: animations, transitions, clip art, font below 8pt, misaligned elements across slides, shrink font to fit.`,
+SPEAKER NOTES: Key message, 3-4 supporting data points, anticipated pushback, transition to next slide.
+NEVER: animations, transitions, clip art, font below 8pt, misaligned elements across slides, shrink-to-fit text.`,
 
-    markdown:`FORMAT: Markdown, Stripe/Vercel documentation standard. Renders in GitHub, Notion, Confluence.
-STRUCTURE: H1 title (once) -- H2 sections -- H3 subsections. YAML frontmatter if appropriate. TOC with linked headings for 4+ sections. Horizontal rules between major sections.
-TEXT: **Bold** key terms only. *Italic* for citations/tools. Backticks for code/filenames/commands. Blockquotes for callouts ("> **Note:**"). Ordered lists for sequential steps only. Max 2-level nesting.
-TABLES: | Header | separated by |---|. Numbers right-aligned (---:), text left (:---). Max 6 columns. Empty = --. Caption above as bold text.
-CODE: Language tag after triple backticks. Max 30 lines per block. One concept per block.
-STANDARDS: Descriptive link text, alt text on images. No trailing whitespace, no tabs. Every claim backed by data or reasoning.`,
+    markdown:`Markdown, Stripe/Vercel documentation standard. Renders in GitHub, Notion, Confluence.
+STRUCTURE: H1 (#) title used exactly once. H2 (##) for sections, H3 (###) for subsections. TOC with linked headings for 4+ sections. Horizontal rules (---) between major sections. One blank line before/after headings, code blocks, tables, blockquotes.
+TEXT: **Bold** for key terms and emphasis only -- never bold entire sentences. *Italic* for citations, definitions, tool names. Inline backticks for filenames, functions, CLI commands, variables. Blockquotes (>) for callouts, prefix with "> **Note:**". Ordered lists for sequential steps only. Max 2-level nesting.
+TABLES: | Header | separated by |---|. Alignment: :--- left, :---: center, ---: right. Numbers RIGHT-aligned (---:). Max 6 columns. Consistent decimal places within columns. Empty = -- (dash), never blank. Caption above as **bold text**. Negative values in parentheses.
+CODE: Always specify language tag. Max 30 lines per block with explanatory text between. One concept per block.
+STANDARDS: Descriptive link text (never raw URLs). No trailing whitespace, no tabs (spaces only). Every claim backed by data or reasoning.`,
 
-    html:`FORMAT: Semantic HTML5, Stripe/Linear quality. Production-ready, responsive, WCAG AA.
-STRUCTURE: <header>, <nav>, <main>, <article>, <section>, <footer>. Single <h1>, never skip heading levels. Meta: charset UTF-8, viewport, description.
-STYLING: BEM class names. Font: -apple-system, Inter, sans-serif. Body 16px, line-height 1.65, max-width 720px. CSS custom properties for colors (--color-primary: #1B2A4A, --color-accent: #4472C4, --color-text: #333, --color-bg-subtle: #F8F9FA). Responsive: CSS Grid, stack below 768px.
-TABLES: <table>/<caption>/<thead>/<tbody> with <th scope>. Overflow-x wrapper for mobile. Header: bold, white on primary bg. Striped rows. Numeric: right-aligned, tabular-nums.
-ACCESSIBILITY: Alt text on images. Focus styles (2px solid accent). 4.5:1 contrast ratio. ARIA labels. Skip-to-content link. Reduced-motion media query.
-STANDARDS: Zero inline styles. 2-space indent. No deprecated elements. Print stylesheet. Lazy-load images.`,
+    html:`Semantic HTML5, Stripe/Linear documentation quality. Production-ready, responsive, WCAG AA compliant.
+STRUCTURE: <header>, <nav>, <main>, <article>, <section>, <aside>, <footer>. Single <h1>, never skip heading levels. Meta: charset UTF-8, viewport (width=device-width, initial-scale=1), description, theme-color.
+STYLING: BEM class names (.report__header, .data-table__cell--numeric). Font stack: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif. Mono: "JetBrains Mono", "Fira Code", monospace. Body: 16px, line-height 1.65, max-width 720px, color #333333. Headings: font-weight 700, color #1B2A4A. CSS custom properties: --color-primary: #1B2A4A; --color-accent: #4472C4; --color-text: #333; --color-border: #E2E8F0; --color-bg-subtle: #F8F9FA. Responsive: CSS Grid, stack below 768px.
+TABLES: <table>/<caption>/<thead>/<tbody> with <th scope="col/row">. Wrapper <div> with overflow-x: auto for mobile. Header: font-weight 700, background var(--color-primary), color white, padding 10px 14px. Striped: nth-child(even) var(--color-bg-subtle). Numeric: text-align right, font-variant-numeric: tabular-nums. Empty = em dash (--).
+ACCESSIBILITY: Descriptive alt text. Visible focus styles (outline 2px solid accent, offset 2px). 4.5:1 contrast for body, 3:1 for large text. ARIA labels on icon buttons. Logical tab order. Skip-to-content link. @media (prefers-reduced-motion: reduce).
+STANDARDS: Zero inline styles. 2-space indent. No deprecated elements. Print stylesheet (@media print). Lazy-load images.`,
 
-    json:`FORMAT: Production-grade JSON, Stripe API / Bloomberg data feed quality. Parseable, self-documenting.
-STRUCTURE: Root with "metadata" (schemaVersion, generatedAt ISO 8601, source, recordCount), "data", "summary". Max 4 levels deep. Arrays for same-type collections, objects for named properties.
-NAMING: camelCase keys (totalRevenue, createdAt). No abbreviations. Boolean: is/has/can prefix. Arrays: plural nouns. Enums: lowercase_snake_case.
-VALUES: Numbers raw numeric (never quoted). Missing: null (never 0, "", "N/A"). Dates: ISO 8601 with timezone. Currency: {amount, currency} object. Percentages: decimal (0.153 not 15.3%). IDs: string type.
-STANDARDS: Valid JSON.parse(). 2-space indent. No trailing commas. Every array object has identical key sets. Sorted keys for deterministic output.`,
+    json:`Production JSON, Stripe API / Bloomberg data feed quality. Parseable by JSON.parse() with zero errors.
+STRUCTURE: Root object with "metadata" (schemaVersion, generatedAt ISO 8601 with timezone, source, description, recordCount), "data", "summary". Max 4 levels deep. Arrays for same-type collections (identical key shapes). Pagination-ready: include total, offset, limit.
+NAMING: camelCase for all keys (totalRevenue, createdAt, riskScore). Descriptive -- NEVER abbreviate (customerLifetimeValue not clv). Boolean: is/has/can prefix. Arrays: plural nouns. Enum values: lowercase_snake_case.
+VALUES: Numbers raw numeric, never quoted. Missing: null (never 0, "", "N/A", "null"). Dates: ISO 8601 "2026-04-10T14:30:00Z". Currency: {"amount": 1234.56, "currency": "USD"} -- never "$1,234.56". Percentages: decimal (0.153 not 15.3%). Booleans: true/false (never "true", 1). IDs: string type.
+STANDARDS: 2-space indent, consistent throughout. No trailing commas, no comments. Every object in an array MUST have identical key sets (use null for absent values). Sorted keys for deterministic output. Include $schema or type field.`,
 
-    csv:`FORMAT: Production CSV, direct import into Excel/pandas/R/BI tools. RFC 4180 compliant.
-STRUCTURE: Row 1 headers in snake_case (revenue_usd, growth_rate_pct). One record per row, identical column count. Sort by primary axis. Column order: identifiers -- dimensions -- measures.
-DATA: Double-quote fields with commas/newlines. Numbers raw (1234567.89, no separators). Dates ISO 8601 (YYYY-MM-DD). Currency numeric, noted in header. Percentages decimal. Missing: empty field (adjacent commas), never N/A/null/0.
-STANDARDS: UTF-8, LF line endings. No trailing commas/whitespace/blank rows. Comment header: # Source, Date range, Generated, Column/Row count. Column definitions appendix.`,
+    csv:`Production CSV, RFC 4180 compliant. Direct import into Excel, pandas, R, or any BI tool.
+STRUCTURE: Row 1 header with descriptive unique column names in snake_case (revenue_usd, growth_rate_pct, report_date). One record per row, identical column count across ALL rows. Sort by primary axis (date descending or primary key ascending). Column order: identifiers (id, name, ticker) -- dimensions (date, region) -- measures (revenue, margin, growth).
+DATA: Double-quote fields containing commas, newlines, or quotes. Escape internal quotes with "". Numbers raw numeric only, no thousand separators (1234567.89). Dates ISO 8601 (YYYY-MM-DD). Timestamps with timezone. Currency numeric only, currency in column header (revenue_usd). Percentages decimal, noted in header (growth_rate_pct, 0.153 = 15.3%). Missing: empty field (adjacent commas) -- NEVER N/A, null, "-", or 0 for missing. Boolean: 1/0 or TRUE/FALSE, consistent throughout.
+STANDARDS: UTF-8 no BOM. LF line endings. No trailing commas or whitespace. No blank rows. Comment header: # Source, Date range, Generated, Columns, Rows. Column definitions appendix.`,
 
-    plaintext:`FORMAT: Professional plain text, top-tier firm memo standard. Any editor/terminal/email compatible.
-STRUCTURE: Centered CAPS title, date (Month DD, YYYY), separator (======). Numbered headers (1.0, 1.1) with underline (------). "--- END OF DOCUMENT ---" at bottom.
-LAYOUT: STRICT 80 char line width. Dash (-) for unordered lists, 2-space indent. Tables column-aligned with spaces, 4+ space gaps between columns, right-align numbers.
-EMPHASIS: CAPS for headers/warnings only. *asterisks* for emphasis. [NOTE], [IMPORTANT], [ACTION REQUIRED] inline labels.
-STANDARDS: ASCII only (-- not em-dash, " not smart quotes). Spaces only, no tabs. Never let table columns overlap or misalign.`,
+    plaintext:`Professional plain text, top-tier firm memo standard. Readable in any editor, terminal, email, or print.
+STRUCTURE: Centered CAPS title, date (Month DD, YYYY), author, separator (======). Section headers in CAPS or Title Case with underline (------). Blank line before headers. "--- END OF DOCUMENT ---" at bottom.
+LAYOUT: STRICT 80 character maximum per line. Body left-aligned, single-spaced, one blank line between paragraphs. Dash (-) for unordered lists, 2-space indent. Numbered steps: Arabic numerals with period (1. 2. 3.), 3-space indent continuation.
+TABLES: Column-aligned using spaces. Header row with dashes below. Right-align all numeric columns. 4+ spaces between columns. Right-pad text columns to uniform width. NEVER let columns overlap or misalign.
+EMPHASIS: CAPS for headers and critical warnings ONLY. *asterisks* for emphasis. 4-space indent for callouts. [NOTE], [IMPORTANT], [ACTION REQUIRED] inline labels.
+STANDARDS: ASCII only (-- not em-dash, " not smart quotes, ... not ellipsis). Spaces only, no tabs. Cross-references: "see Section 3.2". Print-friendly at any monospaced font.`,
 
-    codeFile:`FORMAT: Production-ready code file, Google/Stripe/Vercel open-source quality. Runs without modification.
-STRUCTURE: File header (filename, description, author, date, license SPDX). Imports grouped: stdlib -- third-party -- local. Constants -- Types -- Helpers -- Public API -- Entry point.
-QUALITY: Canonical style guide (PEP 8, Airbnb, rustfmt). Type annotations on all signatures. Docstrings/JSDoc on public functions (@param, @returns, @throws, @example). Specific exception types with context. Input validation at public boundaries. Named constants, no magic numbers.
-NAMING: Functions verb_noun (calculate_revenue). Classes PascalCase. Constants UPPER_SNAKE_CASE. Booleans is_/has_/can_ prefix. No single-letter names except loop counters.
-STANDARDS: All imports resolvable. Logging over print. No hardcoded credentials. Parameterized queries. Performance notes where relevant.`
+    codeFile:`Production-ready code file, Google/Stripe/Vercel open-source quality. Runs without modification.
+STRUCTURE: File header (filename, description, author, date, license SPDX). Imports grouped: (1) stdlib, (2) third-party, (3) local -- blank line between groups, alphabetical within. Constants -- Type definitions -- Helper functions (private) -- Public API -- Entry point.
+QUALITY: Follow canonical style guide (PEP 8, Airbnb, rustfmt, Google Style). Type annotations on ALL function signatures (params + return). Docstrings/JSDoc on ALL public functions (@param, @returns, @throws, @example). Specific exception types with context messages. Input validation at public boundaries. Named constants, no magic numbers.
+NAMING: Functions: verb_noun (calculate_revenue). Classes: PascalCase nouns (RevenueCalculator). Constants: UPPER_SNAKE_CASE. Variables: descriptive, no single-letter except loop counters. Booleans: is_/has_/can_ prefix.
+STANDARDS: All imports resolvable, no placeholder code. Logging over print. No hardcoded credentials. Parameterized queries. Performance notes where relevant. Suggest test file name and key test cases.`
   };
 
-  // Inject file output into contract
-  if(fileOutput&&FILE_INST[fileOutput]){
-    contractParts.push("File format: "+(FILE_OUTPUTS[fileOutput]?.l||fileOutput)+".\n\n"+FILE_INST[fileOutput]);
+  if(hasFileInst&&FILE_INST[fileOutput]){
+    contractParts.push(FILE_INST[fileOutput]);
 
-    // Industry-specific typography & color injection for styled file types
+    // Industry design standard for styled file types
     const styledFileTypes=["pdf","word","ppt","excel"];
     const indStyle=IND_STYLE[industry]||IND_STYLE.general;
     if(styledFileTypes.includes(fileOutput)&&indStyle){
       const f=indStyle.fonts;const c=indStyle.colors;
-      contractParts.push(indStyle.label+" (ref: "+indStyle.ref+")\nFONTS: Headings: "+f.primary+". Body: "+f.secondary+". Data: "+f.data+". Mono: "+f.mono+".\nCOLORS: Primary: "+c.primary+". Secondary: "+c.secondary+". Accent: "+c.accent+". Text: "+c.text+". Muted: "+c.muted+". Header bg: "+c.headerBg+" / "+c.headerText+" text. Alt row: "+c.altRow+". Borders: "+c.border+". Negative: "+c.negative+". Positive: "+c.positive+".\nApply consistently across all pages, slides, tabs, tables, and charts.");
+      contractParts.push("DESIGN STANDARD: "+indStyle.label+" (ref: "+indStyle.ref+")\nFONTS: "+f.primary+" (headings), "+f.secondary+" (body), "+f.data+" (tables/numbers), "+f.mono+" (code/formulas).\nCOLORS: Primary "+c.primary+" (headers, dividers). Secondary "+c.secondary+" (charts). Accent "+c.accent+" (highlights, callouts). Text "+c.text+". Muted "+c.muted+" (captions). Table headers: "+c.headerBg+" bg / "+c.headerText+" text. Alt rows: "+c.altRow+". Borders: "+c.border+". Negative values: "+c.negative+". Positive: "+c.positive+".\nApply these fonts and colors consistently across ALL pages, slides, tabs, tables, and charts.");
     }
   }
 
-  // Finalize CONTRACT block
+  // Finalize CONTRACT
   if(contractParts.length>0){
     sec("contract",contractParts.join("\n\n"));
   }
 
-  // ═══ BLOCK 4: QUALITY_GATE — verification checklist ═══
-  const docFileTypes=["pdf","word","ppt","excel"];
-  if(tier!=="fast"&&fileOutput&&docFileTypes.includes(fileOutput)){
-    sec("quality_gate","Before delivering, verify every table and structured element:\n1. CELL INTEGRITY: No word split across lines -- abbreviate or widen if needed\n2. COLUMN FIT: No content wrapping -- redistribute widths\n3. PAGE FILL: No page <40% filled -- merge sections or extend\n4. NUMBER FORMAT: Identical formatting within each column (decimals, units, alignment)\n5. ABBREVIATIONS: Every abbreviation defined in glossary or footnote\nFix any failure. Standard: senior analyst at a top-tier investment bank preparing for a board presentation.");
+  // ═══ BLOCK 4: QUALITY_GATE ═══
+  if(tier!=="fast"&&hasFileInst){
+    const docFileTypes=["pdf","word","ppt","excel"];
+    const dataFileTypes=["json","csv","excel"];
+    const qgParts=[];
+    if(docFileTypes.includes(fileOutput)){
+      qgParts.push("(1) Every table cell complete -- no truncation, no word-breaking, no wrapping. Abbreviate or widen if needed.");
+      qgParts.push("(2) No page/slide <40% filled -- merge sections or extend content.");
+      qgParts.push("(3) Consistent number formatting within each column (decimals, units, alignment).");
+      qgParts.push("(4) Every abbreviation defined in glossary or footnote.");
+    }
+    if(dataFileTypes.includes(fileOutput)){
+      qgParts.push("("+((qgParts.length||0)+1)+") All data types consistent within columns. No missing keys. No mixed formats.");
+    }
+    if(fileOutput==="codeFile"){
+      qgParts.push("(1) Code compiles/runs without errors. All imports resolve. No placeholder functions.");
+      qgParts.push("(2) All public functions have type annotations and docstrings.");
+    }
+    if(fileOutput==="markdown"||fileOutput==="html"){
+      qgParts.push("("+(qgParts.length+1)+") All tables render correctly with consistent alignment. All links valid. No raw URLs in body text.");
+    }
+    if(qgParts.length>0){
+      qgParts.push("Fix any failure before delivering.");
+      sec("quality_gate",qgParts.join("\n"));
+    }
   }
 
-  // ═══ BLOCK 5: AVOID — anti-patterns ═══
+  // ═══ BLOCK 5: AVOID ═══
   if(tier==="fast"){
-    sec("avoid","No filler, hedging, or preamble. Start with substance, end with actionable specifics.");
+    sec("avoid","No filler, hedging, or preamble. Start with substance, end with specifics.");
   }else{
-    sec("avoid","- No filler openers (\"Sure!\", \"Great question!\") -- begin with substance\n- No vague hedging (\"it depends\") without specifics\n- No generic background the audience already knows\n- No empty closing cliches -- end with actionable specifics\n- No restating the same point in different words");
+    sec("avoid","No filler openers. No vague hedging without specifics. No generic background the audience knows. No empty cliches. No restating the same point.");
   }
 
   // Token efficiency for non-flagship tiers
   if(tier==="balanced"){
-    sec("efficiency","Balanced-tier model. Be thorough but concise. Combine related points. Maximum insight per paragraph.");
+    sec("efficiency","Balanced-tier model. Thorough but concise. Maximum insight per paragraph.");
   }else if(tier==="fast"){
-    sec("efficiency","Fast-tier model. Extremely concise. Bullets over paragraphs. Skip obvious context. Keep response short.");
+    sec("efficiency","Fast-tier model. Extremely concise. Bullets over paragraphs. Keep response short.");
   }
 
   return lines.join("\n\n");
