@@ -3,14 +3,12 @@
   "private": true,
   "dependencies": {
     "@supabase/supabase-js": "^2.49.0",
+    "esbuild": "^0.28.0",
     "stripe": "^17.5.0"
   },
   "version": "1.0.0",
-  "description": "Professional-grade AI prompt generator with smart enhancement. Your input gets automatically enriched with audience targeting, reasoning strategies, and domain expertise — so the AI gives better output than raw prompting.",
+  "description": "Professional-grade AI prompt generator with smart enhancement.",
   "main": "index.js",
-  "devDependencies": {
-    "esbuild": "^0.28.0"
-  },
   "scripts": {
     "build": "node build.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
