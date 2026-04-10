@@ -1079,17 +1079,19 @@ function buildPrompt(p){
 
   const FILE_INST={
     pdf:`PDF, institutional quality (Goldman Sachs / J.P. Morgan standard).
-STRUCTURE: Title page (title 28pt, subtitle 16pt, date Month DD YYYY, classification) -- TOC -- Glossary at end.
-TYPOGRAPHY: Arial throughout. Body 10.5pt #333333. H1 20pt bold #1B2A4A with 1pt rule below. H2 14pt bold #1B2A4A. H3 11pt bold #333333. Margins 1in L/R, 0.75in T/B. 6pt paragraph spacing. Left-aligned (not justified). Callouts: #EBF5FB background, 1pt navy left border.
-TABLES: Header 10pt bold, white (#FFFFFF) on #1B2A4A, 10px padding. Data 9.5pt, 8px padding, alternating white/#F8F9FA rows. Borders 0.5pt #D0D5DD, 1pt navy under header.
+STRUCTURE: Title page (title 28pt, subtitle 16pt, date Month DD YYYY, classification) -- TOC -- Glossary at end. DO NOT number section headers -- use clean text headers only (e.g. "Executive Summary" not "1.0 Executive Summary").
+TYPOGRAPHY: Arial throughout. Body 10.5pt #333333. H1 20pt bold #1B2A4A with 1pt rule below, 18pt space above, 8pt below. H2 14pt bold #1B2A4A, 14pt above, 6pt below. H3 11pt bold #333333, 10pt above, 4pt below. Margins 1in L/R, 0.75in T/B. 6pt paragraph spacing. Left-aligned (not justified). Callouts: #EBF5FB background, 1pt #1B2A4A left border, 8px padding.
+SPACING: Consistent vertical rhythm throughout. 12pt space between body text and table/chart. 6pt between table title and table. 4pt between table and source line. No double blank lines. No orphan headers at page bottom -- if header has <3 lines of content before page break, move header to next page.
+TABLES: Header 10pt bold, white (#FFFFFF) on #1B2A4A, 10px padding. Data 9.5pt, 8px padding, alternating white/#F8F9FA rows. Borders 0.5pt #D0D5DD, 1pt navy under header. Row height: 22px headers, 18px data (uniform throughout document). Column padding: 10px minimum.
 `+TABLE_RULES+`
 CHARTS: Title as insight statement (not generic label). Navy/steel blue/teal palette, max 5 colors. 8pt axis labels. Data labels on bars. Source line below.
-PAGE FLOW: Hard page break before each H1. Never split table from its title. Min 2 rows per page side. If <30% page remaining, start table on next page. No page <40% filled.`,
+PAGE FLOW: Hard page break before each H1. Never split table from its title. Min 2 rows per page side. If <30% page remaining, start table on next page. No page <40% filled. Last page must be >40% filled -- extend glossary or add appendix if needed.`,
 
     word:`DOCX, Big 4 consulting / top-tier law firm standard.
-STRUCTURE: Title page (Calibri 26pt, date, version, confidentiality) -- TOC via Heading styles -- Glossary at end.
-TYPOGRAPHY: Calibri throughout. Body 11pt #333333, 1.25 line spacing, 6pt after paragraph. H1 18pt bold #1B2A4A with bottom border. H2 14pt bold #1B2A4A. H3 11.5pt bold #333333. Callouts: #EBF5FB background, 1pt navy left border.
-TABLES: Header 10pt bold, white on #1B2A4A, repeat header row on multi-page tables. Data 10pt, 6px padding, alternating white/#F8F9FA rows. Auto-fit columns, min 60px. Landscape section break if table exceeds margins.
+STRUCTURE: Title page (Calibri 26pt, date, version, confidentiality) -- TOC via Heading styles -- Glossary at end. DO NOT number section headers -- use clean text headers only.
+TYPOGRAPHY: Calibri throughout. Body 11pt #333333, 1.25 line spacing, 6pt after paragraph. H1 18pt bold #1B2A4A with bottom border, 18pt above, 8pt below. H2 14pt bold #1B2A4A, 14pt above, 6pt below. H3 11.5pt bold #333333, 10pt above, 4pt below. Callouts: #EBF5FB background, 1pt #1B2A4A left border.
+SPACING: 12pt between body text and table/chart. 6pt between table title and table. 4pt between table and source line. No orphan headers -- min 3 lines after header before page break.
+TABLES: Header 10pt bold, white on #1B2A4A, repeat header row on multi-page tables. Data 10pt, 6px padding, alternating white/#F8F9FA rows. Auto-fit columns, min 60px. Row height: 22px headers, 18px data. Landscape section break if table exceeds margins.
 `+TABLE_RULES+`
 PAGE FLOW: Table title + body on same page. Never split with <2 rows per side. Source on same page as table.`,
 
@@ -1105,7 +1107,7 @@ FORMATTING: Section totals: bold, 1pt navy top border, #E8EEF4 background. Grand
 CHARTS: Insight statement titles. Navy/steel blue/teal palette, max 5 colors. 8pt labels. Data labels on bars.`,
 
     ppt:`PPTX, pitchbook standard (Goldman Sachs / McKinsey quality), 16:9 aspect ratio.
-STRUCTURE: Title slide (28pt white on navy, subtitle, date, confidentiality) -- Agenda -- Section dividers (navy background) -- Content slides -- Summary + Next Steps -- Appendix.
+STRUCTURE: Title slide (28pt white on navy, subtitle, date, confidentiality) -- Agenda -- Section dividers (navy background) -- Content slides -- Summary + Next Steps -- Appendix. DO NOT number slide titles.
 SLIDE RULES:
 - Assertion-Evidence format: slide title IS the conclusion, body proves it with data.
 - Max 5 bullets per slide, max 2 lines per bullet. Telegraphic style (verb + metric + insight).
@@ -1143,7 +1145,7 @@ DATA: Double-quote fields containing commas, newlines, or quotes. Escape interna
 STANDARDS: UTF-8 no BOM. LF line endings. No trailing commas or whitespace. No blank rows. Comment header: # Source, Date range, Generated, Columns, Rows. Column definitions appendix.`,
 
     plaintext:`Professional plain text, top-tier firm memo standard. Readable in any editor, terminal, email, or print.
-STRUCTURE: Centered CAPS title, date (Month DD, YYYY), author, separator (======). Section headers in CAPS or Title Case with underline (------). Blank line before headers. "--- END OF DOCUMENT ---" at bottom.
+STRUCTURE: Centered CAPS title, date (Month DD, YYYY), author, separator (======). Section headers in CAPS or Title Case with underline (------). DO NOT number headers. Blank line before headers. "--- END OF DOCUMENT ---" at bottom.
 LAYOUT: STRICT 80 character maximum per line. Body left-aligned, single-spaced, one blank line between paragraphs. Dash (-) for unordered lists, 2-space indent. Numbered steps: Arabic numerals with period (1. 2. 3.), 3-space indent continuation.
 TABLES: Column-aligned using spaces. Header row with dashes below. Right-align all numeric columns. 4+ spaces between columns. Right-pad text columns to uniform width. NEVER let columns overlap or misalign.
 EMPHASIS: CAPS for headers and critical warnings ONLY. *asterisks* for emphasis. 4-space indent for callouts. [NOTE], [IMPORTANT], [ACTION REQUIRED] inline labels.
