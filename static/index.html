@@ -284,6 +284,7 @@ const UI={
   heroSub:{en:"Your AI is only as smart as your prompt. Describe any goal and we inject strategy, structure, and domain expertise automatically -- so every AI interaction delivers.",no:"AI-en din er bare så smart som prompten din. Beskriv et mål, så legger vi til strategi, struktur og domenekunnskap automatisk -- slik at hver AI-interaksjon leverer."},
   heroPlaceholder:{en:"Describe what you need -- e.g. 'Write a market analysis for Norwegian salmon exports'",no:"Beskriv hva du trenger -- f.eks. 'Skriv en markedsanalyse for norsk lakseeksport'"},
   heroGenerate:{en:"Generate Prompt",no:"Generer Prompt"},
+  tryExample:{en:"Try an example",no:"Prøv et eksempel"},
   trustedBy:{en:"Trusted by professionals",no:"Brukt av profesjonelle"},
   industryContexts:{en:"15 industry contexts",no:"15 bransjer"},
   modelsSupported:{en:"5 AI models supported",no:"5 AI-modeller"},
@@ -1934,6 +1935,7 @@ function App(){
   const [authErr,setAuthErr]=useState("");
   const [promptGenerated,setPromptGenerated]=useState(false);
   const [exampleSector,setExampleSector]=useState("");
+  const [heroExamplesOpen,setHeroExamplesOpen]=useState(false);
   const [showResetConfirm,setShowResetConfirm]=useState(false);
   const [showExamples,setShowExamples]=useState(false);
   const [showProfileDD,setShowProfileDD]=useState(false);
@@ -2305,6 +2307,29 @@ function App(){
                 <textarea id="hero-input" placeholder={t("heroPlaceholder")} rows={2} style={{flex:1,padding:"14px 16px",border:"none",background:"transparent",color:"var(--t1)",fontSize:14,fontFamily:"var(--f)",outline:"none",lineHeight:1.55,resize:"none"}} onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();const v=document.getElementById("hero-input").value.trim();if(v){setTopic(v);document.getElementById("tool").scrollIntoView({behavior:"smooth",block:"start"});}}}} />
                 <button onClick={()=>{const v=document.getElementById("hero-input").value.trim();if(v){setTopic(v);document.getElementById("tool").scrollIntoView({behavior:"smooth",block:"start"});}}} style={{padding:"0 24px",border:"none",background:ac,color:"#fff",fontSize:14,fontWeight:650,fontFamily:"var(--f)",cursor:"pointer",transition:"opacity .15s",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:8}} onMouseEnter={e=>e.currentTarget.style.opacity=".88"} onMouseLeave={e=>e.currentTarget.style.opacity="1"}>{I.wand(15,"#fff")} {t("heroGenerate")}</button>
               </div>
+              {/* Try an example — collapsible */}
+              <div style={{textAlign:"center",marginTop:10}}>
+                <button onClick={()=>setHeroExamplesOpen(!heroExamplesOpen)} style={{border:"none",background:"transparent",color:"var(--t3)",fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:"var(--f)",display:"inline-flex",alignItems:"center",gap:5,padding:"4px 8px",borderRadius:6,transition:"color .15s"}} onMouseEnter={e=>e.currentTarget.style.color=ac} onMouseLeave={e=>e.currentTarget.style.color="var(--t3)"}>{I.lightbulb(13,"currentColor")} {t("tryExample")} <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{transform:heroExamplesOpen?"rotate(180deg)":"rotate(0)",transition:"transform .2s"}}><path d="M6 9l6 6 6-6"/></svg></button>
+                {heroExamplesOpen&&(
+                  <div style={{marginTop:10,animation:"fadeIn .2s ease"}}>
+                    <div style={{display:"flex",gap:5,justifyContent:"center",flexWrap:"wrap",marginBottom:10}}>
+                      {[...new Set(EXAMPLES.map(e=>e.sector))].map((sector,i)=>(
+                        <button key={i} onClick={()=>setExampleSector(exampleSector===sector?"":sector)} style={{padding:"4px 10px",borderRadius:6,border:"1.5px solid "+(exampleSector===sector?ac:"var(--bd)"),background:exampleSector===sector?ac+"14":"#fff",color:exampleSector===sector?ac:"var(--t2)",cursor:"pointer",fontSize:10.5,fontFamily:"var(--f)",fontWeight:600,transition:"all .15s"}}>{sector}</button>
+                      ))}
+                    </div>
+                    {exampleSector&&(
+                      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:6,textAlign:"left"}}>
+                        {EXAMPLES.filter(ex=>ex.sector===exampleSector).map((ex,i)=>(
+                          <button key={i} onClick={()=>{loadExample(ex);setExampleSector("");setHeroExamplesOpen(false);document.getElementById("tool").scrollIntoView({behavior:"smooth",block:"start"});}} style={{padding:"8px 10px",borderRadius:8,border:"1px solid var(--bd)",background:"#fff",color:"var(--t1)",cursor:"pointer",fontFamily:"var(--f)",transition:"all .15s",textAlign:"left"}}>
+                            <span style={{fontSize:11.5,fontWeight:620,lineHeight:1.3,display:"block"}}>{ex.label}</span>
+                            <span style={{fontSize:10,color:"var(--t3)",lineHeight:1.3,display:"block",marginTop:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{ex.topic.substring(0,70)}...</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -2468,8 +2493,7 @@ function App(){
           </div>
 
           {/* EXAMPLE PROMPTS */}
-          {!topic.trim()&&(
-            <div style={{marginTop:14}}>
+          <div style={{marginTop:14}}>
               <div style={{fontSize:11.5,color:"var(--t3)",marginBottom:8,fontWeight:600}}>{t("examplesTitle")}:</div>
               <div style={{display:"flex",gap:6,marginBottom:12,flexWrap:"wrap"}}>
                 {[...new Set(EXAMPLES.map(e=>e.sector))].map((sector,i)=>(
@@ -2491,7 +2515,6 @@ function App(){
               </div>
               )}
             </div>
-          )}
 
           {/* SMART ENHANCEMENT BADGES */}
           {topic.trim()&&enhancements.length>0&&(
