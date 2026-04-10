@@ -1,6 +1,8 @@
 {
+  "framework": null,
   "buildCommand": "npm install && npm run build",
   "installCommand": "npm install",
+  "outputDirectory": "static",
   "cleanUrls": true,
   "functions": {
     "api/*.js": {
