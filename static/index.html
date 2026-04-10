@@ -282,6 +282,8 @@ const UI={
   heroTitle1:{en:"Stop struggling with AI.",no:"Slutt å slite med AI."},
   heroTitle2:{en:"Start getting expert results.",no:"Få ekspertresultater."},
   heroSub:{en:"Your AI is only as smart as your prompt. Describe any goal and we inject strategy, structure, and domain expertise automatically -- so every AI interaction delivers.",no:"AI-en din er bare så smart som prompten din. Beskriv et mål, så legger vi til strategi, struktur og domenekunnskap automatisk -- slik at hver AI-interaksjon leverer."},
+  heroPlaceholder:{en:"Describe what you need -- e.g. 'Write a market analysis for Norwegian salmon exports'",no:"Beskriv hva du trenger -- f.eks. 'Skriv en markedsanalyse for norsk lakseeksport'"},
+  heroGenerate:{en:"Generate Prompt",no:"Generer Prompt"},
   trustedBy:{en:"Trusted by professionals",no:"Brukt av profesjonelle"},
   industryContexts:{en:"15 industry contexts",no:"15 bransjer"},
   modelsSupported:{en:"5 AI models supported",no:"5 AI-modeller"},
@@ -2207,6 +2209,8 @@ function App(){
         .chip-wrap button{font-size:11px!important;padding:6px 10px!important}
         .mobile-stack{flex-direction:column!important}
         .mobile-full{min-width:100%!important}
+        .hero-cta{flex-direction:column!important}
+        .hero-cta button{padding:14px 24px!important;border-radius:0 0 10px 10px!important}
       }
       @media(max-width:480px){
         nav>div{padding:0 4px!important}
@@ -2294,10 +2298,23 @@ function App(){
               <span style={{width:1,height:14,background:"var(--bd)"}} className="hero-art"/>
               <span style={{display:"flex",alignItems:"center",gap:4}} className="hero-art">{I.sparkle(13,"var(--t3)")} {t("modelsSupported")}</span>
             </div>
+
+            {/* HERO QUICK-START — compact textarea + generate button */}
+            <div style={{maxWidth:620,margin:"24px auto 0",position:"relative"}}>
+              <div className="hero-cta" style={{display:"flex",gap:0,background:"#fff",borderRadius:12,border:"1.5px solid var(--bd)",boxShadow:"0 2px 12px rgba(0,0,0,.06)",overflow:"hidden",transition:"border-color .2s"}} onFocus={e=>e.currentTarget.style.borderColor=ac} onBlur={e=>e.currentTarget.style.borderColor="var(--bd)"}>
+                <textarea id="hero-input" placeholder={t("heroPlaceholder")} rows={2} style={{flex:1,padding:"14px 16px",border:"none",background:"transparent",color:"var(--t1)",fontSize:14,fontFamily:"var(--f)",outline:"none",lineHeight:1.55,resize:"none"}} onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();const v=document.getElementById("hero-input").value.trim();if(v){setTopic(v);document.getElementById("tool").scrollIntoView({behavior:"smooth",block:"start"});}}}} />
+                <button onClick={()=>{const v=document.getElementById("hero-input").value.trim();if(v){setTopic(v);document.getElementById("tool").scrollIntoView({behavior:"smooth",block:"start"});}}} style={{padding:"0 24px",border:"none",background:ac,color:"#fff",fontSize:14,fontWeight:650,fontFamily:"var(--f)",cursor:"pointer",transition:"opacity .15s",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:8}} onMouseEnter={e=>e.currentTarget.style.opacity=".88"} onMouseLeave={e=>e.currentTarget.style.opacity="1"}>{I.wand(15,"#fff")} {t("heroGenerate")}</button>
+              </div>
+            </div>
           </div>
 
-          {/* HOW IT WORKS — horizontal, seamless, no box */}
-          <div id="features" style={{display:"flex",justifyContent:"center",gap:"clamp(16px, 4vw, 56px)",flexWrap:"wrap",paddingBottom:28,borderBottom:"1px solid var(--bd)"}}>
+        </div>
+      </section>
+
+      {/* HOW IT WORKS — standalone strip below hero */}
+      <section style={{background:"var(--bg)",padding:"0 clamp(12px,3vw,24px)"}}>
+        <div style={{maxWidth:1200,margin:"0 auto"}}>
+          <div id="features" style={{display:"flex",justifyContent:"center",gap:"clamp(16px, 4vw, 56px)",flexWrap:"wrap",padding:"20px 0",borderBottom:"1px solid var(--bd)"}}>
             {[
               {ic:"pen",n:"1",tt:t("step1t"),s:t("step1s")},
               {ic:"wand",n:"2",tt:t("step2t"),s:t("step2s")},
@@ -2315,7 +2332,6 @@ function App(){
               </React.Fragment>
             ))}
           </div>
-
         </div>
       </section>
 
