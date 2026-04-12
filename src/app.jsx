@@ -2078,7 +2078,7 @@ function App(){
                     {usage.is_paid&&<div style={{fontSize:10,fontWeight:600,color:"#10B981",marginTop:4,display:"flex",alignItems:"center",gap:4}}>{I.check(10,"#10B981")} {t("proMember")}</div>}
                   </div>
                   {user&&history.length>0&&(
-                    <button onClick={()=>{setShowHistory(!showHistory);setShowProfileDD(false);}}>{I.clock(14,"var(--t2)")} {t("promptHistory")} ({history.length})</button>
+                    <button onClick={()=>{const next=!showHistory;setShowHistory(next);setShowProfileDD(false);if(next)setTimeout(()=>{const el=document.getElementById("history-panel");if(el)el.scrollIntoView({behavior:"smooth",block:"start"});},100);}}>{I.clock(14,"var(--t2)")} {t("promptHistory")} ({history.length})</button>
                   )}
                   {usage.is_paid&&(
                     <button onClick={async()=>{setShowProfileDD(false);try{const res=await fetch("/api/portal",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:user.email})});const data=await res.json();if(data.url)window.location.href=data.url;else alert(data.error||"Could not open account portal.");}catch(e){alert("Something went wrong.");}}}>{I.sliders(14,"var(--t2)")} {t("manageSubscription")}</button>
@@ -2248,7 +2248,7 @@ function App(){
 
       {/* HISTORY PANEL */}
       {showHistory&&history.length>0&&(
-        <div style={{background:"var(--s1)",borderRadius:14,border:"1px solid var(--bd)",padding:20,marginBottom:24,animation:"fadeIn .2s ease",boxShadow:"0 1px 4px rgba(0,0,0,.04)"}}>
+        <div id="history-panel" style={{background:"var(--s1)",borderRadius:14,border:"1px solid var(--bd)",padding:20,marginBottom:24,animation:"fadeIn .2s ease",boxShadow:"0 1px 4px rgba(0,0,0,.04)"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
             <span style={{fontSize:13,fontWeight:640,color:"var(--t1)"}}>{t("recentPrompts")}</span>
             <button onClick={clearHistory} style={{display:"flex",alignItems:"center",gap:4,padding:"4px 10px",borderRadius:6,border:"1px solid rgba(239,68,68,.3)",background:"transparent",color:"#ef4444",cursor:"pointer",fontSize:11,fontFamily:"var(--f)"}}>{I.trash(11,"#ef4444")} {t("clear")}</button>
