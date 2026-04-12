@@ -1467,6 +1467,23 @@ function buildPrompt(p){
 - Abbreviate headers aggressively (Rev., Gr., Mgn., FY25E, EV/EBITDA). Define all abbreviations in glossary.
 - Every cell must be complete -- no truncation, no word-breaking, max 2 lines per cell.`;
 
+  // Shared formula / equation rules enforced across ALL document-style file types.
+  // Purpose: never render math with ASCII hacks like x^alpha, v(x) = -lambda(-x)^beta,
+  // or alpha approx 0.88. Always typeset with LaTeX so the PDF/DOCX/PPT renderer (or
+  // the markdown pipeline via MathJax / KaTeX) produces clean, publication-quality math.
+  const FORMULA_RULES=`FORMULA & EQUATION RULES (apply to every mathematical expression):
+- ALWAYS use LaTeX syntax for math. NEVER use ASCII fallbacks like x^alpha, >=, <=, !=, approx, sum, integral, sqrt, lambda, beta, <=, or unicode soup.
+- Inline math: wrap in single dollars: $v(x) = x^{\\alpha}$. Display math: wrap in double dollars on its own line: $$v(x) = \\begin{cases} x^{\\alpha} & x \\geq 0 \\\\ -\\lambda(-x)^{\\beta} & x < 0 \\end{cases}$$
+- Use proper LaTeX primitives: \\alpha \\beta \\gamma \\lambda \\mu \\sigma \\Sigma \\Delta \\pi \\theta \\rho \\epsilon \\phi \\Phi \\psi \\Psi \\omega \\Omega; \\leq \\geq \\neq \\approx \\equiv \\pm \\times \\cdot \\div \\infty \\partial \\nabla; \\sum \\int \\prod \\lim \\frac{a}{b} \\sqrt{x} \\sqrt[n]{x}; subscripts x_{i}, superscripts x^{n}, multi-char indices with braces: x_{i,j}^{2}.
+- Align multi-step derivations with \\begin{aligned}...\\end{aligned} and & anchors. Number key equations with \\tag{1}, \\tag{2} and reference them as "see eq. (1)".
+- Variable definitions: immediately after first use, define every symbol in a "where:" block with one bullet per symbol.
+- Units OUTSIDE the math: $E = 42$ kWh, NOT $E = 42\\,\\text{kWh}$ mixed inline. For unit-inside-math use \\text{} or \\mathrm{}.
+- Percentages in math: use \\% (0.88 \\approx 88\\%), never a bare % inside $$.
+- Matrices: \\begin{bmatrix}...\\end{bmatrix}. Fractions: \\frac{num}{den}, NEVER inline slashes for complex fractions. Nested fractions: \\dfrac for display size.
+- Citations next to equations: put author-year AFTER the equation block, not inside the math, e.g. "...(Tversky & Kahneman, 1992)."
+- RENDERING TARGET: the document will be rendered by a LaTeX-aware pipeline (MathJax / KaTeX / pdflatex / Word Equation). Produce LaTeX that parses cleanly in all three. No custom macros, no \\newcommand, no \\usepackage. Stick to amsmath primitives.
+- Formulas must look like they came from a published textbook, not a chat transcript. If you find yourself typing "^" or "_" outside of $...$, STOP and wrap it in math mode.`;
+
   const FILE_INST={
     pdf:`PDF, institutional quality (Goldman Sachs / J.P. Morgan standard).
 STRUCTURE: Title page (title 28pt, subtitle 16pt, date Month DD YYYY, classification) -- TOC -- Glossary at end. DO NOT number section headers -- use clean text headers only (e.g. "Executive Summary" not "1.0 Executive Summary").
@@ -1475,7 +1492,8 @@ SPACING: Consistent vertical rhythm throughout. 12pt space between body text and
 TABLES: Header 10pt bold, white (#FFFFFF) on #1B2A4A, 10px padding. Data 9.5pt, 8px padding, alternating white/#F8F9FA rows. Borders 0.5pt #D0D5DD, 1pt navy under header. Row height: 22px headers, 18px data (uniform throughout document). Column padding: 10px minimum.
 `+TABLE_RULES+`
 CHARTS: Title as insight statement (not generic label). Navy/steel blue/teal palette, max 5 colors. 8pt axis labels. Data labels on bars. Source line below.
-PAGE FLOW: Hard page break before each H1. Never split table from its title. Min 2 rows per page side. If <30% page remaining, start table on next page. No page <40% filled. Last page must be >40% filled -- extend glossary or add appendix if needed.`,
+PAGE FLOW: Hard page break before each H1. Never split table from its title. Min 2 rows per page side. If <30% page remaining, start table on next page. No page <40% filled. Last page must be >40% filled -- extend glossary or add appendix if needed.
+`+FORMULA_RULES,
 
     word:`DOCX, Big 4 consulting / top-tier law firm standard.
 STRUCTURE: Title page (Calibri 26pt, date, version, confidentiality) -- TOC via Heading styles -- Glossary at end. DO NOT number section headers -- use clean text headers only.
@@ -1483,7 +1501,8 @@ TYPOGRAPHY: Calibri throughout. Body 11pt #333333, 1.25 line spacing, 6pt after 
 SPACING: 12pt between body text and table/chart. 6pt between table title and table. 4pt between table and source line. No orphan headers -- min 3 lines after header before page break.
 TABLES: Header 10pt bold, white on #1B2A4A, repeat header row on multi-page tables. Data 10pt, 6px padding, alternating white/#F8F9FA rows. Auto-fit columns, min 60px. Row height: 22px headers, 18px data. Landscape section break if table exceeds margins.
 `+TABLE_RULES+`
-PAGE FLOW: Table title + body on same page. Never split with <2 rows per side. Source on same page as table.`,
+PAGE FLOW: Table title + body on same page. Never split with <2 rows per side. Source on same page as table.
+`+FORMULA_RULES,
 
     excel:`XLSX, investment-bank-grade (Goldman Sachs / J.P. Morgan standard).
 STRUCTURE: Named tabs ("Summary", "Revenue Build", etc.). One analytical purpose per tab. Summary tab first with navigation links.
@@ -1507,21 +1526,24 @@ TYPOGRAPHY: Title 20pt bold #1B2A4A, max 2 lines. Body 14pt #333333. Bullets 13p
 TABLES: Max 7 rows x 6 columns. Split or move to appendix if more. Header 10pt bold, white on #1B2A4A. Data 9.5pt, alternating rows. Horizontal borders only. Numbers right-aligned. Empty = em dash (--). Abbreviate aggressively. Center table on slide.
 CHARTS: Fill content area. Insight title ("Revenue grew 23% driven by pricing" not "Revenue Overview"). Navy/steel blue/teal, max 5 colors. 8pt labels. Source line below.
 SPEAKER NOTES: Key message, 3-4 supporting data points, anticipated pushback, transition to next slide.
-NEVER: animations, transitions, clip art, font below 8pt, misaligned elements across slides, shrink-to-fit text.`,
+NEVER: animations, transitions, clip art, font below 8pt, misaligned elements across slides, shrink-to-fit text.
+`+FORMULA_RULES,
 
     markdown:`Markdown, Stripe/Vercel documentation standard. Renders in GitHub, Notion, Confluence.
 STRUCTURE: H1 (#) title used exactly once. H2 (##) for sections, H3 (###) for subsections. TOC with linked headings for 4+ sections. Horizontal rules (---) between major sections. One blank line before/after headings, code blocks, tables, blockquotes.
 TEXT: **Bold** for key terms and emphasis only -- never bold entire sentences. *Italic* for citations, definitions, tool names. Inline backticks for filenames, functions, CLI commands, variables. Blockquotes (>) for callouts, prefix with "> **Note:**". Ordered lists for sequential steps only. Max 2-level nesting.
 TABLES: | Header | separated by |---|. Alignment: :--- left, :---: center, ---: right. Numbers RIGHT-aligned (---:). Max 6 columns. Consistent decimal places within columns. Empty = -- (dash), never blank. Caption above as **bold text**. Negative values in parentheses.
 CODE: Always specify language tag. Max 30 lines per block with explanatory text between. One concept per block.
-STANDARDS: Descriptive link text (never raw URLs). No trailing whitespace, no tabs (spaces only). Every claim backed by data or reasoning.`,
+STANDARDS: Descriptive link text (never raw URLs). No trailing whitespace, no tabs (spaces only). Every claim backed by data or reasoning.
+`+FORMULA_RULES,
 
     html:`Semantic HTML5, Stripe/Linear documentation quality. Production-ready, responsive, WCAG AA compliant.
 STRUCTURE: <header>, <nav>, <main>, <article>, <section>, <aside>, <footer>. Single <h1>, never skip heading levels. Meta: charset UTF-8, viewport (width=device-width, initial-scale=1), description, theme-color.
 STYLING: BEM class names (.report__header, .data-table__cell--numeric). Font stack: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif. Mono: "JetBrains Mono", "Fira Code", monospace. Body: 16px, line-height 1.65, max-width 720px, color #333333. Headings: font-weight 700, color #1B2A4A. CSS custom properties: --color-primary: #1B2A4A; --color-accent: #4472C4; --color-text: #333; --color-border: #E2E8F0; --color-bg-subtle: #F8F9FA. Responsive: CSS Grid, stack below 768px.
 TABLES: <table>/<caption>/<thead>/<tbody> with <th scope="col/row">. Wrapper <div> with overflow-x: auto for mobile. Header: font-weight 700, background var(--color-primary), color white, padding 10px 14px. Striped: nth-child(even) var(--color-bg-subtle). Numeric: text-align right, font-variant-numeric: tabular-nums. Empty = em dash (--).
 ACCESSIBILITY: Descriptive alt text. Visible focus styles (outline 2px solid accent, offset 2px). 4.5:1 contrast for body, 3:1 for large text. ARIA labels on icon buttons. Logical tab order. Skip-to-content link. @media (prefers-reduced-motion: reduce).
-STANDARDS: Zero inline styles. 2-space indent. No deprecated elements. Print stylesheet (@media print). Lazy-load images.`,
+STANDARDS: Zero inline styles. 2-space indent. No deprecated elements. Print stylesheet (@media print). Lazy-load images. Load MathJax v3 for LaTeX rendering: <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>.
+`+FORMULA_RULES,
 
     json:`Production JSON, Stripe API / Bloomberg data feed quality. Parseable by JSON.parse() with zero errors.
 STRUCTURE: Root object with "metadata" (schemaVersion, generatedAt ISO 8601 with timezone, source, description, recordCount), "data", "summary". Max 4 levels deep. Arrays for same-type collections (identical key shapes). Pagination-ready: include total, offset, limit.
@@ -1617,12 +1639,14 @@ async function loadHistoryFromDB(){
   if(!user)return [];
   const {data,error}=await supabase.from("prompt_history").select("*").eq("user_id",user.id).order("created_at",{ascending:false}).limit(20);
   if(error){console.error("History load error:",error);return [];}
-  return (data||[]).map(r=>({id:r.id,topic:r.topic,task:r.task,industry:r.industry,output:r.output,model:r.model,fileOutput:r.file_output,timestamp:new Date(r.created_at).getTime()}));
+  return (data||[]).map(r=>({id:r.id,topic:r.topic,task:r.task,industry:r.industry,output:r.output,model:r.model,fileOutput:r.file_output,config:r.config||null,timestamp:new Date(r.created_at).getTime()}));
 }
 async function saveHistoryToDB(entry){
   const {data:{user}}=await supabase.auth.getUser();
   if(!user)return;
-  const {error}=await supabase.from("prompt_history").insert({user_id:user.id,topic:entry.topic,task:entry.task,industry:entry.industry,output:entry.output,model:entry.model,file_output:entry.fileOutput||"pdf",prompt_text:entry.promptText||null});
+  const row={user_id:user.id,topic:entry.topic,task:entry.task,industry:entry.industry,output:entry.output,model:entry.model,file_output:entry.fileOutput||"pdf",prompt_text:entry.promptText||null};
+  if(entry.config)row.config=entry.config;
+  const {error}=await supabase.from("prompt_history").insert(row);
   if(error)console.error("History save error:",error);
 }
 async function clearHistoryFromDB(){
@@ -1838,11 +1862,12 @@ function App(){
       if(data)setUsage(data);
     });
     if(user){
-      const entry={topic,task,industry,output,model,fileOutput,promptText:prompt};
+      const config={mode,task,model,subModel,industry,output,style,tone,len,fmt,includes,techs,aud,extra,special,riskLevel,language,fileOutput,selectedFirm,selectedRole};
+      const entry={topic,task,industry,output,model,fileOutput,promptText:prompt,config};
       saveHistoryToDB(entry).then(()=>loadHistoryFromDB().then(h=>setHistory(h)));
     }
     setTimeout(()=>ref.current?.scrollIntoView({behavior:"smooth",block:"start"}),120);
-  },[topic,task,industry,output,model,fileOutput,prompt,user,isExp,usage]);
+  },[topic,task,industry,output,model,subModel,fileOutput,prompt,user,isExp,usage,mode,style,tone,len,fmt,includes,techs,aud,extra,special,riskLevel,language,selectedFirm,selectedRole]);
 
   const isFree=!usage.is_paid&&usage.subscription_status!=="active";
   const watermark="\n\n---\nGenerated with Prompt Architect | proarch.tech";
@@ -1876,7 +1901,32 @@ function App(){
 
   const loadExample=useCallback((ex)=>{setTopic(ex.topic);setTask(ex.task);setIndustry(ex.industry);setOutput(ex.output);setModel(ex.model);if(ex.style)setStyle(ex.style);if(ex.tone)setTone(ex.tone);if(ex.len)setLen(ex.len);if(ex.fileOutput)setFileOutput(ex.fileOutput);if(ex.includes)setIncludes(ex.includes);if(ex.techs)setTechs(ex.techs);setSelectedFirm("");setSelectedRole("");setShow(false);},[]);
 
-  const loadFromHistory=useCallback((h)=>{setTopic(h.topic);setTask(h.task);setIndustry(h.industry);setOutput(h.output);setModel(h.model);setShowHistory(false);setShow(false);},[]);
+  const loadFromHistory=useCallback((h)=>{
+    setTopic(h.topic);
+    const c=h.config||{};
+    setTask(c.task!==undefined?c.task:h.task);
+    setIndustry(c.industry!==undefined?c.industry:h.industry);
+    setOutput(c.output!==undefined?c.output:h.output);
+    setModel(c.model!==undefined?c.model:h.model);
+    if(c.mode!==undefined)setMode(c.mode);
+    if(c.subModel!==undefined)setSubModel(c.subModel);
+    if(c.style!==undefined)setStyle(c.style);
+    if(c.tone!==undefined)setTone(c.tone);
+    if(c.len!==undefined)setLen(c.len);
+    if(Array.isArray(c.fmt))setFmt(c.fmt);
+    if(Array.isArray(c.includes))setIncludes(c.includes);
+    if(Array.isArray(c.techs))setTechs(c.techs);
+    if(c.aud!==undefined)setAud(c.aud);
+    if(c.extra!==undefined)setExtra(c.extra);
+    if(c.special!==undefined)setSpecial(c.special);
+    if(c.riskLevel!==undefined)setRiskLevel(c.riskLevel);
+    if(c.language!==undefined)setLanguage(c.language);
+    if(c.fileOutput!==undefined)setFileOutput(c.fileOutput);else if(h.fileOutput)setFileOutput(h.fileOutput);
+    if(c.selectedFirm!==undefined)setSelectedFirm(c.selectedFirm);
+    if(c.selectedRole!==undefined)setSelectedRole(c.selectedRole);
+    setShowHistory(false);
+    setShow(false);
+  },[]);
 
   const clearHistory=useCallback(()=>{clearHistoryFromDB();setHistory([]);setShowHistory(false);},[]);
 
