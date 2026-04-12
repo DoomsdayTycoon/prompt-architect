@@ -1631,6 +1631,12 @@ async function clearHistoryFromDB(){
   const {error}=await supabase.from("prompt_history").delete().eq("user_id",user.id);
   if(error)console.error("History clear error:",error);
 }
+async function deleteHistoryRow(id){
+  const {data:{user}}=await supabase.auth.getUser();
+  if(!user||!id)return;
+  const {error}=await supabase.from("prompt_history").delete().eq("user_id",user.id).eq("id",id);
+  if(error)console.error("History row delete error:",error);
+}
 
 /* ═══════════════════════════════════════════════════════
    UI COMPONENTS
@@ -1873,6 +1879,8 @@ function App(){
   const loadFromHistory=useCallback((h)=>{setTopic(h.topic);setTask(h.task);setIndustry(h.industry);setOutput(h.output);setModel(h.model);setShowHistory(false);setShow(false);},[]);
 
   const clearHistory=useCallback(()=>{clearHistoryFromDB();setHistory([]);setShowHistory(false);},[]);
+
+  const deleteFromHistory=useCallback((id,e)=>{if(e){e.stopPropagation();}deleteHistoryRow(id);setHistory(h=>h.filter(x=>x.id!==id));},[]);
 
   const ti=useCallback(v=>setIncludes(p=>p.includes(v)?p.filter(x=>x!==v):[...p,v]),[]);
   const tf=useCallback(v=>setFmt(p=>p.includes(v)?p.filter(x=>x!==v):[...p,v]),[]);
@@ -2230,17 +2238,40 @@ function App(){
 
       {/* HISTORY PANEL */}
       {showHistory&&history.length>0&&(
-        <div id="history-panel" style={{background:"var(--s1)",borderRadius:14,border:"1px solid var(--bd)",padding:20,marginBottom:24,animation:"fadeIn .2s ease",boxShadow:"0 1px 4px rgba(0,0,0,.04)"}}>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-            <span style={{fontSize:13,fontWeight:640,color:"var(--t1)"}}>{t("recentPrompts")}</span>
-            <button onClick={clearHistory} style={{display:"flex",alignItems:"center",gap:4,padding:"4px 10px",borderRadius:6,border:"1px solid rgba(239,68,68,.3)",background:"transparent",color:"#ef4444",cursor:"pointer",fontSize:11,fontFamily:"var(--f)"}}>{I.trash(11,"#ef4444")} {t("clear")}</button>
+        <div id="history-panel" style={{background:"var(--s1)",borderRadius:14,border:"1px solid var(--bd)",padding:"18px 20px 14px",marginBottom:24,animation:"fadeIn .2s ease",boxShadow:"0 1px 4px rgba(0,0,0,.04)"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <span style={{fontSize:13,fontWeight:650,color:"var(--t1)",letterSpacing:"-.1px"}}>{t("recentPrompts")}</span>
+              <span style={{fontSize:11,fontWeight:600,color:"var(--t3)",background:"var(--s2)",padding:"2px 7px",borderRadius:10}}>{history.length}</span>
+            </div>
+            <button onClick={clearHistory} style={{display:"flex",alignItems:"center",gap:4,padding:"5px 11px",borderRadius:7,border:"1px solid rgba(239,68,68,.3)",background:"transparent",color:"#ef4444",cursor:"pointer",fontSize:11,fontFamily:"var(--f)",fontWeight:600,transition:"all .15s"}}>{I.trash(11,"#ef4444")} {t("clear")}</button>
           </div>
-          {history.map((h,i)=>(
-            <button key={i} onClick={()=>loadFromHistory(h)} style={{display:"block",width:"100%",textAlign:"left",padding:"10px 12px",marginBottom:4,borderRadius:8,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t1)",cursor:"pointer",fontFamily:"var(--f)",fontSize:12,lineHeight:1.4,transition:"border-color .15s"}}>
-              <div style={{fontWeight:600,marginBottom:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{h.topic}</div>
-              <div style={{color:"var(--t3)",fontSize:11}}>{tl(UI_TASKS,h.task)} \u00b7 {tl(UI_INDUSTRIES,h.industry)} \u00b7 {new Date(h.timestamp).toLocaleDateString()}</div>
-            </button>
-          ))}
+          <div style={{display:"flex",flexDirection:"column",gap:8}}>
+          {history.map((h,i)=>{
+            const mc=(MODELS[h.model]&&MODELS[h.model].col)||"var(--ac)";
+            const dt=new Date(h.timestamp);
+            const now=Date.now();
+            const diff=Math.floor((now-h.timestamp)/86400000);
+            const when=diff===0?"Today":diff===1?"Yesterday":diff<7?diff+"d ago":dt.toLocaleDateString();
+            const chip=(label,color,bg)=><span style={{display:"inline-flex",alignItems:"center",padding:"3px 9px",borderRadius:999,fontSize:10.5,fontWeight:600,color:color,background:bg,border:"1px solid "+color+"22",whiteSpace:"nowrap",letterSpacing:".1px"}}>{label}</span>;
+            return (
+              <div key={h.id||i} onClick={()=>loadFromHistory(h)} style={{position:"relative",padding:"12px 44px 12px 14px",borderRadius:10,border:"1px solid var(--bd)",background:"var(--s2)",cursor:"pointer",fontFamily:"var(--f)",transition:"all .15s",borderLeft:"3px solid "+mc}} onMouseEnter={e=>{e.currentTarget.style.background="var(--bg)";e.currentTarget.style.borderColor=mc+"55";}} onMouseLeave={e=>{e.currentTarget.style.background="var(--s2)";e.currentTarget.style.borderColor="var(--bd)";e.currentTarget.style.borderLeftColor=mc;}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:10,marginBottom:8}}>
+                  <div style={{fontWeight:600,fontSize:13,color:"var(--t1)",lineHeight:1.35,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",flex:1}}>{h.topic}</div>
+                  <span style={{fontSize:10.5,color:"var(--t3)",fontWeight:500,whiteSpace:"nowrap",flexShrink:0}}>{when}</span>
+                </div>
+                <div style={{display:"flex",flexWrap:"wrap",gap:5,alignItems:"center"}}>
+                  {h.model&&chip(MODELS[h.model]?MODELS[h.model].name:h.model,mc,mc+"12")}
+                  {h.task&&chip(tl(UI_TASKS,h.task),"var(--t2)","var(--s1)")}
+                  {h.industry&&chip(tl(UI_INDUSTRIES,h.industry),"var(--t2)","var(--s1)")}
+                  {h.output&&chip(tl(UI_OUTPUTS,h.output),"var(--t2)","var(--s1)")}
+                  {h.fileOutput&&FILE_OUTPUTS[h.fileOutput]&&chip(FILE_OUTPUTS[h.fileOutput].l,"var(--t3)","var(--bg)")}
+                </div>
+                <button onClick={e=>deleteFromHistory(h.id,e)} title="Delete" style={{position:"absolute",top:10,right:10,width:26,height:26,display:"flex",alignItems:"center",justifyContent:"center",borderRadius:6,border:"1px solid var(--bd)",background:"var(--s1)",color:"var(--t3)",cursor:"pointer",transition:"all .15s",padding:0}} onMouseEnter={e=>{e.currentTarget.style.background="#fee2e2";e.currentTarget.style.borderColor="#fca5a5";e.currentTarget.style.color="#dc2626";}} onMouseLeave={e=>{e.currentTarget.style.background="var(--s1)";e.currentTarget.style.borderColor="var(--bd)";e.currentTarget.style.color="var(--t3)";}}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+              </div>
+            );
+          })}
+          </div>
         </div>
       )}
 
