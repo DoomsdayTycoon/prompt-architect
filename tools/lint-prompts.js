@@ -445,6 +445,105 @@ const rules = [
       return /flowing prose|complete paragraph|prose paragraph/i.test(text) ? null : 'document output missing prose-guidance';
     },
   },
+
+  // ── FORMULA / LaTeX rules ─────────────────────────────────────────────
+  // These catch the class of bugs that produced overlapping equations in
+  // exported PDFs: long \tag{} labels, multi-formula display blocks,
+  // parameters stuffed into equation bodies, and unbroken wide expressions.
+  // The fix lives in FORMULA_RULES (inside FILE_INST for pdf/word/ppt/
+  // markdown/html), so every rule below verifies a specific anti-pattern
+  // warning is actually present in the generated prompt text.
+
+  {
+    id: 'formula-rules-present',
+    severity: 'error',
+    description: 'Document-style file outputs must ship the FORMULA & EQUATION RULES block.',
+    applies: (c) => ['pdf', 'word', 'ppt', 'markdown', 'html'].includes(c.fileOutput),
+    check: (text) => {
+      return /FORMULA & EQUATION RULES/.test(text) ? null : 'missing FORMULA & EQUATION RULES block';
+    },
+  },
+
+  {
+    id: 'formula-one-per-block',
+    severity: 'error',
+    description: 'Formula rules must forbid multiple equations inside a single $$...$$ display block.',
+    applies: (c) => ['pdf', 'word', 'ppt', 'markdown', 'html'].includes(c.fileOutput),
+    check: (text) => {
+      // Must explicitly say ONE equation per display block.
+      return /ONE equation per .*block|one equation per display/i.test(text)
+        ? null : 'formula rules missing "one equation per block" requirement';
+    },
+  },
+
+  {
+    id: 'formula-short-tag',
+    severity: 'error',
+    description: 'Formula rules must require \\tag{} contents to be short (numbers or 1-3 char labels).',
+    applies: (c) => ['pdf', 'word', 'ppt', 'markdown', 'html'].includes(c.fileOutput),
+    check: (text) => {
+      // Must explicitly forbid multi-word tags like \tag{value function}.
+      if (!/tag\{\}.*SHORT|short.*tag|NEVER multi-word|NEVER.*\\tag\{value function\}/i.test(text)) {
+        return 'formula rules missing "short \\tag{} contents" requirement';
+      }
+      return null;
+    },
+  },
+
+  {
+    id: 'formula-no-inline-params',
+    severity: 'error',
+    description: 'Formula rules must forbid combining equation body with parameter values on the same line.',
+    applies: (c) => ['pdf', 'word', 'ppt', 'markdown', 'html'].includes(c.fileOutput),
+    check: (text) => {
+      return /NEVER combine.*equation.*parameter|parameter values.*separate line|where:.*block/i.test(text)
+        ? null : 'formula rules missing "parameters on separate line" requirement';
+    },
+  },
+
+  {
+    id: 'formula-break-wide',
+    severity: 'error',
+    description: 'Formula rules must require wide expressions to be broken across lines with aligned.',
+    applies: (c) => ['pdf', 'word', 'ppt', 'markdown', 'html'].includes(c.fileOutput),
+    check: (text) => {
+      return /wide.*aligned|break.*aligned|\\begin\{aligned\}.*\\\\/i.test(text)
+        ? null : 'formula rules missing "break wide expressions with aligned" requirement';
+    },
+  },
+
+  {
+    id: 'formula-worked-example',
+    severity: 'error',
+    description: 'Formula rules must ship a BAD/GOOD worked example showing the overlap anti-pattern.',
+    applies: (c) => ['pdf', 'word', 'ppt', 'markdown', 'html'].includes(c.fileOutput),
+    check: (text) => {
+      // The rule block ships both "BAD" and "GOOD" example labels.
+      if (!/BAD \(/i.test(text) || !/GOOD \(/i.test(text)) {
+        return 'formula rules missing BAD/GOOD worked examples';
+      }
+      // And the canonical overlap case: value function + lambda 2.25.
+      if (!/value function|lambda.*2\.25|\\lambda \\approx 2\.25/i.test(text)) {
+        return 'formula rules missing the value-function overlap example';
+      }
+      return null;
+    },
+  },
+
+  {
+    id: 'formula-no-literal-script-close',
+    severity: 'error',
+    description: 'No FILE_INST / FORMULA_RULES text may contain a literal </script> close tag (HTML parser footgun).',
+    applies: (c) => ['pdf', 'word', 'ppt', 'markdown', 'html'].includes(c.fileOutput),
+    check: (text) => {
+      // If the generated prompt contains </script> anywhere, a template-literal
+      // in FILE_INST has leaked a raw HTML script close tag. Inside the inline
+      // Babel block in static/index.html that closes the entire app. Block it.
+      return text.includes('</script>')
+        ? 'generated prompt contains literal </script> — will break inline Babel in index.html'
+        : null;
+    },
+  },
 ];
 
 /* ─────────────────────────────────────────────────────────────

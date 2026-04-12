@@ -95,6 +95,9 @@ python app.py  # serves on http://localhost:5001
 # Lint pipeline — bundles src/app.jsx and runs 1255 prompt combos
 node tools/watch-refine.js --once
 
+# Static HTML safety tests — catches </script> outage, broken Babel block, missing formula rules
+node tools/test-static-html.js
+
 # Deploy
 git push origin main  # Vercel serves static/index.html as-is (no build step)
 ```
@@ -106,36 +109,22 @@ The previous incident: a literal `<script src="..."></script>` inside a JS templ
 **Before every `git push`, run ALL of the following. If any fail, DO NOT push.**
 
 1. **Mirror check** — every functional edit exists in both `static/index.html` and `src/app.jsx`. Drift between them is a bug.
-2. **esbuild on src/app.jsx**: `npm run build` — must complete with no errors.
-3. **Lint pipeline**: `node tools/watch-refine.js --once` — must report `with errors: 0` and `with warnings: 0` across all 1255 combos.
-4. **Inline Babel parse check** — THIS IS THE ONE THAT WOULD HAVE CAUGHT THE OUTAGE. Extract the inline Babel block from `static/index.html` and parse it. Any failure here means production is broken:
-   ```bash
-   node -e "
-   const fs=require('fs');
-   const html=fs.readFileSync('static/index.html','utf8');
-   const m=html.match(/<script type=\"text\/babel\">([\s\S]*?)<\/script>/);
-   if(!m){console.error('FAIL: no babel block found');process.exit(1);}
-   require('esbuild').transform(m[1],{loader:'jsx',jsx:'transform',jsxFactory:'React.createElement',jsxFragment:'React.Fragment'})
-     .then(r=>console.log('babel block OK, '+r.code.length+' bytes transformed'))
-     .catch(e=>{console.error('BABEL BLOCK BROKEN:',e.message);if(e.errors)e.errors.slice(0,5).forEach(er=>console.error(er.location?er.location.line+':'+er.location.column+' '+er.text:er.text));process.exit(1);});
-   "
-   ```
-5. **Exactly one `</script>` inside the Babel block** — more than one means a stray closer is hiding in a string literal:
-   ```bash
-   node -e "
-   const fs=require('fs');
-   const html=fs.readFileSync('static/index.html','utf8');
-   const start=html.indexOf('<script type=\"text/babel\">')+'<script type=\"text/babel\">'.length;
-   const tail=html.slice(start);
-   const n=(tail.match(/<\/script>/g)||[]).length;
-   if(n!==1){console.error('FAIL: expected exactly 1 </script> inside babel block, found '+n);process.exit(1);}
-   console.log('script-close count OK');
-   "
-   ```
-6. **Smoke test via Flask**: `python app.py &` then `curl -s http://localhost:5001/ | grep -c 'script type=\"text/babel\"'` must print `1`. Kill the server after.
-7. **Git status sanity** — `git status` and `git diff --stat` — confirm you are pushing what you think you are pushing. Never `git add .` or `git add -A`; stage files by name.
+2. **esbuild build**: `npm run build` — must complete with no errors.
+3. **Lint pipeline**: `node tools/watch-refine.js --once` — must report `with errors: 0` and `with warnings: 0` across all combos. This now includes 7 formula-specific rules that catch the LaTeX overlap bug class.
+4. **Static HTML safety tests**: `node tools/test-static-html.js` — this is the single most important check. It catches the exact class of bug that broke production. It tests:
+   - Inline Babel block parses cleanly as JSX (catches unterminated strings, bad syntax)
+   - Exactly one `</script>` after the Babel opening tag (catches stray literal closers in template literals)
+   - No literal `</script>` in src/app.jsx either (prevents reintroducing the bug via mirror)
+   - FORMULA_RULES block has all required anti-overlap rules in both files
+   - Core entry points (buildPrompt, App, createRoot) and Supabase client are present
+5. **Git status sanity** — `git status` and `git diff --stat` — confirm you are pushing what you think you are pushing. Never `git add .` or `git add -A`; stage files by name.
 
-**Optional but recommended when touching UI:** hit the live URL in a browser via the dev server and click through the changed flow. The pre-push checks above catch parse errors, not behavioral regressions.
+**One-liner for steps 2-4** (copy-paste this every time):
+```bash
+npm run build && node tools/watch-refine.js --once && node tools/test-static-html.js
+```
+
+**Optional but recommended when touching UI:** start the dev server (`python app.py`) and click through the changed flow in a browser. The checks above catch parse and content errors, not behavioral regressions.
 
 ## Known landmines
 
@@ -146,7 +135,7 @@ Edit `static/index.html` with these specific hazards in mind. Each of these has 
 - **Unescaped backticks in template literals** end the string early. Use `` \` `` inside template literals that contain backticks in their content.
 - **JSX attribute values with embedded quotes of the same type.** `onMouseEnter={e=>e.currentTarget.style.background="var(--s1)"}}` broke parsing in a previous commit. Prefer block bodies with semicolons: `onMouseEnter={e=>{e.currentTarget.style.background="var(--s1)";}}`.
 - **Supabase schema drift.** New columns in `prompt_history`, `profiles`, etc. require a SQL migration AND the user must run it in the Supabase SQL editor. Ship the `.sql` file in the repo root and tell the user to run it. Do not assume the schema matches the code until confirmed.
-- **The lint pipeline only tests the prompt-engine output**, not React rendering, not the inline Babel block, not the Supabase calls. A clean lint pass is necessary but not sufficient.
+- **The lint pipeline only tests the prompt-engine output**, not React rendering, not the Supabase calls. `tools/test-static-html.js` covers the inline Babel block, but neither test suite covers actual browser rendering. A clean lint + static-html pass is necessary but not sufficient for UI changes.
 - **`vercel.json` has `buildCommand: ""`.** Do not "fix" this without understanding the consequences. Changing it means Vercel will start running `npm run build` and serving `static/app.js`, which would flip production from the inline Babel path to the compiled path — a deploy model change, not a config tweak.
 
 ## Hard rules
