@@ -10,3 +10,10 @@ build/
 static/app.js
 .vscode/
 Project Docs/
+
+# Local lint pipeline artifacts (deterministic, regenerated on every run)
+tools/.engine-entry.jsx
+tools/prompt-engine.cjs
+data/lint-report.json
+data/lint-summary.txt
+logs/watch.log

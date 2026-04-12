@@ -69,7 +69,7 @@ const MM=({id,size=22})=>{const s=size;
   if(id==="claude")return <svg width={s} height={s} viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="#D4A574"/>{[0,45,90,135,180,225,270,315].map((a,i)=><line key={i} x1="16" y1="16" x2={16+8*Math.cos(a*Math.PI/180)} y2={16+8*Math.sin(a*Math.PI/180)} stroke="#fff" strokeWidth="2" strokeLinecap="round"/>)}<circle cx="16" cy="16" r="3.5" fill="#fff"/></svg>;
   /* ChatGPT — OpenAI hexagonal flower/knot */
   if(id==="chatgpt")return <svg width={s} height={s} viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="#10A37F"/><path d="M16 7l7.8 4.5v9L16 25l-7.8-4.5v-9z" fill="none" stroke="#fff" strokeWidth="1.6"/><path d="M16 7v9m0 0l7.8-4.5M16 16l-7.8-4.5M16 16v9m0 0l7.8-4.5M16 25l-7.8-4.5" stroke="#fff" strokeWidth="1.6" strokeLinecap="round"/></svg>;
-  /* GPT-4o — OpenAI black circle variant */
+  /* o-series — OpenAI black circle variant (reasoning models) */
   if(id==="gpt4o")return <svg width={s} height={s} viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="#0f0f0f"/><path d="M16 7l7.8 4.5v9L16 25l-7.8-4.5v-9z" fill="none" stroke="#fff" strokeWidth="1.4"/><path d="M16 7v9m0 0l7.8-4.5M16 16l-7.8-4.5M16 16v9m0 0l7.8-4.5M16 25l-7.8-4.5" stroke="#fff" strokeWidth="1.4" strokeLinecap="round"/></svg>;
   /* Gemini — Google's 4-point sparkle */
   if(id==="gemini")return <svg width={s} height={s} viewBox="0 0 32 32"><defs><linearGradient id="gm" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#4285F4"/><stop offset="50%" stopColor="#9B72CB"/><stop offset="100%" stopColor="#D96570"/></linearGradient></defs><path d="M16 4Q22 10 28 16Q22 22 16 28Q10 22 4 16Q10 10 16 4z" fill="url(#gm)"/></svg>;
@@ -92,11 +92,11 @@ const MM=({id,size=22})=>{const s=size;
    ═══════════════════════════════════════════════════════ */
 const MODELS={
   claude:{name:"Claude",col:"#0891B2",tips:"XML tags for structure, documents at top, detailed context windows, thinking blocks supported",fmt:"xml"},
-  chatgpt:{name:"ChatGPT",col:"#10A37F",tips:"Markdown headers, strict JSON schemas, system + user message separation, chain-of-thought in steps",fmt:"md"},
-  gpt4o:{name:"GPT-4o",col:"#0EA5E9",tips:"Multimodal native, structured outputs with JSON mode, temperature-sensitive — be explicit about creativity vs precision",fmt:"md"},
-  gemini:{name:"Gemini",col:"#4285F4",tips:"PTCF framework (Persona-Task-Context-Format), bold section headers, strong at multimodal and long context",fmt:"bold"},
-  grok:{name:"Grok",col:"#F97316",tips:"Direct and conversational, handles real-time context, system prompts for personality — concise instructions perform best",fmt:"md"},
-  mistral:{name:"Mistral",col:"#FF6F00",tips:"Instruction-tuned format, system/user/assistant roles, strong at structured reasoning — keep prompts focused and precise",fmt:"md"},
+  chatgpt:{name:"ChatGPT",col:"#10A37F",tips:"Markdown headers, strict JSON schemas, system + user message separation, chain-of-thought in steps. GPT-5 series flagship.",fmt:"md"},
+  gpt4o:{name:"o-series",col:"#0EA5E9",tips:"Chain-of-thought reasoning models. Think before answering — best for math, logic, coding, and multi-step problems. Slower but more accurate.",fmt:"md"},
+  gemini:{name:"Gemini",col:"#4285F4",tips:"PTCF framework (Persona-Task-Context-Format), bold section headers. Gemini 3.1 Pro flagship with 1M+ context. Strong at multimodal.",fmt:"bold"},
+  grok:{name:"Grok",col:"#F97316",tips:"Direct and conversational, handles real-time context, multi-agent capable. Grok 4 series flagship. Concise instructions perform best.",fmt:"md"},
+  mistral:{name:"Mistral",col:"#FF6F00",tips:"Instruction-tuned format, system/user/assistant roles, MoE architecture. Mistral Large 3 and Small 4 — strong at structured reasoning.",fmt:"md"},
   llama:{name:"Llama",col:"#8B5CF6",tips:"System prompt for role assignment, explicit constraints, shorter prompts with clear delimiters, supports tool use",fmt:"md"},
   perplexity:{name:"Perplexity",col:"#22D3EE",tips:"Search-augmented generation — ask specific questions, request source citations, great for research and fact-checking",fmt:"md"},
   copilot:{name:"Copilot",col:"#6366F1",tips:"Code-context aware, inline comment style, specify language/framework explicitly, file-level context helps",fmt:"md"},
@@ -113,28 +113,29 @@ const SUB_MODELS={
     {id:"haiku-4-5",name:"Haiku 4.5",tier:"fast",cost:"$",desc:"Fastest and cheapest. Quick edits, classification, summaries. ~$0.25/M input tokens.",badge:"Fastest"}
   ],
   chatgpt:[
-    {id:"gpt-4.1",name:"GPT-4.1",tier:"flagship",cost:"$$$",desc:"Strongest OpenAI model. Complex analysis, coding, long context. ~$2/M input tokens.",badge:"Most capable"},
-    {id:"gpt-4.1-mini",name:"GPT-4.1 Mini",tier:"balanced",cost:"$$",desc:"Great balance of speed and quality. Everyday tasks. ~$0.40/M input tokens.",badge:"Best value"},
+    {id:"gpt-5.4",name:"GPT-5.4",tier:"flagship",cost:"$$$",desc:"OpenAI flagship. Best reasoning, coding, long documents, agent workflows. ~$2.50/M input tokens.",badge:"Most capable"},
+    {id:"gpt-5-mini",name:"GPT-5 Mini",tier:"balanced",cost:"$$",desc:"Great balance of speed and quality. Everyday tasks. ~$0.25/M input tokens.",badge:"Best value"},
     {id:"gpt-4.1-nano",name:"GPT-4.1 Nano",tier:"fast",cost:"$",desc:"Ultra-fast, lowest cost. Simple queries and drafts. ~$0.10/M input tokens.",badge:"Fastest"}
   ],
   gpt4o:[
-    {id:"gpt-4o",name:"GPT-4o",tier:"flagship",cost:"$$$",desc:"Multimodal flagship. Vision, audio, complex reasoning. ~$2.50/M input tokens.",badge:"Most capable"},
-    {id:"gpt-4o-mini",name:"GPT-4o Mini",tier:"balanced",cost:"$$",desc:"Fast multimodal. Good for image+text tasks. ~$0.15/M input tokens.",badge:"Best value"},
-    {id:"o3-mini",name:"o3-mini",tier:"fast",cost:"$",desc:"Optimized reasoning. Math, logic, structured output. ~$1.10/M input tokens.",badge:"Reasoning"}
+    {id:"o3",name:"o3",tier:"flagship",cost:"$$$",desc:"Strongest reasoning model. Math, logic, multi-step analysis, coding. ~$2/M input tokens.",badge:"Most capable"},
+    {id:"o4-mini",name:"o4-mini",tier:"balanced",cost:"$$",desc:"Fast reasoning at lower cost. Outperforms o3-mini on most benchmarks. ~$1.10/M input tokens.",badge:"Best value"},
+    {id:"gpt-5-mini",name:"GPT-5 Mini",tier:"fast",cost:"$",desc:"Lightweight multimodal. Quick tasks with image+text. ~$0.25/M input tokens.",badge:"Fast"}
   ],
   gemini:[
-    {id:"gemini-2.5-pro",name:"Gemini 2.5 Pro",tier:"flagship",cost:"$$$",desc:"Google flagship. Long context (1M tokens), complex tasks. ~$1.25/M input tokens.",badge:"Most capable"},
-    {id:"gemini-2.5-flash",name:"Gemini 2.5 Flash",tier:"balanced",cost:"$$",desc:"Fast and capable. Great for most tasks. ~$0.15/M input tokens.",badge:"Best value"},
-    {id:"gemini-2.0-flash-lite",name:"Gemini 2.0 Flash Lite",tier:"fast",cost:"$",desc:"Fastest Gemini. Simple tasks, high volume. ~$0.075/M input tokens.",badge:"Fastest"}
+    {id:"gemini-3.1-pro",name:"Gemini 3.1 Pro",tier:"flagship",cost:"$$$",desc:"Google flagship. Complex tasks, data synthesis, 1M+ context window. ~$1.25/M input tokens.",badge:"Most capable"},
+    {id:"gemini-3-flash",name:"Gemini 3 Flash",tier:"balanced",cost:"$$",desc:"Default Gemini model. Fast and capable for most tasks. ~$0.15/M input tokens.",badge:"Best value"},
+    {id:"gemini-3.1-flash-lite",name:"Gemini 3.1 Flash Lite",tier:"fast",cost:"$",desc:"Fastest Gemini. Simple tasks, high volume. ~$0.075/M input tokens.",badge:"Fastest"}
   ],
   grok:[
-    {id:"grok-3",name:"Grok 3",tier:"flagship",cost:"$$$",desc:"xAI flagship. Strong reasoning with real-time knowledge. Included in X Premium+.",badge:"Most capable"},
-    {id:"grok-3-mini",name:"Grok 3 Mini",tier:"balanced",cost:"$$",desc:"Lighter, faster Grok. Good for everyday use. Included in X Premium.",badge:"Best value"}
+    {id:"grok-4.20",name:"Grok 4.20",tier:"flagship",cost:"$$$",desc:"xAI flagship. Multi-agent capable, strong reasoning, real-time knowledge. SuperGrok / X Premium+.",badge:"Most capable"},
+    {id:"grok-4.1-fast",name:"Grok 4.1 Fast",tier:"balanced",cost:"$$",desc:"High throughput, lower latency. Enterprise API. Good for everyday use.",badge:"Best value"},
+    {id:"grok-3-mini",name:"Grok 3 Mini",tier:"fast",cost:"$",desc:"Lightweight reasoning. Cost-efficient logic tasks. Speed over depth.",badge:"Fastest"}
   ],
   mistral:[
-    {id:"mistral-large",name:"Mistral Large",tier:"flagship",cost:"$$$",desc:"Most capable Mistral. Complex reasoning, multilingual. ~$2/M input tokens.",badge:"Most capable"},
-    {id:"mistral-medium",name:"Mistral Medium",tier:"balanced",cost:"$$",desc:"Balanced performance. Good for structured tasks. ~$0.40/M input tokens.",badge:"Best value"},
-    {id:"mistral-small",name:"Mistral Small",tier:"fast",cost:"$",desc:"Fast and efficient. Quick tasks, classification. ~$0.10/M input tokens.",badge:"Fastest"}
+    {id:"mistral-large-3",name:"Mistral Large 3",tier:"flagship",cost:"$$$",desc:"675B MoE (41B active). Complex reasoning, multilingual. ~$2/M input tokens.",badge:"Most capable"},
+    {id:"mistral-small-4",name:"Mistral Small 4",tier:"balanced",cost:"$$",desc:"Unified instruct, reasoning, coding, and multimodal. 256K context. ~$0.40/M input tokens.",badge:"Best value"},
+    {id:"mistral-small-3b",name:"Mistral 3B",tier:"fast",cost:"$",desc:"Dense 3B model. Edge-friendly, fast classification and drafts. ~$0.04/M input tokens.",badge:"Fastest"}
   ],
   llama:[
     {id:"llama-4-maverick",name:"Llama 4 Maverick",tier:"flagship",cost:"$$$",desc:"Meta flagship. 128 experts MoE, strong reasoning. Free/open-weight.",badge:"Most capable"},
@@ -142,12 +143,14 @@ const SUB_MODELS={
     {id:"llama-3.3-70b",name:"Llama 3.3 70B",tier:"fast",cost:"$",desc:"Proven workhorse. Fast, widely deployed. Free/open-weight.",badge:"Popular"}
   ],
   perplexity:[
-    {id:"sonar-pro",name:"Sonar Pro",tier:"flagship",cost:"$$$",desc:"Advanced search + reasoning. Complex research queries. ~$3/M input tokens.",badge:"Most capable"},
-    {id:"sonar",name:"Sonar",tier:"balanced",cost:"$$",desc:"Standard search-augmented. Quick fact-checking. ~$1/M input tokens.",badge:"Best value"}
+    {id:"sonar-reasoning-pro",name:"Sonar Reasoning Pro",tier:"flagship",cost:"$$$",desc:"Chain-of-thought search. Complex analytical research. ~$3/M input tokens.",badge:"Most capable"},
+    {id:"sonar-pro",name:"Sonar Pro",tier:"balanced",cost:"$$",desc:"Deep context, broad retrieval. Research and synthesis. ~$3/M input tokens.",badge:"Best value"},
+    {id:"sonar",name:"Sonar",tier:"fast",cost:"$",desc:"Lightweight search. Fast fact-checking, 1200 tok/s. ~$1/M input tokens.",badge:"Fastest"}
   ],
   copilot:[
-    {id:"copilot-gpt4",name:"Copilot (GPT-4)",tier:"flagship",cost:"$$$",desc:"Full GPT-4 powered. Complex code gen, architecture. Requires Pro subscription.",badge:"Most capable"},
-    {id:"copilot-standard",name:"Copilot",tier:"balanced",cost:"$$",desc:"Standard Copilot. Everyday code assistance. Free tier available.",badge:"Best value"}
+    {id:"copilot-pro-plus",name:"Copilot Pro+",tier:"flagship",cost:"$$$",desc:"GPT-5.4 + Claude powered. Complex code gen, architecture, multi-model review.",badge:"Most capable"},
+    {id:"copilot-pro",name:"Copilot Pro",tier:"balanced",cost:"$$",desc:"Standard Copilot with GPT-4o. Everyday code assistance.",badge:"Best value"},
+    {id:"copilot-free",name:"Copilot Free",tier:"fast",cost:"$",desc:"Free tier. Basic code completion and chat. Limited monthly usage.",badge:"Free"}
   ],
   general:[
     {id:"flagship",name:"Flagship tier",tier:"flagship",cost:"$$$",desc:"Use the most capable model available. Best for complex, high-stakes tasks.",badge:"Most capable"},
@@ -398,6 +401,24 @@ const UI={
   selectRole:{en:"Select a role",no:"Velg en rolle"},
   firmContext:{en:"Firm & role context",no:"Firma- og rollekontekst"},
   firmContextSub:{en:"Adopt a specific firm's methodology and role perspective",no:"Adopter et spesifikt firmas metodikk og rolleperspektiv"},
+
+  // Lab
+  labBtn:{en:"Lab",no:"Lab"},
+  labTitle:{en:"Prompt Lab -- Finding Best Configuration",no:"Prompt Lab -- Finner beste konfigurasjon"},
+  labLoading:{en:"Testing 3 strategies (~15-30s)...",no:"Tester 3 strategier (~15-30s)..."},
+  labApply:{en:"Apply this config",no:"Bruk denne konfigurasjonen"},
+  labWinner:{en:"Top scorer",no:"Beste resultat"},
+  labStructured:{en:"Structured",no:"Strukturert"},
+  labNarrative:{en:"Narrativ",no:"Narrativ"},
+  labMeta:{en:"Meta-Reasoning",no:"Metaresonering"},
+  labClarity:{en:"Clarity",no:"Klarhet"},
+  labSpecificity:{en:"Specificity",no:"Spesifisitet"},
+  labProfessionalism:{en:"Professionalism",no:"Profesjonalitet"},
+  labActionability:{en:"Actionability",no:"Handlingsrettethet"},
+  labStructure:{en:"Structure",no:"Struktur"},
+  labTotal:{en:"Total",no:"Totalt"},
+  labPreview:{en:"Preview",no:"Forhandsvisning"},
+  labError:{en:"Something went wrong. Please try again.",no:"Noe gikk galt. Vennligst prov igjen."},
 };
 
 // Translated labels for data constants
@@ -972,9 +993,16 @@ function buildPrompt(p){
   const taskParts=[];
   taskParts.push(sharpenTopic(topic));
   if(smartContext)taskParts.push(smartContext);
-  // Source guidance (inline, not a separate section)
-  if(hasAttachment)taskParts.push("Files attached -- use as primary data source. Reference specific figures. State gaps.");
-  else taskParts.push("No files attached. Use realistic figures, label estimates, note what source data would strengthen the analysis.");
+  // Source guidance — Claude gets structured document tags per Anthropic best practices
+  if(hasAttachment){
+    if(isXml){
+      taskParts.push("Documents are attached below in <documents> tags. Use them as your primary data source. Extract and reference specific figures. State gaps where source data is missing or insufficient.\n\n<documents>\n  <document index=\"1\">\n    <source>[Attached file]</source>\n    <document_content>\n      [User's attached content will appear here]\n    </document_content>\n  </document>\n</documents>");
+    }else{
+      taskParts.push("Files attached -- use as primary data source. Reference specific figures. State gaps.");
+    }
+  }else{
+    taskParts.push("No files attached. Use realistic figures, label estimates, note what source data would strengthen the analysis.");
+  }
   // Risk level (inline)
   const risk=riskLevel||"medium";
   if(risk==="high")taskParts.push("HIGH RISK: Validate every assumption. Flag irreversible actions. Include rollback procedures.");
@@ -1009,7 +1037,7 @@ function buildPrompt(p){
 
   // Techniques (user-selected)
   if(techniques.includes("cot"))sec("reasoning","Think step by step. Show reasoning explicitly -- walk through logic, evaluate alternatives, explain conclusions.");
-  if(techniques.includes("fewshot"))sec("examples_format",isXml?"Model your response after this pattern:\n\n<example>\n  <input>[Example input]</input>\n  <ideal_output>[Ideal output]</ideal_output>\n</example>":"Model your response after this pattern:\n\n**Example Input:** [Example input]\n**Ideal Output:** [Ideal output]");
+  if(techniques.includes("fewshot"))sec("examples_format",isXml?"Model your response after the patterns below. Match the structure, depth, and tone of the ideal outputs.\n\n<examples>\n  <example>\n    <input>[Example input]</input>\n    <ideal_output>[Ideal output demonstrating expected quality]</ideal_output>\n  </example>\n  <example>\n    <input>[Different example showing edge case]</input>\n    <ideal_output>[Ideal output handling the edge case]</ideal_output>\n  </example>\n</examples>":"Model your response after this pattern:\n\n**Example Input:** [Example input]\n**Ideal Output:** [Ideal output]");
   if(techniques.includes("constraints"))sec("constraints","1. Never fabricate facts or sources\n2. State uncertainty with confidence level\n3. Stay focused -- no tangential drift\n4. Distinguish facts from analysis from speculation\n5. Flag incorrect assumptions before proceeding");
   if(techniques.includes("selfcheck"))sec("self_check","Before submitting, verify: fully addresses task, clear structure, claims supported, tone consistent, no repetition.");
   if(techniques.includes("compare"))sec("comparative","Present each option with clear label. Evaluate on same criteria. State recommendation with reasoning.");
@@ -1093,6 +1121,7 @@ TYPOGRAPHY: Calibri throughout. Body 11pt #333333, 1.25 line spacing, 6pt after 
 SPACING: 12pt between body text and table/chart. 6pt between table title and table. 4pt between table and source line. No orphan headers -- min 3 lines after header before page break.
 TABLES: Header 10pt bold, white on #1B2A4A, repeat header row on multi-page tables. Data 10pt, 6px padding, alternating white/#F8F9FA rows. Auto-fit columns, min 60px. Row height: 22px headers, 18px data. Landscape section break if table exceeds margins.
 `+TABLE_RULES+`
+CHARTS: Title as insight statement, never a generic label (e.g. "Revenue grew 23% driven by pricing" not "Revenue Overview"). Navy/steel blue/teal palette, max 5 colors. 8pt axis labels. Data labels on bars. Source line 8pt italic below chart.
 PAGE FLOW: Table title + body on same page. Never split with <2 rows per side. Source on same page as table.`,
 
     excel:`XLSX, investment-bank-grade (Goldman Sachs / J.P. Morgan standard).
@@ -1101,10 +1130,11 @@ LAYOUT: Rows 1-3 title block (company, title, date). Row 5+ data. Freeze Row 5 +
 - Headers: 10pt bold, white (#FFFFFF) on #1B2A4A, 22px row height
 - Data: 9.5pt, 18px row height, alternating white/#F8F9FA rows
 - Labels LEFT-aligned, numbers RIGHT-aligned. Auto-fit + 20px padding. Never allow ###.
-NUMBERS: Millions 1 decimal, $ on first/total rows only. Percentages 1 decimal + %. Multiples 1 decimal + x. Per-share 2 decimal. Commas for thousands. Negatives: red (#CC0000) parentheses, no minus sign. Growth: + prefix. Empty = em dash (--). NEVER N/A, None, or 0. Units in 8pt italic gray subtitle cell, never inline.
+NUMBERS: Millions 1 decimal, $ on first/total rows only. Percentages 1 decimal + %. Multiples 1 decimal + x. Per-share 2 decimal. Commas for thousands. Negatives: red (#CC0000) parentheses, no minus sign. Growth: + prefix. Empty = em dash (--). NEVER N/A, None, null, or 0 for missing data. Units in 8pt italic gray subtitle cell, never inline.
 CELLS: Input = blue background (#DCE6F1). Calculated = formula only, no background. Linked = green font (#006100). Override = orange (#E26B0A) + comment. ZERO hardcoded values in formulas. Named ranges for assumptions. IFERROR on all divisions. Scenario toggles via dropdown.
 FORMATTING: Section totals: bold, 1pt navy top border, #E8EEF4 background. Grand totals: double border. KPI status: green/amber/red conditional formatting.
-CHARTS: Insight statement titles. Navy/steel blue/teal palette, max 5 colors. 8pt labels. Data labels on bars.`,
+"Table N: [Title]" cell above every table. Source line in 8pt italic gray cell below every table. Define abbreviations in a glossary tab.
+CHARTS: Insight statement titles (e.g. "Revenue grew 23% driven by pricing" not "Revenue Overview"). Navy/steel blue/teal palette, max 5 colors. 8pt labels. Data labels on bars. Source line below.`,
 
     ppt:`PPTX, pitchbook standard (Goldman Sachs / McKinsey quality), 16:9 aspect ratio.
 STRUCTURE: Title slide (28pt white on navy, subtitle, date, confidentiality) -- Agenda -- Section dividers (navy background) -- Content slides -- Summary + Next Steps -- Appendix. DO NOT number slide titles.
@@ -1114,7 +1144,7 @@ SLIDE RULES:
 - ONE table OR ONE chart per slide, never both.
 - Hero metrics: 36pt bold callout numbers with 11pt descriptor below.
 TYPOGRAPHY: Title 20pt bold #1B2A4A, max 2 lines. Body 14pt #333333. Bullets 13pt with em dash. Sub-bullets 11pt. Min 8pt for sources/footnotes.
-TABLES: Max 7 rows x 6 columns. Split or move to appendix if more. Header 10pt bold, white on #1B2A4A. Data 9.5pt, alternating rows. Horizontal borders only. Numbers right-aligned. Empty = em dash (--). Abbreviate aggressively. Center table on slide.
+TABLES: Max 7 rows x 6 columns. Split or move to appendix if more. Header 10pt bold, white on #1B2A4A. Data 9.5pt, alternating rows. Horizontal borders only. Numbers right-aligned. Empty = em dash (--). NEVER use N/A, None, null, or 0 for missing data. Units (NOK '000, USD millions, %) in 8pt italic subtitle below table title, never inline with data. "Table N: [Title]" above every table. Source line 8pt italic below. Abbreviate aggressively. Center table on slide.
 CHARTS: Fill content area. Insight title ("Revenue grew 23% driven by pricing" not "Revenue Overview"). Navy/steel blue/teal, max 5 colors. 8pt labels. Source line below.
 SPEAKER NOTES: Key message, 3-4 supporting data points, anticipated pushback, transition to next slide.
 NEVER: animations, transitions, clip art, font below 8pt, misaligned elements across slides, shrink-to-fit text.`,
@@ -1196,6 +1226,11 @@ STANDARDS: All imports resolvable, no placeholder code. Logging over print. No h
     if(fileOutput==="markdown"||fileOutput==="html"){
       qgParts.push("("+(qgParts.length+1)+") All tables render correctly with consistent alignment. All links valid. No raw URLs in body text.");
     }
+    if(fileOutput==="plaintext"){
+      qgParts.push("(1) Every line <= 80 characters. ASCII only -- no smart quotes, no em-dash characters, no ellipsis glyph.");
+      qgParts.push("(2) Tables column-aligned with spaces, no overlap, right-aligned numerics.");
+      qgParts.push("(3) Headers in CAPS or Title Case with underline, never numbered.");
+    }
     if(qgParts.length>0){
       qgParts.push("Fix any failure before delivering.");
       sec("quality_gate",qgParts.join("\n"));
@@ -1203,10 +1238,20 @@ STANDARDS: All imports resolvable, no placeholder code. Logging over print. No h
   }
 
   // ═══ BLOCK 5: AVOID ═══
-  if(tier==="fast"){
-    sec("avoid","No filler, hedging, or preamble. Start with substance, end with specifics.");
+  if(isXml){
+    // Claude best practice: tell the model what TO DO, not what NOT to do.
+    // Positive framing per Anthropic prompting guide.
+    if(tier==="fast"){
+      sec("avoid","Start with substance immediately. Every sentence must contain a fact, figure, or actionable point. End with specifics.");
+    }else{
+      sec("avoid","Open with the most important finding or recommendation. Back every claim with evidence or reasoning. Write for an audience that already understands the domain -- skip introductory background. Make each paragraph advance the argument; if a paragraph restates a prior point, cut it.");
+    }
   }else{
-    sec("avoid","No filler openers. No vague hedging without specifics. No generic background the audience knows. No empty cliches. No restating the same point.");
+    if(tier==="fast"){
+      sec("avoid","No filler, hedging, or preamble. Start with substance, end with specifics.");
+    }else{
+      sec("avoid","No filler openers. No vague hedging without specifics. No generic background the audience knows. No empty cliches. No restating the same point.");
+    }
   }
 
   // Token efficiency for non-flagship tiers
@@ -1214,6 +1259,340 @@ STANDARDS: All imports resolvable, no placeholder code. Logging over print. No h
     sec("efficiency","Balanced-tier model. Thorough but concise. Maximum insight per paragraph.");
   }else if(tier==="fast"){
     sec("efficiency","Fast-tier model. Extremely concise. Bullets over paragraphs. Keep response short.");
+  }
+
+  // ═══ BLOCK 6: CLAUDE-SPECIFIC BEST PRACTICES (Anthropic official guidance) ═══
+  if(isXml){
+    const claudeParts=[];
+
+    // No-preamble rule (Anthropic: "Respond directly without preamble")
+    claudeParts.push("Respond directly without preamble. Do not start with phrases like \"Here is...\", \"Based on...\", \"Certainly!\", or \"I'd be happy to...\". Begin with the deliverable itself.");
+
+    // Self-verification (Anthropic: "Before you finish, verify your answer against [criteria]")
+    if(tier==="flagship"||tier==="balanced"){
+      const checkItems=[];
+      checkItems.push("fully addresses every part of the task");
+      checkItems.push("claims are supported by evidence or labeled as estimates");
+      checkItems.push("structure is consistent (headers, numbering, formatting)");
+      if(hasFileInst)checkItems.push("all file-format rules above are satisfied (table rules, typography, spacing)");
+      if(industry==="finance")checkItems.push("every number has units, time period, and currency specified");
+      if(industry==="legal")checkItems.push("jurisdictional applicability is noted");
+      if(industry==="healthcare")checkItems.push("clinical disclaimers are present where needed");
+      claudeParts.push("Before you finish, verify your response against these criteria:\n"+checkItems.map((c,i)=>"("+(i+1)+") "+c).join("\n"));
+    }
+
+    // Ground in quotes when attachments present (Anthropic: "Quote relevant parts first")
+    if(hasAttachment){
+      claudeParts.push("Before performing your analysis, extract and quote the most relevant data points from the attached documents inside <quotes> tags. Then base your analysis on these specific quotes.");
+    }
+
+    // Long-form prose guidance for document outputs (Anthropic: anti-markdown/bullet-list guidance)
+    const docOutputs=["document","proposal","brief"];
+    if(docOutputs.includes(output)&&hasFileInst&&["pdf","word","plaintext"].includes(fileOutput)){
+      claudeParts.push("Write in clear, flowing prose using complete paragraphs. Reserve bullet points for genuinely discrete items. Incorporate supporting details naturally into sentences rather than fragmenting them into isolated bullet points.");
+    }
+
+    // Industry-specific Claude guidance — sector-specific tips beyond IND_CONTEXT
+    const CLAUDE_SECTOR_TIPS={
+      finance:"When presenting financial data: state the base case first, then sensitivities. Label every assumption explicitly. Use consistent valuation methodology throughout. Separate backward-looking actuals from forward estimates with clear notation (e.g. FY24A vs FY25E). Cross-reference figures across tables for consistency.",
+      healthcare:"Structure clinical information using the PICO framework (Patient/Population, Intervention, Comparison, Outcome) where applicable. Cite evidence levels (Level I meta-analysis through Level V expert opinion). Flag off-label uses or emerging therapies distinctly from standard-of-care.",
+      legal:"Structure legal analysis using IRAC (Issue, Rule, Application, Conclusion). Cite specific statutes, regulations, or case law with full citations. Distinguish between binding authority and persuasive authority. Flag areas of unsettled law explicitly.",
+      consulting:"Follow the pyramid principle: lead every section with the conclusion, then provide supporting evidence. Structure arguments as MECE (Mutually Exclusive, Collectively Exhaustive). Quantify all impact estimates with specific figures and assumptions. Include an implementation roadmap with owners, timelines, and dependencies.",
+      tech:"Include version numbers for all technologies referenced. Distinguish between stable/LTS and experimental features. Address backward compatibility, migration paths, and deprecation timelines. Provide complexity analysis (Big-O) for algorithmic recommendations.",
+      marketing:"Tie every recommendation to a measurable KPI (CAC, ROAS, LTV, conversion rate). Include channel-specific benchmarks. Reference current platform algorithm behavior (not outdated patterns). Segment recommendations by funnel stage.",
+      education:"Align content to Bloom's taxonomy levels. Include formative assessment checkpoints. Provide differentiation strategies for varied learning levels. Reference specific pedagogical frameworks (UDL, scaffolding, spaced repetition).",
+      research:"Follow discipline-standard reporting (CONSORT for trials, PRISMA for reviews, STROBE for observational). State hypotheses before results. Distinguish correlation from causation. Include effect sizes and confidence intervals alongside p-values. Address limitations and generalizability."
+    };
+    if(CLAUDE_SECTOR_TIPS[industry]){
+      claudeParts.push(CLAUDE_SECTOR_TIPS[industry]);
+    }
+
+    // File-output-specific Claude guidance — what Claude specifically needs to nail each format
+    const CLAUDE_FILE_TIPS={
+      pdf:"When producing PDF-formatted content: maintain strict vertical rhythm throughout. Every page must feel intentionally designed -- no orphan headers, no half-empty pages. Use the exact typography and color specifications above as a binding contract, not suggestions.",
+      word:"Maintain style consistency that enables TOC auto-generation from heading styles. Every table must repeat its header row specification for multi-page scenarios. Use landscape section breaks for wide tables rather than shrinking fonts.",
+      excel:"Produce formulas, never hardcoded values. Every calculated cell must use a formula referencing source cells. Use named ranges for key assumptions. Include IFERROR wrappers on all division formulas. Structure the Summary tab as a dashboard with navigation links to detail tabs.",
+      ppt:"Every slide title must be an assertion (a complete sentence stating a conclusion), never a topic label. The slide body must provide evidence supporting that assertion. Limit to 5 bullets maximum per slide. Include speaker notes with: key message, 3-4 supporting data points, anticipated questions, and transition to next slide.",
+      json:"Produce valid JSON parseable by JSON.parse() with zero errors. Use consistent camelCase for all keys. Include a metadata block with schemaVersion, generatedAt (ISO 8601), and recordCount. Every array element must have identical key shapes.",
+      csv:"Produce RFC 4180 compliant output. Use snake_case headers. Include a comment header row with source, date range, and column definitions. Numbers must be raw numeric (no formatting characters). Missing values must be empty fields (adjacent commas), never sentinel strings.",
+      markdown:"Structure for rendering in GitHub, Notion, and Confluence simultaneously. Use a single H1, H2 for sections, H3 for subsections. Include a linked TOC for documents with 4+ sections. Use fenced code blocks with language tags.",
+      html:"Produce semantic HTML5 with proper heading hierarchy (never skip levels). Include ARIA labels and skip-to-content links for accessibility. Use CSS custom properties for all colors and spacing. Ensure WCAG AA contrast ratios.",
+      codeFile:"Include a file header with filename, description, and date. Group imports: stdlib, third-party, local. Add JSDoc/docstring with @param, @returns, @throws, @example on all public functions. Use strict type annotations throughout.",
+      plaintext:"Enforce strict 80-character line limit. Use ASCII only -- straight quotes, double-dash, three-dot ellipsis. Align table columns with spaces, right-align numerics. End with '--- END OF DOCUMENT ---'."
+    };
+    if(CLAUDE_FILE_TIPS[fileOutput]){
+      claudeParts.push(CLAUDE_FILE_TIPS[fileOutput]);
+    }
+
+    if(claudeParts.length>0){
+      sec("claude_guidance",claudeParts.join("\n\n"));
+    }
+  }
+
+  // ═══ BLOCK 6b: CHATGPT / o-SERIES BEST PRACTICES (OpenAI official guidance) ═══
+  if(model==="chatgpt"||model==="gpt4o"){
+    const gptParts=[];
+
+    // No preamble (GPT-5 series: literal instruction following)
+    gptParts.push("Respond directly with the deliverable. Skip introductory phrasing such as \"Sure!\", \"Here is...\", or \"Based on your request...\".");
+
+    // Instruction hierarchy (GPT-5: later instructions override earlier)
+    if(tier==="flagship"||tier==="balanced"){
+      const checkItems=["fully addresses every part of the task","claims supported by evidence or labeled as estimates","structure consistent (headers, numbering, formatting)"];
+      if(hasFileInst)checkItems.push("all file-format rules above are satisfied");
+      if(industry==="finance")checkItems.push("every number has units, time period, and currency");
+      gptParts.push("Before finalizing, verify:\n"+checkItems.map((c,i)=>(i+1)+". "+c).join("\n"));
+    }
+
+    // Markdown formatting control (GPT-5 series: use markdown hierarchy)
+    const docOutputs=["document","proposal","brief"];
+    if(docOutputs.includes(output)&&hasFileInst&&["pdf","word","plaintext"].includes(fileOutput)){
+      gptParts.push("Write in flowing prose paragraphs. Reserve bullet points for genuinely discrete items. Use markdown headings (H1-H3) for structure but minimize bold/italic emphasis.");
+    }
+
+    // Sector tips
+    const GPT_SECTOR_TIPS={
+      finance:"Present financial data with base case first, then sensitivities. Label assumptions explicitly. Use FY24A/FY25E notation to separate actuals from estimates. Ensure cross-table figure consistency.",
+      healthcare:"Structure clinical information using PICO (Patient, Intervention, Comparison, Outcome). Cite evidence levels. Flag off-label uses distinctly from standard-of-care.",
+      legal:"Use IRAC structure (Issue, Rule, Application, Conclusion). Cite statutes with full references. Distinguish binding from persuasive authority.",
+      consulting:"Lead with conclusions (pyramid principle). Structure as MECE. Quantify impact estimates. Include implementation roadmap with owners and timelines.",
+      tech:"Include version numbers. Address backward compatibility and deprecation timelines. Provide Big-O complexity for algorithms.",
+      marketing:"Tie recommendations to KPIs (CAC, ROAS, LTV). Include channel benchmarks. Segment by funnel stage.",
+      education:"Align to Bloom's taxonomy. Include formative assessments. Reference UDL and scaffolding frameworks.",
+      research:"Follow discipline-standard reporting (CONSORT/PRISMA/STROBE). Include effect sizes and confidence intervals. Distinguish correlation from causation."
+    };
+    if(GPT_SECTOR_TIPS[industry])gptParts.push(GPT_SECTOR_TIPS[industry]);
+
+    // File tips
+    const GPT_FILE_TIPS={
+      pdf:"Maintain strict vertical rhythm. No orphan headers or half-empty pages. Treat typography specs as binding requirements.",
+      word:"Enable TOC auto-generation via consistent heading styles. Repeat header rows on multi-page tables. Use landscape section breaks for wide tables.",
+      excel:"Use formulas, never hardcoded values. Named ranges for assumptions. IFERROR on all divisions. Summary tab with navigation links.",
+      ppt:"Slide titles must be assertions (conclusions), not topic labels. Max 5 bullets per slide. Include speaker notes with key message, data points, and anticipated questions.",
+      json:"Output valid JSON parseable by JSON.parse(). Use camelCase keys. Include metadata (schemaVersion, generatedAt, recordCount). Identical key shapes across array elements.",
+      csv:"RFC 4180 compliant. snake_case headers. Raw numeric values only. Missing = empty field, never sentinel strings.",
+      markdown:"Single H1. H2/H3 hierarchy. Linked TOC for 4+ sections. Fenced code blocks with language tags.",
+      html:"Semantic HTML5. Never skip heading levels. ARIA labels. WCAG AA contrast. CSS custom properties.",
+      codeFile:"File header with filename/description/date. Grouped imports. JSDoc on public functions. Type annotations throughout.",
+      plaintext:"80-character max per line. ASCII only. Column-aligned tables. End with '--- END OF DOCUMENT ---'."
+    };
+    if(GPT_FILE_TIPS[fileOutput])gptParts.push(GPT_FILE_TIPS[fileOutput]);
+
+    if(gptParts.length>0)sec("model_guidance",gptParts.join("\n\n"));
+  }
+
+  // ═══ BLOCK 6c: GEMINI BEST PRACTICES (Google official guidance) ═══
+  if(model==="gemini"){
+    const gemParts=[];
+
+    // No preamble (Gemini 3: direct and efficient)
+    gemParts.push("Respond directly with the deliverable. Gemini default: direct and efficient. Skip introductory or meta-commentary phrasing.");
+
+    // Self-check (Gemini: plan before executing)
+    if(tier==="flagship"||tier==="balanced"){
+      const checkItems=["fully addresses every part of the task","claims supported by evidence or labeled as estimates","structure consistent throughout"];
+      if(hasFileInst)checkItems.push("all file-format rules above are satisfied");
+      if(industry==="finance")checkItems.push("every number has units, time period, and currency");
+      gemParts.push("Before finalizing, verify:\n"+checkItems.map((c,i)=>(i+1)+". "+c).join("\n"));
+    }
+
+    // Prose guidance
+    const docOutputs=["document","proposal","brief"];
+    if(docOutputs.includes(output)&&hasFileInst&&["pdf","word","plaintext"].includes(fileOutput)){
+      gemParts.push("Write in clear, flowing prose paragraphs. Reserve bullet points for genuinely discrete items. Use bold section headers for structure.");
+    }
+
+    // Sector tips
+    const GEM_SECTOR_TIPS={
+      finance:"Present base case then sensitivities. Label assumptions. Use FY24A/FY25E notation. Cross-reference tables for consistency.",
+      healthcare:"Use PICO framework. Cite evidence levels (I-V). Flag off-label uses.",
+      legal:"Use IRAC structure. Full statute citations. Distinguish binding vs persuasive authority.",
+      consulting:"Pyramid principle (conclusion first). MECE structure. Quantified impact. Implementation roadmap.",
+      tech:"Version numbers for all technologies. Backward compatibility. Big-O complexity analysis.",
+      marketing:"Tie to KPIs (CAC, ROAS, LTV). Channel benchmarks. Funnel stage segmentation.",
+      education:"Bloom's taxonomy alignment. Formative assessments. UDL/scaffolding frameworks.",
+      research:"CONSORT/PRISMA/STROBE reporting. Effect sizes + CIs. Correlation vs causation."
+    };
+    if(GEM_SECTOR_TIPS[industry])gemParts.push(GEM_SECTOR_TIPS[industry]);
+
+    // File tips
+    const GEM_FILE_TIPS={
+      pdf:"Strict vertical rhythm. No orphan headers. Typography specs are binding.",
+      word:"Consistent heading styles for TOC. Repeat header rows. Landscape breaks for wide tables.",
+      excel:"Formulas only, no hardcoded values. Named ranges. IFERROR wrappers. Summary dashboard.",
+      ppt:"Assertion-evidence slide titles. Max 5 bullets. Speaker notes with key message and data.",
+      json:"Valid JSON. camelCase keys. metadata block. Identical array element shapes.",
+      csv:"RFC 4180. snake_case headers. Raw numerics. Empty fields for missing data.",
+      markdown:"Single H1. H2/H3 hierarchy. Linked TOC. Fenced code blocks.",
+      html:"Semantic HTML5. Proper heading hierarchy. ARIA labels. WCAG AA.",
+      codeFile:"File header. Grouped imports. Docstrings on public functions. Type annotations.",
+      plaintext:"80-char limit. ASCII only. Aligned tables. '--- END OF DOCUMENT ---'."
+    };
+    if(GEM_FILE_TIPS[fileOutput])gemParts.push(GEM_FILE_TIPS[fileOutput]);
+
+    if(gemParts.length>0)sec("model_guidance",gemParts.join("\n\n"));
+  }
+
+  // ═══ BLOCK 6d: GROK BEST PRACTICES (xAI guidance) ═══
+  if(model==="grok"){
+    const grokParts=[];
+    grokParts.push("Respond directly with the deliverable. Skip conversational preamble.");
+
+    if(tier!=="fast"){
+      const checkItems=["fully addresses the task","claims supported by evidence","consistent formatting throughout"];
+      if(hasFileInst)checkItems.push("file-format rules satisfied");
+      grokParts.push("Before finalizing, verify:\n"+checkItems.map((c,i)=>(i+1)+". "+c).join("\n"));
+    }
+
+    const docOutputs=["document","proposal","brief"];
+    if(docOutputs.includes(output)&&hasFileInst&&["pdf","word","plaintext"].includes(fileOutput)){
+      grokParts.push("Write in flowing prose. Reserve bullets for discrete items.");
+    }
+
+    // Sector + file tips (concise for Grok's direct style)
+    const GROK_SECTOR={
+      finance:"Base case then sensitivities. FY24A/FY25E notation. Cross-reference tables.",
+      healthcare:"PICO framework. Evidence levels. Clinical disclaimers.",
+      legal:"IRAC structure. Full citations. Binding vs persuasive authority.",
+      consulting:"Pyramid principle. MECE. Quantified impact.",
+      tech:"Version numbers. Backward compat. Complexity analysis.",
+      research:"CONSORT/PRISMA reporting. Effect sizes + CIs."
+    };
+    if(GROK_SECTOR[industry])grokParts.push(GROK_SECTOR[industry]);
+
+    const GROK_FILE={
+      pdf:"Strict typography. No orphan headers. No half-empty pages.",
+      word:"Heading styles for TOC. Repeat header rows. Landscape for wide tables.",
+      excel:"Formulas only. Named ranges. IFERROR wrappers.",
+      ppt:"Assertion titles. Max 5 bullets. Speaker notes.",
+      json:"Valid JSON. camelCase. metadata block.",
+      csv:"RFC 4180. snake_case headers. Raw numerics.",
+      codeFile:"File header. Grouped imports. Type annotations."
+    };
+    if(GROK_FILE[fileOutput])grokParts.push(GROK_FILE[fileOutput]);
+
+    if(grokParts.length>0)sec("model_guidance",grokParts.join("\n\n"));
+  }
+
+  // ═══ BLOCK 6e: MISTRAL BEST PRACTICES (Mistral official guidance) ═══
+  if(model==="mistral"){
+    const misParts=[];
+    misParts.push("Respond directly with the deliverable. No preamble, no meta-commentary.");
+
+    if(tier!=="fast"){
+      const checkItems=["fully addresses the task","claims supported by evidence","formatting consistent"];
+      if(hasFileInst)checkItems.push("file-format rules satisfied");
+      misParts.push("Before finalizing, verify:\n"+checkItems.map((c,i)=>(i+1)+". "+c).join("\n"));
+    }
+
+    // Mistral-specific: worded scales, structured hierarchy
+    const docOutputs=["document","proposal","brief"];
+    if(docOutputs.includes(output)&&hasFileInst&&["pdf","word","plaintext"].includes(fileOutput)){
+      misParts.push("Write in flowing prose. Reserve bullet points for genuinely discrete items. Use clear heading hierarchy.");
+    }
+
+    const MIS_SECTOR={
+      finance:"Base case then sensitivities. Label assumptions. FY24A/FY25E notation.",
+      healthcare:"PICO framework. Evidence levels. Clinical disclaimers.",
+      legal:"IRAC structure. Full citations. Jurisdictional notes.",
+      consulting:"Pyramid principle. MECE. Quantified impact. Roadmap.",
+      tech:"Version numbers. Backward compat. Big-O complexity.",
+      research:"CONSORT/PRISMA reporting. Effect sizes. Correlation vs causation."
+    };
+    if(MIS_SECTOR[industry])misParts.push(MIS_SECTOR[industry]);
+
+    const MIS_FILE={
+      pdf:"Strict typography. No orphan headers. Pages min 40% filled.",
+      word:"Heading styles for TOC. Repeat header rows.",
+      excel:"Formulas only. Named ranges. IFERROR wrappers.",
+      ppt:"Assertion titles. Max 5 bullets. Speaker notes.",
+      json:"Valid JSON. camelCase. metadata block.",
+      csv:"RFC 4180. snake_case headers. Raw numerics.",
+      codeFile:"File header. Grouped imports. Type annotations."
+    };
+    if(MIS_FILE[fileOutput])misParts.push(MIS_FILE[fileOutput]);
+
+    if(misParts.length>0)sec("model_guidance",misParts.join("\n\n"));
+  }
+
+  // ═══ BLOCK 6f: LLAMA BEST PRACTICES (Meta guidance) ═══
+  if(model==="llama"){
+    const llamaParts=[];
+    llamaParts.push("Respond directly with the deliverable. No conversational preamble or meta-commentary.");
+
+    if(tier!=="fast"){
+      const checkItems=["fully addresses the task","claims supported by evidence","consistent formatting"];
+      if(hasFileInst)checkItems.push("file-format rules satisfied");
+      llamaParts.push("Before finalizing, verify:\n"+checkItems.map((c,i)=>(i+1)+". "+c).join("\n"));
+    }
+
+    const docOutputs=["document","proposal","brief"];
+    if(docOutputs.includes(output)&&hasFileInst&&["pdf","word","plaintext"].includes(fileOutput)){
+      llamaParts.push("Write in flowing prose. Reserve bullet points for discrete items. Use clear headings.");
+    }
+
+    const LLAMA_SECTOR={
+      finance:"Base case then sensitivities. Label assumptions. FY24A/FY25E notation.",
+      healthcare:"PICO framework. Evidence levels. Clinical disclaimers.",
+      legal:"IRAC structure. Full citations. Binding vs persuasive authority.",
+      consulting:"Pyramid principle. MECE. Quantified impact.",
+      tech:"Version numbers. Backward compatibility. Complexity analysis.",
+      research:"CONSORT/PRISMA reporting. Effect sizes + CIs."
+    };
+    if(LLAMA_SECTOR[industry])llamaParts.push(LLAMA_SECTOR[industry]);
+
+    const LLAMA_FILE={
+      pdf:"Strict typography. No orphan headers. No half-empty pages.",
+      word:"Heading styles for TOC. Repeat header rows.",
+      excel:"Formulas only. Named ranges. IFERROR wrappers.",
+      ppt:"Assertion titles. Max 5 bullets. Speaker notes.",
+      json:"Valid JSON. camelCase. metadata block.",
+      csv:"RFC 4180. snake_case headers. Raw numerics.",
+      codeFile:"File header. Grouped imports. Type annotations."
+    };
+    if(LLAMA_FILE[fileOutput])llamaParts.push(LLAMA_FILE[fileOutput]);
+
+    if(llamaParts.length>0)sec("model_guidance",llamaParts.join("\n\n"));
+  }
+
+  // ═══ BLOCK 6g: PERPLEXITY / COPILOT / GENERAL — universal guidance ═══
+  if(model==="perplexity"||model==="copilot"||model==="general"){
+    const uniParts=[];
+    uniParts.push("Respond directly with the deliverable. No introductory preamble.");
+
+    if(tier!=="fast"){
+      const checkItems=["fully addresses the task","claims supported by evidence","formatting consistent"];
+      if(hasFileInst)checkItems.push("file-format rules satisfied");
+      uniParts.push("Before finalizing, verify:\n"+checkItems.map((c,i)=>(i+1)+". "+c).join("\n"));
+    }
+
+    const docOutputs=["document","proposal","brief"];
+    if(docOutputs.includes(output)&&hasFileInst&&["pdf","word","plaintext"].includes(fileOutput)){
+      uniParts.push("Write in flowing prose. Reserve bullets for discrete items.");
+    }
+
+    // Key sector tips for universal models
+    const UNI_SECTOR={
+      finance:"Base case then sensitivities. Label assumptions. Consistent valuation methodology.",
+      healthcare:"PICO framework. Evidence levels. Clinical disclaimers.",
+      legal:"IRAC structure. Full citations. Jurisdictional notes.",
+      consulting:"Pyramid principle. MECE. Quantified impact.",
+      tech:"Version numbers. Backward compatibility. Complexity analysis."
+    };
+    if(UNI_SECTOR[industry])uniParts.push(UNI_SECTOR[industry]);
+
+    const UNI_FILE={
+      pdf:"Strict typography. No orphan headers.",
+      word:"Heading styles for TOC. Repeat header rows.",
+      excel:"Formulas only. Named ranges.",
+      ppt:"Assertion titles. Max 5 bullets. Speaker notes.",
+      json:"Valid JSON. camelCase. metadata block.",
+      csv:"RFC 4180. snake_case headers.",
+      codeFile:"File header. Grouped imports. Type annotations."
+    };
+    if(UNI_FILE[fileOutput])uniParts.push(UNI_FILE[fileOutput]);
+
+    if(uniParts.length>0)sec("model_guidance",uniParts.join("\n\n"));
   }
 
   return lines.join("\n\n");
@@ -1319,6 +1698,10 @@ function App(){
   const [showReferral,setShowReferral]=useState(false);
   const [showCookies,setShowCookies]=useState(()=>!localStorage.getItem("pa_cookies"));
   const [refCode]=useState(()=>{const p=new URLSearchParams(window.location.search).get("ref");if(p&&/^[a-f0-9]{8}$/i.test(p)){window.history.replaceState({},"",window.location.pathname);return p;}return null;});
+  const [labOpen,setLabOpen]=useState(false);
+  const [labLoading,setLabLoading]=useState(false);
+  const [labResults,setLabResults]=useState([]);
+  const [labError,setLabError]=useState("");
   const ref=useRef(null);
   const isExp=mode==="expert";
   const ac=MODELS[model].col;
@@ -1564,6 +1947,49 @@ function App(){
     setFileOutput("pdf");setSelectedFirm("");setSelectedRole("");setHasAttachment(false);
     setShow(false);setShowResetConfirm(false);setPromptGenerated(false);
     window.scrollTo({top:0,behavior:"smooth"});
+  },[]);
+
+  /* ═══ PROMPT LAB ═══ */
+  const generateLabVariants=useCallback(()=>{
+    const base={topic,taskType:task,model,subModel,subModelTier:activeSubModel?.tier||"flagship",audience:aud,extra,special,mode,industry,output,style,includes,language,fileOutput,selectedFirm,selectedRole,hasAttachment,riskLevel};
+    const variants=[
+      {id:"structured",name:"Structured",config:{tone:"Authoritative",length:"Detailed",format:["bullets","headers"],techniques:["cot","constraints","selfcheck"]},tone:"Authoritative",length:"Detailed",format:["bullets","headers"],techniques:["cot","constraints","selfcheck"]},
+      {id:"narrative",name:"Narrative",config:{tone:"Professional",length:"Comprehensive",format:["prose","headers"],techniques:[]},tone:"Professional",length:"Comprehensive",format:["prose","headers"],techniques:[]},
+      {id:"meta",name:"Meta-Reasoning",config:{tone:"Academic",length:"Detailed",format:["headers","numbered"],techniques:["meta","firstprinciples"]},tone:"Academic",length:"Detailed",format:["headers","numbered"],techniques:["meta","firstprinciples"]},
+    ];
+    return variants.map(v=>({
+      id:v.id,
+      name:v.name,
+      config:v.config,
+      prompt:buildPrompt({...base,tone:v.tone,length:v.length,format:v.format,techniques:v.techniques}),
+    }));
+  },[topic,task,model,subModel,activeSubModel,aud,extra,special,mode,industry,output,style,includes,language,fileOutput,selectedFirm,selectedRole,hasAttachment,riskLevel]);
+
+  const runLab=useCallback(async()=>{
+    setLabLoading(true);setLabOpen(true);setLabResults([]);setLabError("");
+    try{
+      const variants=generateLabVariants();
+      const res=await fetch("/api/evaluate",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({variants,topic,task,industry}),
+      });
+      const data=await res.json();
+      if(!res.ok)throw new Error(data.error||"Evaluation failed");
+      setLabResults(data.results||[]);
+    }catch(err){
+      setLabError(err.message||"Something went wrong. Please try again.");
+    }
+    setLabLoading(false);
+  },[generateLabVariants,topic,task,industry]);
+
+  const applyLabConfig=useCallback((config)=>{
+    if(config.tone)setTone(config.tone);
+    if(config.length)setLen(config.length);
+    if(config.format)setFmt(config.format);
+    if(config.techniques)setTechs(config.techniques);
+    setLabOpen(false);
+    setTimeout(()=>ref.current?.scrollIntoView({behavior:"smooth",block:"start"}),120);
   },[]);
 
   return <>
@@ -2035,9 +2461,12 @@ function App(){
           </div>
         </div>
 
-        {/* GENERATE */}
+        {/* GENERATE + LAB */}
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:12,paddingTop:12,borderTop:"1px solid var(--bd)",marginTop:8}}>
-          <button onClick={go} disabled={!topic.trim()} style={{display:"flex",alignItems:"center",gap:8,padding:"14px 44px",borderRadius:12,border:"none",background:topic.trim()?(canGenerate?`linear-gradient(135deg, ${ac}, #2563EB)`:"#94a3b8"):"var(--s2)",color:topic.trim()?"#fff":"var(--t3)",fontSize:15,fontWeight:660,fontFamily:"var(--f)",cursor:topic.trim()?"pointer":"not-allowed",transition:"all .2s",boxShadow:topic.trim()&&canGenerate?"0 6px 28px "+ac+"35":"none"}}>{I.sparkle(16,topic.trim()?"#fff":"var(--t3)")} {canGenerate?t("generateBtn"):t("upgradeGenerate")}</button>
+          <div style={{display:"flex",gap:10,alignItems:"center"}}>
+            <button onClick={go} disabled={!topic.trim()} style={{display:"flex",alignItems:"center",gap:8,padding:"14px 44px",borderRadius:12,border:"none",background:topic.trim()?(canGenerate?`linear-gradient(135deg, ${ac}, #2563EB)`:"#94a3b8"):"var(--s2)",color:topic.trim()?"#fff":"var(--t3)",fontSize:15,fontWeight:660,fontFamily:"var(--f)",cursor:topic.trim()?"pointer":"not-allowed",transition:"all .2s",boxShadow:topic.trim()&&canGenerate?"0 6px 28px "+ac+"35":"none"}}>{I.sparkle(16,topic.trim()?"#fff":"var(--t3)")} {canGenerate?t("generateBtn"):t("upgradeGenerate")}</button>
+            <button onClick={runLab} disabled={!topic.trim()||labLoading} style={{display:"flex",alignItems:"center",gap:6,padding:"14px 22px",borderRadius:12,border:"2px solid "+(topic.trim()?ac:"var(--bd)"),background:topic.trim()?ac+"08":"var(--s2)",color:topic.trim()?ac:"var(--t3)",fontSize:14,fontWeight:640,fontFamily:"var(--f)",cursor:topic.trim()&&!labLoading?"pointer":"not-allowed",transition:"all .2s",opacity:labLoading?.6:1}}>{I.microscope(15,topic.trim()?ac:"var(--t3)")} {t("labBtn")}</button>
+          </div>
           {user&&!usage.is_paid&&usage.subscription_status!=="active"&&(
             <div style={{fontSize:12,color:"var(--t3)",display:"flex",gap:14}}>
               <span>Simple: {remainingSimple}/{FREE_SIMPLE} free</span>
@@ -2243,6 +2672,100 @@ function App(){
             <button onClick={()=>setShowResetConfirm(false)} style={{flex:1,padding:"11px 16px",borderRadius:8,border:"1px solid var(--bd)",background:"var(--s1)",color:"var(--t2)",fontSize:13,fontWeight:600,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>Cancel</button>
             <button onClick={resetAll} style={{flex:1,padding:"11px 16px",borderRadius:8,border:"none",background:"#dc2626",color:"#fff",fontSize:13,fontWeight:700,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>Clear & start new</button>
           </div>
+        </div>
+      </div>
+    )}
+
+    {/* PROMPT LAB MODAL */}
+    {labOpen&&(
+      <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,.55)",backdropFilter:"blur(4px)",WebkitBackdropFilter:"blur(4px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:2000,padding:16,overflow:"auto"}} onClick={()=>!labLoading&&setLabOpen(false)}>
+        <div style={{background:"var(--s1)",borderRadius:18,maxWidth:920,width:"100%",boxShadow:"0 24px 64px rgba(0,0,0,.2)",animation:"slideDown .3s ease",maxHeight:"90vh",overflow:"auto",position:"relative"}} onClick={(e)=>e.stopPropagation()}>
+          {/* Header */}
+          <div style={{padding:"22px 28px 18px",borderBottom:"1px solid var(--bd)",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+            <div style={{display:"flex",alignItems:"center",gap:10}}>
+              <div style={{width:36,height:36,borderRadius:10,background:ac+"10",display:"flex",alignItems:"center",justifyContent:"center"}}>{I.microscope(18,ac)}</div>
+              <div>
+                <h2 style={{fontSize:17,fontWeight:700,margin:0,color:"var(--t1)"}}>{t("labTitle")}</h2>
+                {labLoading&&<p style={{fontSize:12,color:"var(--t3)",margin:"3px 0 0"}}>{t("labLoading")}</p>}
+              </div>
+            </div>
+            <button onClick={()=>setLabOpen(false)} style={{width:32,height:32,borderRadius:8,border:"1px solid var(--bd)",background:"var(--s2)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:"var(--t3)",fontSize:18,fontFamily:"var(--f)",lineHeight:1}}>&times;</button>
+          </div>
+
+          {/* Loading state */}
+          {labLoading&&(
+            <div style={{padding:"60px 28px",textAlign:"center"}}>
+              <div style={{width:48,height:48,borderRadius:"50%",border:"3px solid var(--bd)",borderTopColor:ac,animation:"spin 1s linear infinite",margin:"0 auto 20px"}}/>
+              <p style={{fontSize:14,color:"var(--t2)",margin:0,fontWeight:500}}>{t("labLoading")}</p>
+              <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+            </div>
+          )}
+
+          {/* Error state */}
+          {labError&&!labLoading&&(
+            <div style={{padding:"40px 28px",textAlign:"center"}}>
+              <div style={{width:44,height:44,borderRadius:12,background:"#fee2e2",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 14px"}}>{I.info(20,"#dc2626")}</div>
+              <p style={{fontSize:14,color:"#dc2626",margin:"0 0 16px",fontWeight:500}}>{labError}</p>
+              <button onClick={runLab} style={{padding:"10px 24px",borderRadius:8,border:"none",background:ac,color:"#fff",fontSize:13,fontWeight:600,fontFamily:"var(--f)",cursor:"pointer"}}>Try again</button>
+            </div>
+          )}
+
+          {/* Results */}
+          {!labLoading&&!labError&&labResults.length>0&&(
+            <div style={{padding:"20px 24px 24px",display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(260px, 1fr))",gap:16}}>
+              {labResults.map((r,idx)=>{
+                const isWinner=idx===0;
+                const scoreKeys=[{k:"clarity",l:t("labClarity")},{k:"specificity",l:t("labSpecificity")},{k:"professionalism",l:t("labProfessionalism")},{k:"actionability",l:t("labActionability")},{k:"structure",l:t("labStructure")}];
+                const nameMap={structured:t("labStructured"),narrative:t("labNarrative"),meta:t("labMeta")};
+                return (
+                  <div key={r.variantId} style={{border:"2px solid "+(isWinner?ac:"var(--bd)"),borderRadius:14,padding:0,overflow:"hidden",background:"var(--s1)",transition:"all .2s",position:"relative"}}>
+                    {isWinner&&<div style={{background:ac,color:"#fff",fontSize:10,fontWeight:700,textAlign:"center",padding:"4px 0",letterSpacing:.5}}>{t("labWinner")}</div>}
+                    <div style={{padding:"16px 18px"}}>
+                      {/* Strategy name */}
+                      <div style={{fontSize:15,fontWeight:700,color:"var(--t1)",marginBottom:8}}>{nameMap[r.variantId]||r.name}</div>
+
+                      {/* Config tags */}
+                      <div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:14}}>
+                        {r.config&&r.config.tone&&<span style={{fontSize:10,padding:"3px 8px",borderRadius:5,background:"var(--s2)",color:"var(--t2)",fontWeight:500}}>{r.config.tone}</span>}
+                        {r.config&&r.config.length&&<span style={{fontSize:10,padding:"3px 8px",borderRadius:5,background:"var(--s2)",color:"var(--t2)",fontWeight:500}}>{r.config.length}</span>}
+                        {r.config&&r.config.techniques&&r.config.techniques.length>0&&r.config.techniques.map(tc=><span key={tc} style={{fontSize:10,padding:"3px 8px",borderRadius:5,background:ac+"10",color:ac,fontWeight:500}}>{TECHS[tc]?.l||tc}</span>)}
+                      </div>
+
+                      {/* Score bars */}
+                      {scoreKeys.map(({k,l})=>{
+                        const val=r.scores?.[k]||0;
+                        const col=val>=8?"#10B981":val>=6?"#F59E0B":"#F97316";
+                        return (
+                          <div key={k} style={{marginBottom:6}}>
+                            <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"var(--t2)",marginBottom:2}}>
+                              <span>{l}</span><span style={{fontWeight:600,color:col}}>{val}/10</span>
+                            </div>
+                            <div style={{height:6,borderRadius:3,background:"var(--s2)",overflow:"hidden"}}>
+                              <div style={{height:"100%",borderRadius:3,background:col,width:(val*10)+"%",transition:"width .4s ease"}}/>
+                            </div>
+                          </div>
+                        );
+                      })}
+
+                      {/* Total */}
+                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:10,paddingTop:10,borderTop:"1px solid var(--bd)"}}>
+                        <span style={{fontSize:12,fontWeight:600,color:"var(--t2)"}}>{t("labTotal")}</span>
+                        <span style={{fontSize:20,fontWeight:800,color:isWinner?ac:"var(--t1)"}}>{r.total}<span style={{fontSize:12,fontWeight:400,color:"var(--t3)"}}>/50</span></span>
+                      </div>
+
+                      {/* Preview */}
+                      <div style={{marginTop:12,padding:"10px 12px",borderRadius:8,background:"var(--bg)",fontSize:11,color:"var(--t3)",lineHeight:1.5,maxHeight:80,overflow:"hidden",fontFamily:"var(--m)"}}>
+                        {r.output?r.output.slice(0,260)+(r.output.length>260?"...":""):"No preview available"}
+                      </div>
+
+                      {/* Apply button */}
+                      <button onClick={()=>applyLabConfig(r.config)} style={{width:"100%",marginTop:14,padding:"10px 0",borderRadius:8,border:isWinner?"none":"1px solid var(--bd)",background:isWinner?ac:"var(--s1)",color:isWinner?"#fff":"var(--t2)",fontSize:13,fontWeight:isWinner?700:600,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{t("labApply")}</button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     )}

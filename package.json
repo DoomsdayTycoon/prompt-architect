@@ -2,6 +2,7 @@
   "name": "prompt-architect",
   "private": true,
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.88.0",
     "@supabase/supabase-js": "^2.49.0",
     "esbuild": "^0.28.0",
     "stripe": "^17.5.0"
