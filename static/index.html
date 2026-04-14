@@ -17,6 +17,15 @@
 <link rel="canonical" href="https://www.proarch.tech">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Prompt Architect","url":"https://www.proarch.tech","applicationCategory":"ProductivityApplication","operatingSystem":"Web","description":"AI prompt generator that turns vague ideas into expert-level prompts with strategy, structure, and domain expertise built in. Works with ChatGPT, Claude, Gemini.","aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","ratingCount":"120","bestRating":"5"},"offers":{"@type":"AggregateOffer","offerCount":"3","lowPrice":"0","highPrice":"72","priceCurrency":"USD","offers":[{"@type":"Offer","name":"Free","price":"0","priceCurrency":"USD","description":"Free tier with limited prompts","availability":"https://schema.org/InStock","url":"https://www.proarch.tech"},{"@type":"Offer","name":"Pro Monthly","url":"https://www.proarch.tech","availability":"https://schema.org/InStock","priceSpecification":{"@type":"UnitPriceSpecification","price":"9.00","priceCurrency":"USD","unitCode":"MON","referenceQuantity":{"@type":"QuantitativeValue","value":"1","unitCode":"MON"}}},{"@type":"Offer","name":"Pro Annual","url":"https://www.proarch.tech","availability":"https://schema.org/InStock","priceSpecification":{"@type":"UnitPriceSpecification","price":"72.00","priceCurrency":"USD","unitCode":"ANN","referenceQuantity":{"@type":"QuantitativeValue","value":"1","unitCode":"ANN"}}}]},"creator":{"@type":"Organization","name":"OpenCraft Labs","url":"https://www.proarch.tech"}}</script>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='23' stroke='%230891B2' stroke-width='1.8' fill='%230891B208'/%3E%3Cpath d='M12 24h6l3-6 4.5 12 3-6H35' stroke='%230891B2' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='12' cy='24' r='2' fill='%230891B2'/%3E%3Ccircle cx='35' cy='24' r='2' fill='%230891B2'/%3E%3C/svg%3E">
+<!-- Resource hints: warm up DNS+TCP+TLS for every third-party origin we hit on first paint.
+     Saves 100-400ms per origin by parallelizing the handshake with HTML parsing.
+     Order matters less than presence; preconnect is strictly better than dns-prefetch when available. -->
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://whfdtdcplkneviumgrkz.supabase.co" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://www.googletagmanager.com">
 <style>body{margin:0;background:#f8fafc;}#seo-fallback{display:none}</style>
 <noscript><style>#seo-fallback{display:block!important}</style></noscript>
 <!-- GA4 -->
@@ -1770,7 +1779,7 @@ function App(){
   const [exampleSector,setExampleSector]=useState("");
   const [exampleSub,setExampleSub]=useState("");
   const [heroExamplesOpen,setHeroExamplesOpen]=useState(false);
-  const [showResetConfirm,setShowResetConfirm]=useState(false);
+  const [showResetUndo,setShowResetUndo]=useState(false);
   const [showExamples,setShowExamples]=useState(false);
   const [showProfileDD,setShowProfileDD]=useState(false);
   const [nlEmail,setNlEmail]=useState("");
@@ -1868,6 +1877,24 @@ function App(){
     }
   },[]);
 
+  // Keep goRef pointing at the latest go() closure so timers and the global
+  // Cmd+Enter listener never call a stale version with old topic/usage state.
+  useEffect(()=>{goRef.current=go;},[go]);
+
+  // Global keyboard shortcut: Cmd/Ctrl+Enter generates from anywhere on the page.
+  // Skipped when the auth modal or paywall is open so you can submit those forms with Enter.
+  useEffect(()=>{
+    const onKey=(e)=>{
+      if((e.metaKey||e.ctrlKey)&&e.key==="Enter"){
+        if(showAuth||showPaywall)return;
+        e.preventDefault();
+        if(goRef.current)goRef.current();
+      }
+    };
+    window.addEventListener("keydown",onKey);
+    return ()=>window.removeEventListener("keydown",onKey);
+  },[showAuth,showPaywall]);
+
   // FREE LIMITS: 2 simple prompts, 1 expert prompt
   const FREE_SIMPLE=2;
   const FREE_EXPERT=1;
@@ -1876,6 +1903,12 @@ function App(){
   const remainingExpert=Math.max(0,FREE_EXPERT-usage.expert_used);
 
   const lastGenRef=useRef(0);
+  // Stable handle to the current go() closure so timers and global listeners always call the freshest version.
+  const goRef=useRef(null);
+  // Snapshot of state taken right before resetAll(); used by the undo toast.
+  const lastResetSnapshotRef=useRef(null);
+  // Pending timer for the auto-dismiss of the undo toast.
+  const resetUndoTimerRef=useRef(null);
   const go=useCallback(()=>{
     // Must have account
     if(!user){setAuthMode("signup");setShowAuth(true);setAuthErr("");return;}
@@ -2051,12 +2084,40 @@ function App(){
 
 
   const resetAll=useCallback(()=>{
+    // Snapshot every field that resetAll() will overwrite so undoReset() can put it back.
+    lastResetSnapshotRef.current={
+      topic,task,industry,output,model,subModel,style,tone,len,fmt,includes,techs,
+      aud,extra,special,language,fileOutput,selectedFirm,selectedRole,hasAttachment,
+      show,promptGenerated,
+    };
     setTopic("");setTask("writing");setIndustry("general");setOutput("document");setModel("claude");setSubModel("opus-4-6");
     setStyle("formal");setTone("Professional");setLen("Medium");setFmt(["prose","headers"]);
     setIncludes([]);setTechs([]);setAud("");setExtra("");setSpecial("");setLanguage("English");
     setFileOutput("pdf");setSelectedFirm("");setSelectedRole("");setHasAttachment(false);
-    setShow(false);setShowResetConfirm(false);setPromptGenerated(false);
+    setShow(false);setPromptGenerated(false);
+    // Show the undo toast for 5 seconds, then auto-dismiss and drop the snapshot.
+    setShowResetUndo(true);
+    if(resetUndoTimerRef.current)clearTimeout(resetUndoTimerRef.current);
+    resetUndoTimerRef.current=setTimeout(()=>{
+      setShowResetUndo(false);
+      lastResetSnapshotRef.current=null;
+      resetUndoTimerRef.current=null;
+    },5000);
     window.scrollTo({top:0,behavior:"smooth"});
+  },[topic,task,industry,output,model,subModel,style,tone,len,fmt,includes,techs,aud,extra,special,language,fileOutput,selectedFirm,selectedRole,hasAttachment,show,promptGenerated]);
+
+  // Restore everything resetAll() cleared, if the user clicks Undo within 5s.
+  const undoReset=useCallback(()=>{
+    const s=lastResetSnapshotRef.current;
+    if(!s)return;
+    setTopic(s.topic);setTask(s.task);setIndustry(s.industry);setOutput(s.output);setModel(s.model);setSubModel(s.subModel);
+    setStyle(s.style);setTone(s.tone);setLen(s.len);setFmt(s.fmt);
+    setIncludes(s.includes);setTechs(s.techs);setAud(s.aud);setExtra(s.extra);setSpecial(s.special);setLanguage(s.language);
+    setFileOutput(s.fileOutput);setSelectedFirm(s.selectedFirm);setSelectedRole(s.selectedRole);setHasAttachment(s.hasAttachment);
+    setShow(s.show);setPromptGenerated(s.promptGenerated);
+    setShowResetUndo(false);
+    lastResetSnapshotRef.current=null;
+    if(resetUndoTimerRef.current){clearTimeout(resetUndoTimerRef.current);resetUndoTimerRef.current=null;}
   },[]);
 
   return <>
@@ -2172,7 +2233,7 @@ function App(){
             {/* HERO QUICK-START — compact textarea + generate button */}
             <div style={{maxWidth:620,margin:"24px auto 0",position:"relative"}}>
               <div className="hero-cta" style={{display:"flex",gap:0,background:"#fff",borderRadius:12,border:"1.5px solid var(--bd)",boxShadow:"0 2px 12px rgba(0,0,0,.06)",overflow:"hidden",transition:"border-color .2s"}} onFocus={e=>e.currentTarget.style.borderColor=ac} onBlur={e=>e.currentTarget.style.borderColor="var(--bd)"}>
-                <textarea id="hero-input" placeholder={t("heroPlaceholder")} rows={2} style={{flex:1,padding:"14px 16px",border:"none",background:"transparent",color:"var(--t1)",fontSize:14,fontFamily:"var(--f)",outline:"none",lineHeight:1.55,resize:"none"}} onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();const v=document.getElementById("hero-input").value.trim();if(v){setTopic(v);document.getElementById("tool").scrollIntoView({behavior:"smooth",block:"start"});}}}} />
+                <textarea id="hero-input" placeholder={t("heroPlaceholder")} rows={2} style={{flex:1,padding:"14px 16px",border:"none",background:"transparent",color:"var(--t1)",fontSize:14,fontFamily:"var(--f)",outline:"none",lineHeight:1.55,resize:"none"}} onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();const v=document.getElementById("hero-input").value.trim();if(v){setTopic(v);document.getElementById("tool").scrollIntoView({behavior:"smooth",block:"start"});/* Defer go() to next tick so the setTopic state flush has propagated and goRef.current sees the fresh closure with the new topic. */ setTimeout(()=>{if(goRef.current)goRef.current();},150);}}}} />
                 <button onClick={()=>{const v=document.getElementById("hero-input").value.trim();if(v){setTopic(v);document.getElementById("tool").scrollIntoView({behavior:"smooth",block:"start"});}}} style={{padding:"0 24px",border:"none",background:ac,color:"#fff",fontSize:14,fontWeight:650,fontFamily:"var(--f)",cursor:"pointer",transition:"opacity .15s",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:8}} onMouseEnter={e=>e.currentTarget.style.opacity=".88"} onMouseLeave={e=>e.currentTarget.style.opacity="1"}>{I.wand(15,"#fff")} {t("heroGenerate")}</button>
               </div>
               {/* Try an example — collapsible */}
@@ -2285,7 +2346,7 @@ function App(){
         <div style={{maxWidth:1200,margin:"0 auto"}}>
           <h2 style={{fontSize:"clamp(20px,2.5vw,26px)",fontWeight:800,textAlign:"center",margin:"0 0 8px",color:"var(--t1)",letterSpacing:"-.3px"}}>{t("ucTitle")}</h2>
           <p style={{fontSize:13,color:"var(--t3)",textAlign:"center",margin:"0 auto 28px",maxWidth:520}}>{t("ucSub")}</p>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(300px, 1fr))",gap:16}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(280px, 1fr))",gap:16,maxWidth:720,margin:"0 auto"}}>
             {[
               {role:t("uc1r"),task:t("uc1t"),ic:"chart"},
               {role:t("uc2r"),task:t("uc2t"),ic:"code"},
@@ -2387,7 +2448,7 @@ function App(){
                 <button onClick={()=>{setTopic("");setShow(false);}} style={{padding:"4px 10px",borderRadius:6,border:"1px solid #fca5a5",background:"#fee2e2",color:"#dc2626",cursor:"pointer",fontSize:11,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",display:"flex",alignItems:"center",gap:4}}>{I.trash(11,"#dc2626")} {t("clear")}</button>
               </div>
             )}
-            <textarea value={topic} onChange={e=>{setTopic(e.target.value);setShow(false);}} placeholder={t("describeGoalPh")} rows={3} style={inp({resize:"vertical"})} />
+            <textarea autoFocus value={topic} onChange={e=>{setTopic(e.target.value);setShow(false);}} placeholder={t("describeGoalPh")} rows={3} style={inp({resize:"vertical"})} />
           </div>
 
           {/* EXAMPLE PROMPTS — 3-level: Sector > Sub > Examples */}
@@ -2602,7 +2663,7 @@ function App(){
 
         {/* GENERATE */}
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:12,paddingTop:12,borderTop:"1px solid var(--bd)",marginTop:8}}>
-          <button onClick={go} disabled={!topic.trim()} style={{display:"flex",alignItems:"center",gap:8,padding:"14px 44px",borderRadius:12,border:"none",background:topic.trim()?(canGenerate?`linear-gradient(135deg, ${ac}, #2563EB)`:"#94a3b8"):"var(--s2)",color:topic.trim()?"#fff":"var(--t3)",fontSize:15,fontWeight:660,fontFamily:"var(--f)",cursor:topic.trim()?"pointer":"not-allowed",transition:"all .2s",boxShadow:topic.trim()&&canGenerate?"0 6px 28px "+ac+"35":"none"}}>{I.sparkle(16,topic.trim()?"#fff":"var(--t3)")} {canGenerate?t("generateBtn"):t("upgradeGenerate")}</button>
+          <button onClick={go} disabled={!topic.trim()} title="Tip: press Cmd/Ctrl + Enter to generate from anywhere" style={{display:"flex",alignItems:"center",gap:8,padding:"14px 44px",borderRadius:12,border:"none",background:topic.trim()?(canGenerate?`linear-gradient(135deg, ${ac}, #2563EB)`:"#94a3b8"):"var(--s2)",color:topic.trim()?"#fff":"var(--t3)",fontSize:15,fontWeight:660,fontFamily:"var(--f)",cursor:topic.trim()?"pointer":"not-allowed",transition:"all .2s",boxShadow:topic.trim()&&canGenerate?"0 6px 28px "+ac+"35":"none"}}>{I.sparkle(16,topic.trim()?"#fff":"var(--t3)")} {canGenerate?t("generateBtn"):t("upgradeGenerate")} {topic.trim()&&canGenerate&&<span style={{fontSize:10,fontWeight:600,opacity:.75,marginLeft:4,padding:"2px 6px",borderRadius:4,background:"rgba(255,255,255,.18)",fontFamily:"var(--m)"}}>⌘↵</span>}</button>
           {user&&!usage.is_paid&&usage.subscription_status!=="active"&&(
             <div style={{fontSize:12,color:"var(--t3)",display:"flex",gap:14}}>
               <span>Simple: {remainingSimple}/{FREE_SIMPLE} free</span>
@@ -2629,7 +2690,7 @@ function App(){
               <button onClick={sharePrompt} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 12px",borderRadius:7,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{I.share(12,"var(--t2)")} {t("shareBtn")}</button>
               <button onClick={exportTxt} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 12px",borderRadius:7,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{I.download(12,"var(--t2)")} .txt</button>
               <button onClick={cp} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 14px",borderRadius:7,border:"none",background:copied?"#10A37F":ac,color:"#fff",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{copied?I.check(12,"#fff"):I.copy(12,"#fff")}{copied?t("copiedBtn"):t("copyBtn")}</button>
-              <button onClick={()=>setShowResetConfirm(true)} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 12px",borderRadius:7,border:"1px solid #fca5a5",background:"#fff5f5",color:"#dc2626",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{I.plus(12,"#dc2626")} {t("newBtn")}</button>
+              <button onClick={resetAll} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 12px",borderRadius:7,border:"1px solid #fca5a5",background:"#fff5f5",color:"#dc2626",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{I.plus(12,"#dc2626")} {t("newBtn")}</button>
             </div>
           </div>
           <pre style={{padding:"20px 22px",margin:0,whiteSpace:"pre-wrap",wordWrap:"break-word",fontSize:12,lineHeight:1.8,fontFamily:"var(--m)",color:"var(--t2)",background:"var(--bg)",maxHeight:600,overflow:"auto"}}>{prompt}</pre>
@@ -2806,18 +2867,13 @@ function App(){
       </div>
     )}
 
-    {/* RESET CONFIRMATION MODAL */}
-    {showResetConfirm&&(
-      <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,.5)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:2000,padding:20}} onClick={()=>setShowResetConfirm(false)}>
-        <div style={{background:"var(--s1)",borderRadius:14,padding:28,maxWidth:340,width:"100%",boxShadow:"0 20px 60px rgba(0,0,0,.15)",animation:"slideDown .2s ease",textAlign:"center"}} onClick={(e)=>e.stopPropagation()}>
-          <div style={{width:44,height:44,borderRadius:12,background:"#fee2e2",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px"}}>{I.trash(20,"#dc2626")}</div>
-          <h3 style={{fontSize:17,fontWeight:700,margin:"0 0 8px",color:"var(--t1)"}}>Start a new prompt?</h3>
-          <p style={{fontSize:13,color:"var(--t2)",margin:"0 0 22px",lineHeight:1.5}}>This will clear your current prompt and all settings. Make sure you've copied it first.</p>
-          <div style={{display:"flex",gap:10}}>
-            <button onClick={()=>setShowResetConfirm(false)} style={{flex:1,padding:"11px 16px",borderRadius:8,border:"1px solid var(--bd)",background:"var(--s1)",color:"var(--t2)",fontSize:13,fontWeight:600,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>Cancel</button>
-            <button onClick={resetAll} style={{flex:1,padding:"11px 16px",borderRadius:8,border:"none",background:"#dc2626",color:"#fff",fontSize:13,fontWeight:700,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>Clear & start new</button>
-          </div>
-        </div>
+    {/* RESET UNDO TOAST — replaces the old 2-click confirmation modal.
+        New Prompt clears immediately; this toast lets the user undo for 5s. */}
+    {showResetUndo&&(
+      <div role="status" aria-live="polite" style={{position:"fixed",bottom:24,left:"50%",transform:"translateX(-50%)",background:"#0f172a",color:"#fff",padding:"12px 16px 12px 18px",borderRadius:10,boxShadow:"0 12px 40px rgba(0,0,0,.25)",display:"flex",alignItems:"center",gap:14,zIndex:2000,animation:"slideDown .2s ease",fontFamily:"var(--f)",fontSize:13}}>
+        <span style={{display:"flex",alignItems:"center",gap:8}}>{I.check(14,"#10B981")} Prompt cleared</span>
+        <button onClick={undoReset} style={{padding:"6px 14px",borderRadius:7,border:"none",background:"#fff",color:"#0f172a",fontSize:12,fontWeight:700,fontFamily:"var(--f)",cursor:"pointer",transition:"all .15s"}}>Undo</button>
+        <button onClick={()=>{setShowResetUndo(false);lastResetSnapshotRef.current=null;if(resetUndoTimerRef.current){clearTimeout(resetUndoTimerRef.current);resetUndoTimerRef.current=null;}}} aria-label="Dismiss" style={{padding:"4px 6px",borderRadius:6,border:"none",background:"transparent",color:"#94a3b8",cursor:"pointer",fontSize:16,lineHeight:1,fontFamily:"var(--f)"}}>×</button>
       </div>
     )}
 

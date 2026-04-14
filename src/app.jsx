@@ -1771,7 +1771,7 @@ function App(){
   const [authErr,setAuthErr]=useState("");
   const [promptGenerated,setPromptGenerated]=useState(false);
   const [exampleSector,setExampleSector]=useState("");
-  const [showResetConfirm,setShowResetConfirm]=useState(false);
+  const [showResetUndo,setShowResetUndo]=useState(false);
   const [showExamples,setShowExamples]=useState(false);
   const [showProfileDD,setShowProfileDD]=useState(false);
   const [nlEmail,setNlEmail]=useState("");
@@ -1873,6 +1873,24 @@ function App(){
     }
   },[]);
 
+  // Keep goRef pointing at the latest go() closure so timers and the global
+  // Cmd+Enter listener never call a stale version with old topic/usage state.
+  useEffect(()=>{goRef.current=go;},[go]);
+
+  // Global keyboard shortcut: Cmd/Ctrl+Enter generates from anywhere on the page.
+  // Skipped when the auth modal or paywall is open so you can submit those forms with Enter.
+  useEffect(()=>{
+    const onKey=(e)=>{
+      if((e.metaKey||e.ctrlKey)&&e.key==="Enter"){
+        if(showAuth||showPaywall)return;
+        e.preventDefault();
+        if(goRef.current)goRef.current();
+      }
+    };
+    window.addEventListener("keydown",onKey);
+    return ()=>window.removeEventListener("keydown",onKey);
+  },[showAuth,showPaywall]);
+
   // FREE LIMITS: 2 simple prompts, 1 expert prompt
   const FREE_SIMPLE=2;
   const FREE_EXPERT=1;
@@ -1881,6 +1899,12 @@ function App(){
   const remainingExpert=Math.max(0,FREE_EXPERT-usage.expert_used);
 
   const lastGenRef=useRef(0);
+  // Stable handle to the current go() closure so timers and global listeners always call the freshest version.
+  const goRef=useRef(null);
+  // Snapshot of state taken right before resetAll(); used by the undo toast.
+  const lastResetSnapshotRef=useRef(null);
+  // Pending timer for the auto-dismiss of the undo toast.
+  const resetUndoTimerRef=useRef(null);
   const go=useCallback(()=>{
     // Must have account
     if(!user){setAuthMode("signup");setShowAuth(true);setAuthErr("");return;}
@@ -2056,12 +2080,40 @@ function App(){
 
 
   const resetAll=useCallback(()=>{
+    // Snapshot every field that resetAll() will overwrite so undoReset() can put it back.
+    lastResetSnapshotRef.current={
+      topic,task,industry,output,model,subModel,style,tone,len,fmt,includes,techs,
+      aud,extra,special,language,fileOutput,selectedFirm,selectedRole,hasAttachment,
+      show,promptGenerated,
+    };
     setTopic("");setTask("writing");setIndustry("general");setOutput("document");setModel("claude");setSubModel("opus-4-6");
     setStyle("formal");setTone("Professional");setLen("Medium");setFmt(["prose","headers"]);
     setIncludes([]);setTechs([]);setAud("");setExtra("");setSpecial("");setLanguage("English");
     setFileOutput("pdf");setSelectedFirm("");setSelectedRole("");setHasAttachment(false);
-    setShow(false);setShowResetConfirm(false);setPromptGenerated(false);
+    setShow(false);setPromptGenerated(false);
+    // Show the undo toast for 5 seconds, then auto-dismiss and drop the snapshot.
+    setShowResetUndo(true);
+    if(resetUndoTimerRef.current)clearTimeout(resetUndoTimerRef.current);
+    resetUndoTimerRef.current=setTimeout(()=>{
+      setShowResetUndo(false);
+      lastResetSnapshotRef.current=null;
+      resetUndoTimerRef.current=null;
+    },5000);
     window.scrollTo({top:0,behavior:"smooth"});
+  },[topic,task,industry,output,model,subModel,style,tone,len,fmt,includes,techs,aud,extra,special,language,fileOutput,selectedFirm,selectedRole,hasAttachment,show,promptGenerated]);
+
+  // Restore everything resetAll() cleared, if the user clicks Undo within 5s.
+  const undoReset=useCallback(()=>{
+    const s=lastResetSnapshotRef.current;
+    if(!s)return;
+    setTopic(s.topic);setTask(s.task);setIndustry(s.industry);setOutput(s.output);setModel(s.model);setSubModel(s.subModel);
+    setStyle(s.style);setTone(s.tone);setLen(s.len);setFmt(s.fmt);
+    setIncludes(s.includes);setTechs(s.techs);setAud(s.aud);setExtra(s.extra);setSpecial(s.special);setLanguage(s.language);
+    setFileOutput(s.fileOutput);setSelectedFirm(s.selectedFirm);setSelectedRole(s.selectedRole);setHasAttachment(s.hasAttachment);
+    setShow(s.show);setPromptGenerated(s.promptGenerated);
+    setShowResetUndo(false);
+    lastResetSnapshotRef.current=null;
+    if(resetUndoTimerRef.current){clearTimeout(resetUndoTimerRef.current);resetUndoTimerRef.current=null;}
   },[]);
 
   /* ═══ PROMPT LAB ═══ */
@@ -2289,7 +2341,7 @@ function App(){
         <div style={{maxWidth:1200,margin:"0 auto"}}>
           <h2 style={{fontSize:"clamp(18px,2.2vw,24px)",fontWeight:800,textAlign:"center",margin:"0 0 6px",color:"var(--t1)",letterSpacing:"-.2px"}}>{t("ucTitle")}</h2>
           <p style={{fontSize:13,color:"var(--t3)",textAlign:"center",margin:"0 auto 24px",maxWidth:460}}>{t("ucSub")}</p>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(220px, 1fr))",gap:14}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(280px, 1fr))",gap:14,maxWidth:720,margin:"0 auto"}}>
             {[
               {role:t("uc1r"),task:t("uc1t"),ic:"chart"},
               {role:t("uc2r"),task:t("uc2t"),ic:"code"},
@@ -2391,7 +2443,7 @@ function App(){
                 <button onClick={()=>{setTopic("");setShow(false);}} style={{padding:"4px 10px",borderRadius:6,border:"1px solid #fca5a5",background:"#fee2e2",color:"#dc2626",cursor:"pointer",fontSize:11,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",display:"flex",alignItems:"center",gap:4}}>{I.trash(11,"#dc2626")} {t("clear")}</button>
               </div>
             )}
-            <textarea value={topic} onChange={e=>{setTopic(e.target.value);setShow(false);}} placeholder={t("describeGoalPh")} rows={3} style={inp({resize:"vertical"})} />
+            <textarea autoFocus value={topic} onChange={e=>{setTopic(e.target.value);setShow(false);}} placeholder={t("describeGoalPh")} rows={3} style={inp({resize:"vertical"})} />
           </div>
 
           {/* EXAMPLE PROMPTS */}
@@ -2602,7 +2654,7 @@ function App(){
         {/* GENERATE + LAB */}
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:12,paddingTop:12,borderTop:"1px solid var(--bd)",marginTop:8}}>
           <div style={{display:"flex",gap:10,alignItems:"center"}}>
-            <button onClick={go} disabled={!topic.trim()} style={{display:"flex",alignItems:"center",gap:8,padding:"14px 44px",borderRadius:12,border:"none",background:topic.trim()?(canGenerate?`linear-gradient(135deg, ${ac}, #2563EB)`:"#94a3b8"):"var(--s2)",color:topic.trim()?"#fff":"var(--t3)",fontSize:15,fontWeight:660,fontFamily:"var(--f)",cursor:topic.trim()?"pointer":"not-allowed",transition:"all .2s",boxShadow:topic.trim()&&canGenerate?"0 6px 28px "+ac+"35":"none"}}>{I.sparkle(16,topic.trim()?"#fff":"var(--t3)")} {canGenerate?t("generateBtn"):t("upgradeGenerate")}</button>
+            <button onClick={go} disabled={!topic.trim()} title="Tip: press Cmd/Ctrl + Enter to generate from anywhere" style={{display:"flex",alignItems:"center",gap:8,padding:"14px 44px",borderRadius:12,border:"none",background:topic.trim()?(canGenerate?`linear-gradient(135deg, ${ac}, #2563EB)`:"#94a3b8"):"var(--s2)",color:topic.trim()?"#fff":"var(--t3)",fontSize:15,fontWeight:660,fontFamily:"var(--f)",cursor:topic.trim()?"pointer":"not-allowed",transition:"all .2s",boxShadow:topic.trim()&&canGenerate?"0 6px 28px "+ac+"35":"none"}}>{I.sparkle(16,topic.trim()?"#fff":"var(--t3)")} {canGenerate?t("generateBtn"):t("upgradeGenerate")} {topic.trim()&&canGenerate&&<span style={{fontSize:10,fontWeight:600,opacity:.75,marginLeft:4,padding:"2px 6px",borderRadius:4,background:"rgba(255,255,255,.18)",fontFamily:"var(--m)"}}>⌘↵</span>}</button>
             <button onClick={runLab} disabled={!topic.trim()||labLoading} style={{display:"flex",alignItems:"center",gap:6,padding:"14px 22px",borderRadius:12,border:"2px solid "+(topic.trim()?ac:"var(--bd)"),background:topic.trim()?ac+"08":"var(--s2)",color:topic.trim()?ac:"var(--t3)",fontSize:14,fontWeight:640,fontFamily:"var(--f)",cursor:topic.trim()&&!labLoading?"pointer":"not-allowed",transition:"all .2s",opacity:labLoading?.6:1}}>{I.microscope(15,topic.trim()?ac:"var(--t3)")} {t("labBtn")}</button>
           </div>
           {user&&!usage.is_paid&&usage.subscription_status!=="active"&&(
@@ -2631,7 +2683,7 @@ function App(){
               <button onClick={sharePrompt} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 12px",borderRadius:7,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{I.share(12,"var(--t2)")} {t("shareBtn")}</button>
               <button onClick={exportTxt} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 12px",borderRadius:7,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{I.download(12,"var(--t2)")} .txt</button>
               <button onClick={cp} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 14px",borderRadius:7,border:"none",background:copied?"#10A37F":ac,color:"#fff",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{copied?I.check(12,"#fff"):I.copy(12,"#fff")}{copied?t("copiedBtn"):t("copyBtn")}</button>
-              <button onClick={()=>setShowResetConfirm(true)} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 12px",borderRadius:7,border:"1px solid #fca5a5",background:"#fff5f5",color:"#dc2626",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{I.plus(12,"#dc2626")} {t("newBtn")}</button>
+              <button onClick={resetAll} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 12px",borderRadius:7,border:"1px solid #fca5a5",background:"#fff5f5",color:"#dc2626",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{I.plus(12,"#dc2626")} {t("newBtn")}</button>
             </div>
           </div>
           <pre style={{padding:"20px 22px",margin:0,whiteSpace:"pre-wrap",wordWrap:"break-word",fontSize:12,lineHeight:1.8,fontFamily:"var(--m)",color:"var(--t2)",background:"var(--bg)",maxHeight:600,overflow:"auto"}}>{prompt}</pre>
@@ -2808,18 +2860,13 @@ function App(){
       </div>
     )}
 
-    {/* RESET CONFIRMATION MODAL */}
-    {showResetConfirm&&(
-      <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,.5)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:2000,padding:20}} onClick={()=>setShowResetConfirm(false)}>
-        <div style={{background:"var(--s1)",borderRadius:14,padding:28,maxWidth:340,width:"100%",boxShadow:"0 20px 60px rgba(0,0,0,.15)",animation:"slideDown .2s ease",textAlign:"center"}} onClick={(e)=>e.stopPropagation()}>
-          <div style={{width:44,height:44,borderRadius:12,background:"#fee2e2",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px"}}>{I.trash(20,"#dc2626")}</div>
-          <h3 style={{fontSize:17,fontWeight:700,margin:"0 0 8px",color:"var(--t1)"}}>Start a new prompt?</h3>
-          <p style={{fontSize:13,color:"var(--t2)",margin:"0 0 22px",lineHeight:1.5}}>This will clear your current prompt and all settings. Make sure you've copied it first.</p>
-          <div style={{display:"flex",gap:10}}>
-            <button onClick={()=>setShowResetConfirm(false)} style={{flex:1,padding:"11px 16px",borderRadius:8,border:"1px solid var(--bd)",background:"var(--s1)",color:"var(--t2)",fontSize:13,fontWeight:600,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>Cancel</button>
-            <button onClick={resetAll} style={{flex:1,padding:"11px 16px",borderRadius:8,border:"none",background:"#dc2626",color:"#fff",fontSize:13,fontWeight:700,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>Clear & start new</button>
-          </div>
-        </div>
+    {/* RESET UNDO TOAST — replaces the old 2-click confirmation modal.
+        New Prompt clears immediately; this toast lets the user undo for 5s. */}
+    {showResetUndo&&(
+      <div role="status" aria-live="polite" style={{position:"fixed",bottom:24,left:"50%",transform:"translateX(-50%)",background:"#0f172a",color:"#fff",padding:"12px 16px 12px 18px",borderRadius:10,boxShadow:"0 12px 40px rgba(0,0,0,.25)",display:"flex",alignItems:"center",gap:14,zIndex:2000,animation:"slideDown .2s ease",fontFamily:"var(--f)",fontSize:13}}>
+        <span style={{display:"flex",alignItems:"center",gap:8}}>{I.check(14,"#10B981")} Prompt cleared</span>
+        <button onClick={undoReset} style={{padding:"6px 14px",borderRadius:7,border:"none",background:"#fff",color:"#0f172a",fontSize:12,fontWeight:700,fontFamily:"var(--f)",cursor:"pointer",transition:"all .15s"}}>Undo</button>
+        <button onClick={()=>{setShowResetUndo(false);lastResetSnapshotRef.current=null;if(resetUndoTimerRef.current){clearTimeout(resetUndoTimerRef.current);resetUndoTimerRef.current=null;}}} aria-label="Dismiss" style={{padding:"4px 6px",borderRadius:6,border:"none",background:"transparent",color:"#94a3b8",cursor:"pointer",fontSize:16,lineHeight:1,fontFamily:"var(--f)"}}>×</button>
       </div>
     )}
 
