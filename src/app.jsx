@@ -1738,7 +1738,7 @@ function App(){
   const [style,setStyle]=useState("formal");
   const [tone,setTone]=useState("Professional");
   const [len,setLen]=useState("Medium");
-  const [fmt,setFmt]=useState(["prose","headers"]);
+  const [fmt,setFmt]=useState(["prose"]);
   const [includes,setIncludes]=useState([]);
   const [techs,setTechs]=useState([]);
   const [aud,setAud]=useState("");
@@ -1783,6 +1783,9 @@ function App(){
   const [labLoading,setLabLoading]=useState(false);
   const [labResults,setLabResults]=useState([]);
   const [labError,setLabError]=useState("");
+  const [showPalette,setShowPalette]=useState(false);
+  const [paletteQuery,setPaletteQuery]=useState("");
+  const paletteRef=useRef(null);
   const ref=useRef(null);
   const isExp=mode==="expert";
   const ac=MODELS[model].col;
@@ -1877,19 +1880,29 @@ function App(){
   // Cmd+Enter listener never call a stale version with old topic/usage state.
   useEffect(()=>{goRef.current=go;},[go]);
 
-  // Global keyboard shortcut: Cmd/Ctrl+Enter generates from anywhere on the page.
-  // Skipped when the auth modal or paywall is open so you can submit those forms with Enter.
+  // Global keyboard shortcuts:
+  //   Cmd/Ctrl+Enter — generate (skipped when auth/paywall modal is open)
+  //   Cmd/Ctrl+K     — toggle command palette
+  //   Escape         — close palette if open
   useEffect(()=>{
     const onKey=(e)=>{
       if((e.metaKey||e.ctrlKey)&&e.key==="Enter"){
-        if(showAuth||showPaywall)return;
+        if(showAuth||showPaywall||showPalette)return;
         e.preventDefault();
         if(goRef.current)goRef.current();
+      }
+      if((e.metaKey||e.ctrlKey)&&e.key==="k"){
+        e.preventDefault();
+        setShowPalette(v=>{if(!v)setPaletteQuery("");return !v;});
+      }
+      if(e.key==="Escape"&&showPalette){
+        e.preventDefault();
+        setShowPalette(false);
       }
     };
     window.addEventListener("keydown",onKey);
     return ()=>window.removeEventListener("keydown",onKey);
-  },[showAuth,showPaywall]);
+  },[showAuth,showPaywall,showPalette]);
 
   // FREE LIMITS: 2 simple prompts, 1 expert prompt
   const FREE_SIMPLE=2;
@@ -2087,7 +2100,7 @@ function App(){
       show,promptGenerated,
     };
     setTopic("");setTask("writing");setIndustry("general");setOutput("document");setModel("claude");setSubModel("opus-4-6");
-    setStyle("formal");setTone("Professional");setLen("Medium");setFmt(["prose","headers"]);
+    setStyle("formal");setTone("Professional");setLen("Medium");setFmt(["prose"]);
     setIncludes([]);setTechs([]);setAud("");setExtra("");setSpecial("");setLanguage("English");
     setFileOutput("pdf");setSelectedFirm("");setSelectedRole("");setHasAttachment(false);
     setShow(false);setPromptGenerated(false);
@@ -2168,6 +2181,8 @@ function App(){
       @keyframes fadeIn{from{opacity:0}to{opacity:1}}
       @keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
       @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+      @keyframes shimmer{0%{background-position:-200px 0}100%{background-position:calc(200px + 100%) 0}}
+      .skeleton{background:linear-gradient(90deg,#e2e8f0 0px,#f1f5f9 40px,#e2e8f0 80px);background-size:200px 100%;animation:shimmer 1.5s infinite linear;border-radius:8px}
       @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
       body{background:#f8fafc;overflow-x:hidden}
       textarea:focus,input:focus{border-color:${ac}!important;box-shadow:0 0 0 3px ${ac}20}
@@ -2209,7 +2224,9 @@ function App(){
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
             {uiLang==="en"?"EN":"NO"}
           </button>
-          {user?(
+          {authLoading?(
+            <div className="skeleton" style={{width:90,height:36}}/>
+          ):user?(
             <div style={{position:"relative"}}>
               <button onClick={()=>setShowProfileDD(!showProfileDD)} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 12px",borderRadius:10,border:"1px solid var(--bd)",background:"var(--s1)",cursor:"pointer",fontFamily:"var(--f)",transition:"all .15s"}}>
                 <div style={{width:28,height:28,borderRadius:"50%",background:`linear-gradient(135deg, ${ac}, #2563EB)`,display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:12,fontWeight:700}}>{(user.name||"U")[0].toUpperCase()}</div>
@@ -2658,11 +2675,15 @@ function App(){
             <button onClick={runLab} disabled={!topic.trim()||labLoading} style={{display:"flex",alignItems:"center",gap:6,padding:"14px 22px",borderRadius:12,border:"2px solid "+(topic.trim()?ac:"var(--bd)"),background:topic.trim()?ac+"08":"var(--s2)",color:topic.trim()?ac:"var(--t3)",fontSize:14,fontWeight:640,fontFamily:"var(--f)",cursor:topic.trim()&&!labLoading?"pointer":"not-allowed",transition:"all .2s",opacity:labLoading?.6:1}}>{I.microscope(15,topic.trim()?ac:"var(--t3)")} {t("labBtn")}</button>
           </div>
           {user&&!usage.is_paid&&usage.subscription_status!=="active"&&(
-            <div style={{fontSize:12,color:"var(--t3)",display:"flex",gap:14}}>
-              <span>Simple: {remainingSimple}/{FREE_SIMPLE} free</span>
-              <span style={{color:"var(--bd)"}}>|</span>
-              <span>Expert: {remainingExpert}/{FREE_EXPERT} free</span>
-            </div>
+            canGenerate?(
+              <div style={{fontSize:12,color:"var(--t3)",display:"flex",alignItems:"center",gap:14}}>
+                <span style={{fontWeight:isExp?400:600,color:isExp?"var(--t3)":(!remainingSimple?"#ef4444":"var(--t2)")}}>Simple: {remainingSimple}/{FREE_SIMPLE}</span>
+                <span style={{color:"var(--bd)"}}>|</span>
+                <span style={{fontWeight:isExp?600:400,color:!isExp?"var(--t3)":(!remainingExpert?"#ef4444":"var(--t2)")}}>Expert: {remainingExpert}/{FREE_EXPERT}</span>
+              </div>
+            ):(
+              <button onClick={()=>setShowPaywall(true)} style={{fontSize:12,fontWeight:600,padding:"6px 16px",borderRadius:7,border:"none",background:ac+"14",color:ac,cursor:"pointer",fontFamily:"var(--f)",transition:"all .2s"}}>0 free prompts left — Subscribe</button>
+            )
           )}
           {!user&&<div style={{fontSize:12,color:"var(--t3)"}}>{t("createAccount")}</div>}
         </div>
@@ -2856,6 +2877,65 @@ function App(){
             <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(referralLink)}`} target="_blank" rel="noopener" style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:6,padding:"10px",borderRadius:8,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",fontSize:12,fontWeight:600,fontFamily:"var(--f)",textDecoration:"none",cursor:"pointer"}}>Share on LinkedIn</a>
           </div>
           <button onClick={()=>setShowReferral(false)} style={{width:"100%",marginTop:14,padding:"10px",borderRadius:8,border:"1px solid var(--bd)",background:"transparent",color:"var(--t3)",fontSize:12,fontWeight:500,fontFamily:"var(--f)",cursor:"pointer"}}>Close</button>
+        </div>
+      </div>
+    )}
+
+    {/* COMMAND PALETTE — Cmd+K quick-access to history, actions, mode toggle */}
+    {showPalette&&(
+      <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,.45)",backdropFilter:"blur(4px)",WebkitBackdropFilter:"blur(4px)",display:"flex",alignItems:"flex-start",justifyContent:"center",paddingTop:"min(20vh, 160px)",zIndex:2001}} onClick={()=>setShowPalette(false)}>
+        <div style={{background:"var(--s1)",borderRadius:14,width:"100%",maxWidth:520,boxShadow:"0 20px 60px rgba(0,0,0,.2)",animation:"slideDown .15s ease",overflow:"hidden"}} onClick={e=>e.stopPropagation()}>
+          <div style={{padding:"14px 16px",borderBottom:"1px solid var(--bd)",display:"flex",alignItems:"center",gap:10}}>
+            {I.search?I.search(16,"var(--t3)"):<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>}
+            <input ref={paletteRef} autoFocus value={paletteQuery} onChange={e=>setPaletteQuery(e.target.value)} placeholder="Search prompts and actions..." style={{flex:1,border:"none",outline:"none",fontSize:14,fontFamily:"var(--f)",background:"transparent",color:"var(--t1)"}} onKeyDown={e=>{if(e.key==="Escape"){e.preventDefault();setShowPalette(false);}}}/>
+            <span style={{fontSize:10,color:"var(--t3)",padding:"2px 6px",borderRadius:4,border:"1px solid var(--bd)",fontFamily:"var(--m)"}}>esc</span>
+          </div>
+          <div style={{maxHeight:340,overflowY:"auto",padding:"6px"}}>
+            {(()=>{
+              const q=paletteQuery.toLowerCase().trim();
+              const actions=[
+                {type:"action",label:"New prompt",sub:"Clear all fields and start fresh",icon:I.plus(14,ac),action:()=>{resetAll();setShowPalette(false);}},
+                {type:"action",label:isExp?"Switch to Simple mode":"Switch to Expert mode",sub:"Toggle between Simple and Expert",icon:I.sliders?I.sliders(14,ac):I.bolt(14,ac),action:()=>{setMode(isExp?"amateur":"expert");setShowPalette(false);}},
+              ];
+              if(user){
+                actions.push({type:"action",label:"Prompt history",sub:history.length+" saved prompts",icon:I.clock(14,ac),action:()=>{setShowHistory(true);setShowPalette(false);setTimeout(()=>{const el=document.getElementById("history-panel");if(el)el.scrollIntoView({behavior:"smooth",block:"start"});},100);}});
+                actions.push({type:"action",label:"Sign out",sub:user.email,icon:I.trash(14,"#ef4444"),action:()=>{handleLogout();setShowPalette(false);}});
+              }
+              const filteredActions=q?actions.filter(a=>a.label.toLowerCase().includes(q)||a.sub.toLowerCase().includes(q)):actions;
+              const filteredHistory=history.filter(h=>!q||h.topic.toLowerCase().includes(q)).slice(0,6);
+              const hasResults=filteredActions.length>0||filteredHistory.length>0;
+              if(!hasResults)return <div style={{padding:"24px 16px",textAlign:"center",color:"var(--t3)",fontSize:13}}>No results</div>;
+              return <>
+                {filteredActions.length>0&&<>
+                  <div style={{padding:"6px 12px 4px",fontSize:10.5,fontWeight:600,color:"var(--t3)",textTransform:"uppercase",letterSpacing:".5px"}}>Actions</div>
+                  {filteredActions.map((a,i)=>(
+                    <button key={"a"+i} onClick={a.action} style={{display:"flex",alignItems:"center",gap:10,width:"100%",padding:"10px 12px",border:"none",background:"transparent",cursor:"pointer",borderRadius:8,fontFamily:"var(--f)",transition:"background .1s",textAlign:"left"}} onMouseEnter={e=>{e.currentTarget.style.background="var(--s2)";}} onMouseLeave={e=>{e.currentTarget.style.background="transparent";}}>
+                      <div style={{width:28,height:28,borderRadius:7,background:ac+"10",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{a.icon}</div>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{fontSize:13,fontWeight:600,color:"var(--t1)"}}>{a.label}</div>
+                        <div style={{fontSize:11,color:"var(--t3)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{a.sub}</div>
+                      </div>
+                    </button>
+                  ))}
+                </>}
+                {filteredHistory.length>0&&<>
+                  <div style={{padding:"8px 12px 4px",fontSize:10.5,fontWeight:600,color:"var(--t3)",textTransform:"uppercase",letterSpacing:".5px",borderTop:filteredActions.length?"1px solid var(--bd)":"none",marginTop:filteredActions.length?4:0}}>Recent prompts</div>
+                  {filteredHistory.map((h,i)=>{
+                    const mc=(MODELS[h.model]&&MODELS[h.model].col)||ac;
+                    return (
+                      <button key={"h"+i} onClick={()=>{loadFromHistory(h);setShowPalette(false);}} style={{display:"flex",alignItems:"center",gap:10,width:"100%",padding:"10px 12px",border:"none",background:"transparent",cursor:"pointer",borderRadius:8,fontFamily:"var(--f)",transition:"background .1s",textAlign:"left"}} onMouseEnter={e=>{e.currentTarget.style.background="var(--s2)";}} onMouseLeave={e=>{e.currentTarget.style.background="transparent";}}>
+                        <div style={{width:28,height:28,borderRadius:7,background:mc+"10",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,borderLeft:"3px solid "+mc}}><MM id={h.model} size={14}/></div>
+                        <div style={{flex:1,minWidth:0}}>
+                          <div style={{fontSize:13,fontWeight:600,color:"var(--t1)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{h.topic}</div>
+                          <div style={{fontSize:11,color:"var(--t3)"}}>{tl(UI_TASKS,h.task)} / {tl(UI_INDUSTRIES,h.industry)}</div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </>}
+              </>;
+            })()}
+          </div>
         </div>
       </div>
     )}
