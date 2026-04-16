@@ -767,7 +767,7 @@ const TONE_INST={Professional:"Polished, business-appropriate language. Direct. 
 
 const STYLE_INST={formal:"Use formal register throughout. Complete sentences. No contractions. Structured paragraphs with topic sentences. Professional vocabulary.",conversational:"Write naturally as if speaking. Contractions encouraged. Short sentences mixed with longer ones. Rhetorical questions OK. Avoid stiff phrasing.",technical:"Precise technical vocabulary. Define terms on first use. Logical structure. Code examples where relevant. Cite specifications and documentation.",persuasive:"Lead with strongest argument. Use social proof, data, and emotional appeal strategically. Address objections proactively. Strong call to action.",narrative:"Tell a story. Use characters, scenes, tension, and resolution. Show don't tell. Vivid sensory details. Clear narrative arc.",instructional:"Step-by-step. Action verbs to start each instruction. Anticipate mistakes. Include tips and warnings. Test understanding at intervals.",analytical:"Data-driven. Present evidence before conclusions. Use frameworks and structured comparisons. Quantify wherever possible. Objective tone.",minimalist:"Maximum clarity, minimum words. Short sentences. No decoration. Every word must earn its place. White space between ideas."};
 
-const OUTPUT_INST={document:"Structure as a professional document with title, sections, and clear hierarchy. Include table of contents for longer pieces.",email:"Format as a ready-to-send email with subject line, greeting, body, and sign-off. Optimize for mobile reading.",code:"Present as clean, runnable code with comments, imports, and usage examples. Specify language and dependencies.",presentation:"Structure as slide-ready content: title slide, key sections (3-5 bullets max per slide), speaker notes for each slide.",spreadsheet:"Structure as a multi-tab professional workbook. Each tab has a single analytical purpose. Include title blocks, clearly labeled sections, formula-driven calculations (never hardcoded values), and summary rows. Use consistent number formatting, input cell highlighting, and conditional formatting for status indicators. Design for auditability  -  every number must trace to a source or formula. NEVER display N/A or None in any cell -- use em dash (--) or remove the column if all values are unavailable. Zero values must show as centered em dash (--), never as 0 or $0. Unit qualifiers (NOK '000, USD millions) go in a small subtitle cell below the title, never inline. Enforce strict uniform row heights (22px headers, 18px data) and consistent column padding throughout.",social:"Format for the target platform's constraints (character limits, hashtag conventions). Include hook, body, CTA.",blog:"Include headline, meta description, introduction, subheaded sections, conclusion, and suggested tags/categories.",proposal:"Executive summary, problem statement, proposed solution, timeline, budget/pricing, team, and terms.",brief:"One-page format: objective, background, key findings, recommendations. Use bullet points for scannability.",docs:"Technical documentation format: overview, prerequisites, step-by-step guide, API reference if applicable, troubleshooting.",creative:"Focus on narrative quality, voice, and emotional impact. Follow genre conventions while finding a fresh angle.",checklist:"Numbered or checkbox-style steps. Group by phase/category. Include responsible party and deadline columns if relevant."};
+const OUTPUT_INST={document:"Structure as a professional document with title, sections, and clear hierarchy. Include table of contents for longer pieces.",email:"Format as a ready-to-send email with subject line, greeting, body, and sign-off. Optimize for mobile reading.",code:"Present as clean, runnable code with comments, imports, and usage examples. Specify language and dependencies.",presentation:"Structure as slide-ready content: title slide, key sections (3-5 bullets max per slide), speaker notes for each slide.",spreadsheet:"Structure as a multi-tab professional workbook. Each tab has a single analytical purpose. Include title blocks, clearly labeled sections, formula-driven calculations (never hardcoded values), and summary rows. Use consistent number formatting, input cell highlighting, and conditional formatting for status indicators. Design for auditability: every number must trace to a source or formula. NEVER display N/A or None in any cell; leave empty cells blank or remove the column if all values are unavailable. Zero values must show as blank, never as 0 or $0. Unit qualifiers (NOK '000, USD millions) go in a small subtitle cell below the title, never inline. Enforce strict uniform row heights (22px headers, 18px data) and consistent column padding throughout.",social:"Format for the target platform's constraints (character limits, hashtag conventions). Include hook, body, CTA.",blog:"Include headline, meta description, introduction, subheaded sections, conclusion, and suggested tags/categories.",proposal:"Executive summary, problem statement, proposed solution, timeline, budget/pricing, team, and terms.",brief:"One-page format: objective, background, key findings, recommendations. Use bullet points for scannability.",docs:"Technical documentation format: overview, prerequisites, step-by-step guide, API reference if applicable, troubleshooting.",creative:"Focus on narrative quality, voice, and emotional impact. Follow genre conventions while finding a fresh angle.",checklist:"Numbered or checkbox-style steps. Group by phase/category. Include responsible party and deadline columns if relevant."};
 
 /* ═══════════════════════════════════════════════════════
    EXAMPLE PROMPTS — Creative, sector-specific inspiration
@@ -997,7 +997,7 @@ function buildPrompt(p){
   if(audience)sys.push("Audience: "+audience+".");
   else if(audienceEnhancement)sys.push(audienceEnhancement.text);
   else sys.push("Audience: knowledgeable professionals who expect depth and precision.");
-  sys.push("Tone: "+tone+(TONE_INST[tone]?" -- "+TONE_INST[tone]:"")+".");
+  sys.push("Tone: "+tone+(TONE_INST[tone]?". "+TONE_INST[tone]:"")+".");
   if(language&&language!=="English")sys.push("Respond entirely in "+language+".");
   sec("system",sys.join("\n"));
 
@@ -1012,7 +1012,7 @@ function buildPrompt(p){
     if(isXml){
       taskParts.push("Documents are attached below in <documents> tags. Use them as your primary data source. Extract and reference specific figures. State gaps where source data is missing or insufficient.\n\n<documents>\n  <document index=\"1\">\n    <source>[Attached file]</source>\n    <document_content>\n      [User's attached content will appear here]\n    </document_content>\n  </document>\n</documents>");
     }else{
-      taskParts.push("Files attached -- use as primary data source. Reference specific figures. State gaps.");
+      taskParts.push("Files attached. Use as primary data source. Reference specific figures. State gaps.");
     }
   }else{
     taskParts.push("No files attached. Use realistic figures, label estimates, note what source data would strengthen the analysis.");
@@ -1050,9 +1050,9 @@ function buildPrompt(p){
   }
 
   // Techniques (user-selected)
-  if(techniques.includes("cot"))sec("reasoning","Think step by step. Show reasoning explicitly -- walk through logic, evaluate alternatives, explain conclusions.");
+  if(techniques.includes("cot"))sec("reasoning","Think step by step. Show reasoning explicitly: walk through logic, evaluate alternatives, explain conclusions.");
   if(techniques.includes("fewshot"))sec("examples_format",isXml?"Model your response after the patterns below. Match the structure, depth, and tone of the ideal outputs.\n\n<examples>\n  <example>\n    <input>[Example input]</input>\n    <ideal_output>[Ideal output demonstrating expected quality]</ideal_output>\n  </example>\n  <example>\n    <input>[Different example showing edge case]</input>\n    <ideal_output>[Ideal output handling the edge case]</ideal_output>\n  </example>\n</examples>":"Model your response after this pattern:\n\n**Example Input:** [Example input]\n**Ideal Output:** [Ideal output]");
-  if(techniques.includes("constraints"))sec("constraints","1. Never fabricate facts or sources\n2. State uncertainty with confidence level\n3. Stay focused -- no tangential drift\n4. Distinguish facts from analysis from speculation\n5. Flag incorrect assumptions before proceeding");
+  if(techniques.includes("constraints"))sec("constraints","1. Never fabricate facts or sources\n2. State uncertainty with confidence level\n3. Stay focused; no tangential drift\n4. Distinguish facts from analysis from speculation\n5. Flag incorrect assumptions before proceeding");
   if(techniques.includes("selfcheck"))sec("self_check","Before submitting, verify: fully addresses task, clear structure, claims supported, tone consistent, no repetition.");
   if(techniques.includes("compare"))sec("comparative","Present each option with clear label. Evaluate on same criteria. State recommendation with reasoning.");
   if(techniques.includes("iterative"))sec("refinement","After initial draft: re-read as target audience, identify gaps, provide improved version.");
@@ -1077,7 +1077,7 @@ function buildPrompt(p){
     prose:"Flowing paragraphs with topic sentences and transitions. Subheadings for major sections.",
     bullets:"Concise bullet points under clear headers. Lead with most important info.",
     numbered:"Numbered steps with bold action verbs. Brief explanations under each.",
-    table:hasFileInst?"Use tables per the file format spec below.":"Tables: max 6 columns, abbreviate headers. Numbers right-aligned, commas, 1 decimal %, negatives in (). Empty = em dash (--). Units as subtitle, not inline. Source line below every table.",
+    table:hasFileInst?"Use tables per the file format spec below.":"Tables: max 6 columns, abbreviate headers. Numbers right-aligned, commas, 1 decimal %, negatives in (). Leave empty cells blank. Units as subtitle, not inline. Source line below every table.",
     qa:"Questions followed by thorough answers. Self-contained pairs.",
     headers:"Clear header hierarchy. Scannable sections. TOC for longer responses.",
     tldr:"TL;DR (3-5 sentences) first, then full detail.",
@@ -1094,7 +1094,7 @@ function buildPrompt(p){
   if(output&&OUTPUT_INST[output]&&!hasFileInst)contractParts.push(OUTPUT_INST[output]);
 
   // Writing style
-  contractParts.push("Style: "+(STYLES[style]?.l||style)+(STYLE_INST[style]?" -- "+STYLE_INST[style]:""));
+  contractParts.push("Style: "+(STYLES[style]?.l||style)+(STYLE_INST[style]?". "+STYLE_INST[style]:""));
 
   // Formatting
   const activeFmts=fmtArr.filter(f=>FMT_INST[f]);
@@ -1105,19 +1105,26 @@ function buildPrompt(p){
   // Length
   const fileLenSub=getLenSub(length,fileOutput);
   const lenG={Brief:"Highest-impact only.",Medium:"All major aspects with supporting detail.",Detailed:"Thorough with examples and nuance.",Comprehensive:"Exhaustive reference-grade depth."};
-  contractParts.push("Length: "+fileLenSub+". "+(lenG[length]||lenG.Medium));
+  const lenStrict=length==="Brief"||length==="Medium"
+    ?"This is a HARD LIMIT, not a suggestion. Do NOT exceed it. If you have more to say, prioritize ruthlessly and cut the rest. Exceeding the specified length is a failure."
+    :"Stay within this range. Prioritize depth on the most important dimensions.";
+  contractParts.push("Length: "+fileLenSub+". "+(lenG[length]||lenG.Medium)+"\n"+lenStrict);
 
   // FILE OUTPUT FORMAT — strict professional specs
   // Shared table rules enforced across ALL file types that use tables
   const TABLE_RULES=`TABLE RULES (apply to every table in this document):
 - Max 6 columns portrait, 10 landscape. Split wider tables.
 - Numbers: right-aligned, commas for thousands, 1 decimal %, 2 decimal currency, negatives in parentheses ()
-- Empty cells: em dash (--). NEVER use N/A, None, null, or 0 for missing data.
+- Empty cells: leave blank or use a single dash. NEVER use N/A, None, null, or 0 for missing data. Do NOT scatter em dashes throughout tables or prose.
 - Units (NOK '000, USD millions, %): 8pt italic subtitle below table title, never inline with data.
 - Currency symbol ($, NOK): first row and total row only, not every cell.
 - "Table N: [Title]" above every table. Source line 8pt italic below every table.
 - Abbreviate headers aggressively (Rev., Gr., Mgn., FY25E, EV/EBITDA). Define all abbreviations in glossary.
-- Every cell must be complete -- no truncation, no word-breaking, max 2 lines per cell.`;
+COLUMN WIDTH AND CELL FIT (CRITICAL, follow strictly):
+- Before writing any table, mentally calculate total available width (page width minus margins). Assign each column a % share proportional to its longest expected content. Short-value columns (percentages, dates, Yes/No, single numbers) get narrow widths. Text-heavy columns (descriptions, names, mitigations) get the remaining space.
+- Every cell must contain COMPLETE, READABLE text. No text may overflow, bleed into, or overlap adjacent columns. If a cell's content does not fit, you MUST either: (a) shorten the text, (b) widen the column by narrowing others, (c) split the table, or (d) move to landscape orientation.
+- Max 2 lines per cell. If content requires more, shorten it. Write telegraphically in table cells: fragments and keywords, not full sentences.
+- Test every table mentally: read each cell in isolation. If any cell's text would collide with the next column's content when rendered, fix it before proceeding.`;
 
   // Shared formula / equation rules enforced across ALL document-style file types.
   // Purpose: never render math with ASCII hacks like x^alpha, v(x) = -lambda(-x)^beta,
@@ -1175,23 +1182,25 @@ FINAL CHECK before writing any equation: does it fit on one line without the tag
 
   const FILE_INST={
     pdf:`PDF, institutional quality (Goldman Sachs / J.P. Morgan standard).
-STRUCTURE: Title page (title 28pt, subtitle 16pt, date Month DD YYYY, classification) -- TOC -- Glossary at end. DO NOT number section headers -- use clean text headers only (e.g. "Executive Summary" not "1.0 Executive Summary").
+STRUCTURE: Title page (title 28pt, subtitle 16pt, date Month DD YYYY, classification), then TOC, then body sections, then Glossary at end. DO NOT number section headers; use clean text headers only (e.g. "Executive Summary" not "1.0 Executive Summary").
 TYPOGRAPHY: Arial throughout. Body 10.5pt #333333. H1 20pt bold #1B2A4A with 1pt rule below, 18pt space above, 8pt below. H2 14pt bold #1B2A4A, 14pt above, 6pt below. H3 11pt bold #333333, 10pt above, 4pt below. Margins 1in L/R, 0.75in T/B. 6pt paragraph spacing. Left-aligned (not justified). Callouts: #EBF5FB background, 1pt #1B2A4A left border, 8px padding.
-SPACING: Consistent vertical rhythm throughout. 12pt space between body text and table/chart. 6pt between table title and table. 4pt between table and source line. No double blank lines. No orphan headers at page bottom -- if header has <3 lines of content before page break, move header to next page.
+ORPHAN/WIDOW PREVENTION (MANDATORY): A header (H1, H2, H3) must NEVER appear at the bottom of a page with fewer than 4 lines of body text following it before the page break. If a header would be stranded, move the entire header and its content to the next page. Similarly, never leave fewer than 2 lines of a paragraph at the top or bottom of a page.
+SPACING: Consistent vertical rhythm throughout. 12pt space between body text and table/chart. 6pt between table title and table. 4pt between table and source line. No double blank lines.
 TABLES: Header 10pt bold, white (#FFFFFF) on #1B2A4A, 10px padding. Data 9.5pt, 8px padding, alternating white/#F8F9FA rows. Borders 0.5pt #D0D5DD, 1pt navy under header. Row height: 22px headers, 18px data (uniform throughout document). Column padding: 10px minimum.
 `+TABLE_RULES+`
 CHARTS: Title as insight statement (not generic label). Navy/steel blue/teal palette, max 5 colors. 8pt axis labels. Data labels on bars. Source line below.
-PAGE FLOW: Hard page break before each H1. Never split table from its title. Min 2 rows per page side. If <30% page remaining, start table on next page. No page <40% filled. Last page must be >40% filled -- extend glossary or add appendix if needed.
+PAGE FLOW: Hard page break before each H1. Never split a table from its title. Min 2 rows per page side. If less than 30% page remaining, start table on next page. No page less than 40% filled. Last page must be more than 40% filled; extend glossary or add appendix if needed.
 `+FORMULA_RULES,
 
     word:`DOCX, Big 4 consulting / top-tier law firm standard.
-STRUCTURE: Title page (Calibri 26pt, date, version, confidentiality) -- TOC via Heading styles -- Glossary at end. DO NOT number section headers -- use clean text headers only.
+STRUCTURE: Title page (Calibri 26pt, date, version, confidentiality), then TOC via Heading styles, then body sections, then Glossary at end. DO NOT number section headers; use clean text headers only.
 TYPOGRAPHY: Calibri throughout. Body 11pt #333333, 1.25 line spacing, 6pt after paragraph. H1 18pt bold #1B2A4A with bottom border, 18pt above, 8pt below. H2 14pt bold #1B2A4A, 14pt above, 6pt below. H3 11.5pt bold #333333, 10pt above, 4pt below. Callouts: #EBF5FB background, 1pt #1B2A4A left border.
-SPACING: 12pt between body text and table/chart. 6pt between table title and table. 4pt between table and source line. No orphan headers -- min 3 lines after header before page break.
+ORPHAN/WIDOW PREVENTION (MANDATORY): A header must NEVER appear at the bottom of a page with fewer than 4 lines of body text following it before the page break. If stranded, move the header and its content to the next page. Never leave fewer than 2 lines of a paragraph at the top or bottom of a page.
+SPACING: 12pt between body text and table/chart. 6pt between table title and table. 4pt between table and source line.
 TABLES: Header 10pt bold, white on #1B2A4A, repeat header row on multi-page tables. Data 10pt, 6px padding, alternating white/#F8F9FA rows. Auto-fit columns, min 60px. Row height: 22px headers, 18px data. Landscape section break if table exceeds margins.
 `+TABLE_RULES+`
 CHARTS: Title as insight statement, never a generic label (e.g. "Revenue grew 23% driven by pricing" not "Revenue Overview"). Navy/steel blue/teal palette, max 5 colors. 8pt axis labels. Data labels on bars. Source line 8pt italic below chart.
-PAGE FLOW: Table title + body on same page. Never split with <2 rows per side. Source on same page as table.
+PAGE FLOW: Table title + body on same page. Never split with fewer than 2 rows per side. Source on same page as table.
 `+FORMULA_RULES,
 
     excel:`XLSX, investment-bank-grade (Goldman Sachs / J.P. Morgan standard).
@@ -1200,21 +1209,21 @@ LAYOUT: Rows 1-3 title block (company, title, date). Row 5+ data. Freeze Row 5 +
 - Headers: 10pt bold, white (#FFFFFF) on #1B2A4A, 22px row height
 - Data: 9.5pt, 18px row height, alternating white/#F8F9FA rows
 - Labels LEFT-aligned, numbers RIGHT-aligned. Auto-fit + 20px padding. Never allow ###.
-NUMBERS: Millions 1 decimal, $ on first/total rows only. Percentages 1 decimal + %. Multiples 1 decimal + x. Per-share 2 decimal. Commas for thousands. Negatives: red (#CC0000) parentheses, no minus sign. Growth: + prefix. Empty = em dash (--). NEVER N/A, None, null, or 0 for missing data. Units in 8pt italic gray subtitle cell, never inline.
+NUMBERS: Millions 1 decimal, $ on first/total rows only. Percentages 1 decimal + %. Multiples 1 decimal + x. Per-share 2 decimal. Commas for thousands. Negatives: red (#CC0000) parentheses, no minus sign. Growth: + prefix. Empty cells: leave blank. NEVER N/A, None, null, or 0 for missing data. Units in 8pt italic gray subtitle cell, never inline.
 CELLS: Input = blue background (#DCE6F1). Calculated = formula only, no background. Linked = green font (#006100). Override = orange (#E26B0A) + comment. ZERO hardcoded values in formulas. Named ranges for assumptions. IFERROR on all divisions. Scenario toggles via dropdown.
 FORMATTING: Section totals: bold, 1pt navy top border, #E8EEF4 background. Grand totals: double border. KPI status: green/amber/red conditional formatting.
 "Table N: [Title]" cell above every table. Source line in 8pt italic gray cell below every table. Define abbreviations in a glossary tab.
 CHARTS: Insight statement titles (e.g. "Revenue grew 23% driven by pricing" not "Revenue Overview"). Navy/steel blue/teal palette, max 5 colors. 8pt labels. Data labels on bars. Source line below.`,
 
     ppt:`PPTX, pitchbook standard (Goldman Sachs / McKinsey quality), 16:9 aspect ratio.
-STRUCTURE: Title slide (28pt white on navy, subtitle, date, confidentiality) -- Agenda -- Section dividers (navy background) -- Content slides -- Summary + Next Steps -- Appendix. DO NOT number slide titles.
+STRUCTURE: Title slide (28pt white on navy, subtitle, date, confidentiality), then Agenda, then Section dividers (navy background), then Content slides, then Summary + Next Steps, then Appendix. DO NOT number slide titles.
 SLIDE RULES:
 - Assertion-Evidence format: slide title IS the conclusion, body proves it with data.
 - Max 5 bullets per slide, max 2 lines per bullet. Telegraphic style (verb + metric + insight).
 - ONE table OR ONE chart per slide, never both.
 - Hero metrics: 36pt bold callout numbers with 11pt descriptor below.
-TYPOGRAPHY: Title 20pt bold #1B2A4A, max 2 lines. Body 14pt #333333. Bullets 13pt with em dash. Sub-bullets 11pt. Min 8pt for sources/footnotes.
-TABLES: Max 7 rows x 6 columns. Split or move to appendix if more. Header 10pt bold, white on #1B2A4A. Data 9.5pt, alternating rows. Horizontal borders only. Numbers right-aligned. Empty = em dash (--). NEVER use N/A, None, null, or 0 for missing data. Units (NOK '000, USD millions, %) in 8pt italic subtitle below table title, never inline with data. "Table N: [Title]" above every table. Source line 8pt italic below. Abbreviate aggressively. Center table on slide.
+TYPOGRAPHY: Title 20pt bold #1B2A4A, max 2 lines. Body 14pt #333333. Bullets 13pt. Sub-bullets 11pt. Min 8pt for sources/footnotes.
+TABLES: Max 7 rows x 6 columns. Split or move to appendix if more. Header 10pt bold, white on #1B2A4A. Data 9.5pt, alternating rows. Horizontal borders only. Numbers right-aligned. Leave empty cells blank. NEVER use N/A, None, null, or 0 for missing data. Units (NOK '000, USD millions, %) in 8pt italic subtitle below table title, never inline with data. "Table N: [Title]" above every table. Source line 8pt italic below. Abbreviate aggressively. Size columns proportional to content. Center table on slide.
 CHARTS: Fill content area. Insight title ("Revenue grew 23% driven by pricing" not "Revenue Overview"). Navy/steel blue/teal, max 5 colors. 8pt labels. Source line below.
 SPEAKER NOTES: Key message, 3-4 supporting data points, anticipated pushback, transition to next slide.
 NEVER: animations, transitions, clip art, font below 8pt, misaligned elements across slides, shrink-to-fit text.
@@ -1222,8 +1231,8 @@ NEVER: animations, transitions, clip art, font below 8pt, misaligned elements ac
 
     markdown:`Markdown, Stripe/Vercel documentation standard. Renders in GitHub, Notion, Confluence.
 STRUCTURE: H1 (#) title used exactly once. H2 (##) for sections, H3 (###) for subsections. TOC with linked headings for 4+ sections. Horizontal rules (---) between major sections. One blank line before/after headings, code blocks, tables, blockquotes.
-TEXT: **Bold** for key terms and emphasis only -- never bold entire sentences. *Italic* for citations, definitions, tool names. Inline backticks for filenames, functions, CLI commands, variables. Blockquotes (>) for callouts, prefix with "> **Note:**". Ordered lists for sequential steps only. Max 2-level nesting.
-TABLES: | Header | separated by |---|. Alignment: :--- left, :---: center, ---: right. Numbers RIGHT-aligned (---:). Max 6 columns. Consistent decimal places within columns. Empty = -- (dash), never blank. Caption above as **bold text**. Negative values in parentheses.
+TEXT: **Bold** for key terms and emphasis only; never bold entire sentences. *Italic* for citations, definitions, tool names. Inline backticks for filenames, functions, CLI commands, variables. Blockquotes (>) for callouts, prefix with "> **Note:**". Ordered lists for sequential steps only. Max 2-level nesting.
+TABLES: | Header | separated by |---|. Alignment: :--- left, :---: center, ---: right. Numbers RIGHT-aligned (---:). Max 6 columns. Consistent decimal places within columns. Leave empty cells blank, never use N/A. Caption above as **bold text**. Negative values in parentheses.
 CODE: Always specify language tag. Max 30 lines per block with explanatory text between. One concept per block.
 STANDARDS: Descriptive link text (never raw URLs). No trailing whitespace, no tabs (spaces only). Every claim backed by data or reasoning.
 `+FORMULA_RULES,
@@ -1231,20 +1240,20 @@ STANDARDS: Descriptive link text (never raw URLs). No trailing whitespace, no ta
     html:`Semantic HTML5, Stripe/Linear documentation quality. Production-ready, responsive, WCAG AA compliant.
 STRUCTURE: <header>, <nav>, <main>, <article>, <section>, <aside>, <footer>. Single <h1>, never skip heading levels. Meta: charset UTF-8, viewport (width=device-width, initial-scale=1), description, theme-color.
 STYLING: BEM class names (.report__header, .data-table__cell--numeric). Font stack: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif. Mono: "JetBrains Mono", "Fira Code", monospace. Body: 16px, line-height 1.65, max-width 720px, color #333333. Headings: font-weight 700, color #1B2A4A. CSS custom properties: --color-primary: #1B2A4A; --color-accent: #4472C4; --color-text: #333; --color-border: #E2E8F0; --color-bg-subtle: #F8F9FA. Responsive: CSS Grid, stack below 768px.
-TABLES: <table>/<caption>/<thead>/<tbody> with <th scope="col/row">. Wrapper <div> with overflow-x: auto for mobile. Header: font-weight 700, background var(--color-primary), color white, padding 10px 14px. Striped: nth-child(even) var(--color-bg-subtle). Numeric: text-align right, font-variant-numeric: tabular-nums. Empty = em dash (--).
+TABLES: <table>/<caption>/<thead>/<tbody> with <th scope="col/row">. Wrapper <div> with overflow-x: auto for mobile. Header: font-weight 700, background var(--color-primary), color white, padding 10px 14px. Striped: nth-child(even) var(--color-bg-subtle). Numeric: text-align right, font-variant-numeric: tabular-nums. Leave empty cells blank.
 ACCESSIBILITY: Descriptive alt text. Visible focus styles (outline 2px solid accent, offset 2px). 4.5:1 contrast for body, 3:1 for large text. ARIA labels on icon buttons. Logical tab order. Skip-to-content link. @media (prefers-reduced-motion: reduce).
 STANDARDS: Zero inline styles. 2-space indent. No deprecated elements. Print stylesheet (@media print). Lazy-load images. Load MathJax v3 for LaTeX rendering via a script tag pointing to cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js (async attribute recommended).
 `+FORMULA_RULES,
 
     json:`Production JSON, Stripe API / Bloomberg data feed quality. Parseable by JSON.parse() with zero errors.
 STRUCTURE: Root object with "metadata" (schemaVersion, generatedAt ISO 8601 with timezone, source, description, recordCount), "data", "summary". Max 4 levels deep. Arrays for same-type collections (identical key shapes). Pagination-ready: include total, offset, limit.
-NAMING: camelCase for all keys (totalRevenue, createdAt, riskScore). Descriptive -- NEVER abbreviate (customerLifetimeValue not clv). Boolean: is/has/can prefix. Arrays: plural nouns. Enum values: lowercase_snake_case.
-VALUES: Numbers raw numeric, never quoted. Missing: null (never 0, "", "N/A", "null"). Dates: ISO 8601 "2026-04-10T14:30:00Z". Currency: {"amount": 1234.56, "currency": "USD"} -- never "$1,234.56". Percentages: decimal (0.153 not 15.3%). Booleans: true/false (never "true", 1). IDs: string type.
+NAMING: camelCase for all keys (totalRevenue, createdAt, riskScore). Descriptive, NEVER abbreviate (customerLifetimeValue not clv). Boolean: is/has/can prefix. Arrays: plural nouns. Enum values: lowercase_snake_case.
+VALUES: Numbers raw numeric, never quoted. Missing: null (never 0, "", "N/A", "null"). Dates: ISO 8601 "2026-04-10T14:30:00Z". Currency: {"amount": 1234.56, "currency": "USD"}, never "$1,234.56". Percentages: decimal (0.153 not 15.3%). Booleans: true/false (never "true", 1). IDs: string type.
 STANDARDS: 2-space indent, consistent throughout. No trailing commas, no comments. Every object in an array MUST have identical key sets (use null for absent values). Sorted keys for deterministic output. Include $schema or type field.`,
 
     csv:`Production CSV, RFC 4180 compliant. Direct import into Excel, pandas, R, or any BI tool.
-STRUCTURE: Row 1 header with descriptive unique column names in snake_case (revenue_usd, growth_rate_pct, report_date). One record per row, identical column count across ALL rows. Sort by primary axis (date descending or primary key ascending). Column order: identifiers (id, name, ticker) -- dimensions (date, region) -- measures (revenue, margin, growth).
-DATA: Double-quote fields containing commas, newlines, or quotes. Escape internal quotes with "". Numbers raw numeric only, no thousand separators (1234567.89). Dates ISO 8601 (YYYY-MM-DD). Timestamps with timezone. Currency numeric only, currency in column header (revenue_usd). Percentages decimal, noted in header (growth_rate_pct, 0.153 = 15.3%). Missing: empty field (adjacent commas) -- NEVER N/A, null, "-", or 0 for missing. Boolean: 1/0 or TRUE/FALSE, consistent throughout.
+STRUCTURE: Row 1 header with descriptive unique column names in snake_case (revenue_usd, growth_rate_pct, report_date). One record per row, identical column count across ALL rows. Sort by primary axis (date descending or primary key ascending). Column order: identifiers (id, name, ticker), then dimensions (date, region), then measures (revenue, margin, growth).
+DATA: Double-quote fields containing commas, newlines, or quotes. Escape internal quotes with "". Numbers raw numeric only, no thousand separators (1234567.89). Dates ISO 8601 (YYYY-MM-DD). Timestamps with timezone. Currency numeric only, currency in column header (revenue_usd). Percentages decimal, noted in header (growth_rate_pct, 0.153 = 15.3%). Missing: empty field (adjacent commas). NEVER N/A, null, "-", or 0 for missing. Boolean: 1/0 or TRUE/FALSE, consistent throughout.
 STANDARDS: UTF-8 no BOM. LF line endings. No trailing commas or whitespace. No blank rows. Comment header: # Source, Date range, Generated, Columns, Rows. Column definitions appendix.`,
 
     plaintext:`Professional plain text, top-tier firm memo standard. Readable in any editor, terminal, email, or print.
@@ -1255,7 +1264,7 @@ EMPHASIS: CAPS for headers and critical warnings ONLY. *asterisks* for emphasis.
 STANDARDS: ASCII only (-- not em-dash, " not smart quotes, ... not ellipsis). Spaces only, no tabs. Cross-references: "see Section 3.2". Print-friendly at any monospaced font.`,
 
     codeFile:`Production-ready code file, Google/Stripe/Vercel open-source quality. Runs without modification.
-STRUCTURE: File header (filename, description, author, date, license SPDX). Imports grouped: (1) stdlib, (2) third-party, (3) local -- blank line between groups, alphabetical within. Constants -- Type definitions -- Helper functions (private) -- Public API -- Entry point.
+STRUCTURE: File header (filename, description, author, date, license SPDX). Imports grouped: (1) stdlib, (2) third-party, (3) local, with a blank line between groups, alphabetical within. Order: Constants, then Type definitions, then Helper functions (private), then Public API, then Entry point.
 QUALITY: Follow canonical style guide (PEP 8, Airbnb, rustfmt, Google Style). Type annotations on ALL function signatures (params + return). Docstrings/JSDoc on ALL public functions (@param, @returns, @throws, @example). Specific exception types with context messages. Input validation at public boundaries. Named constants, no magic numbers.
 NAMING: Functions: verb_noun (calculate_revenue). Classes: PascalCase nouns (RevenueCalculator). Constants: UPPER_SNAKE_CASE. Variables: descriptive, no single-letter except loop counters. Booleans: is_/has_/can_ prefix.
 STANDARDS: All imports resolvable, no placeholder code. Logging over print. No hardcoded credentials. Parameterized queries. Performance notes where relevant. Suggest test file name and key test cases.`
@@ -1284,8 +1293,8 @@ STANDARDS: All imports resolvable, no placeholder code. Logging over print. No h
     const dataFileTypes=["json","csv","excel"];
     const qgParts=[];
     if(docFileTypes.includes(fileOutput)){
-      qgParts.push("(1) Every table cell complete -- no truncation, no word-breaking, no wrapping. Abbreviate or widen if needed.");
-      qgParts.push("(2) No page/slide <40% filled -- merge sections or extend content.");
+      qgParts.push("(1) Every table cell complete. No truncation, no word-breaking, no wrapping. Abbreviate or widen if needed.");
+      qgParts.push("(2) No page/slide less than 40% filled. Merge sections or extend content.");
       qgParts.push("(3) Consistent number formatting within each column (decimals, units, alignment).");
       qgParts.push("(4) Every abbreviation defined in glossary or footnote.");
     }
@@ -1300,7 +1309,7 @@ STANDARDS: All imports resolvable, no placeholder code. Logging over print. No h
       qgParts.push("("+(qgParts.length+1)+") All tables render correctly with consistent alignment. All links valid. No raw URLs in body text.");
     }
     if(fileOutput==="plaintext"){
-      qgParts.push("(1) Every line <= 80 characters. ASCII only -- no smart quotes, no em-dash characters, no ellipsis glyph.");
+      qgParts.push("(1) Every line 80 characters or fewer. ASCII only: straight quotes, double-dash, three-dot ellipsis. No smart quotes, no em-dash characters, no ellipsis glyph.");
       qgParts.push("(2) Tables column-aligned with spaces, no overlap, right-aligned numerics.");
       qgParts.push("(3) Headers in CAPS or Title Case with underline, never numbered.");
     }
@@ -1315,15 +1324,15 @@ STANDARDS: All imports resolvable, no placeholder code. Logging over print. No h
     // Claude best practice: tell the model what TO DO, not what NOT to do.
     // Positive framing per Anthropic prompting guide.
     if(tier==="fast"){
-      sec("avoid","Start with substance immediately. Every sentence must contain a fact, figure, or actionable point. End with specifics.");
+      sec("avoid","Start with substance immediately. Every sentence must contain a fact, figure, or actionable point. End with specifics.\nDo not overuse em dashes. Use periods, commas, colons, or semicolons instead. Limit em dashes to at most one per paragraph, and only where no other punctuation works.");
     }else{
-      sec("avoid","Open with the most important finding or recommendation. Back every claim with evidence or reasoning. Write for an audience that already understands the domain -- skip introductory background. Make each paragraph advance the argument; if a paragraph restates a prior point, cut it.");
+      sec("avoid","Open with the most important finding or recommendation. Back every claim with evidence or reasoning. Write for an audience that already understands the domain; skip introductory background. Make each paragraph advance the argument; if a paragraph restates a prior point, cut it.\nDo not overuse em dashes. Use periods, commas, colons, or semicolons instead. Limit em dashes to at most one per paragraph, and only where no other punctuation works. Excessive em dashes make prose look rushed and informal.");
     }
   }else{
     if(tier==="fast"){
-      sec("avoid","No filler, hedging, or preamble. Start with substance, end with specifics.");
+      sec("avoid","No filler, hedging, or preamble. Start with substance, end with specifics. No overuse of em dashes; use proper punctuation (periods, commas, colons, semicolons).");
     }else{
-      sec("avoid","No filler openers. No vague hedging without specifics. No generic background the audience knows. No empty cliches. No restating the same point.");
+      sec("avoid","No filler openers. No vague hedging without specifics. No generic background the audience knows. No empty cliches. No restating the same point. No overuse of em dashes; limit to at most one per paragraph. Use periods, commas, colons, or semicolons instead.");
     }
   }
 
@@ -1382,7 +1391,7 @@ STANDARDS: All imports resolvable, no placeholder code. Logging over print. No h
 
     // File-output-specific Claude guidance — what Claude specifically needs to nail each format
     const CLAUDE_FILE_TIPS={
-      pdf:"When producing PDF-formatted content: maintain strict vertical rhythm throughout. Every page must feel intentionally designed -- no orphan headers, no half-empty pages. Use the exact typography and color specifications above as a binding contract, not suggestions.",
+      pdf:"When producing PDF-formatted content: maintain strict vertical rhythm throughout. Every page must feel intentionally designed. No orphan headers, no half-empty pages. Use the exact typography and color specifications above as a binding contract, not suggestions.",
       word:"Maintain style consistency that enables TOC auto-generation from heading styles. Every table must repeat its header row specification for multi-page scenarios. Use landscape section breaks for wide tables rather than shrinking fonts.",
       excel:"Produce formulas, never hardcoded values. Every calculated cell must use a formula referencing source cells. Use named ranges for key assumptions. Include IFERROR wrappers on all division formulas. Structure the Summary tab as a dashboard with navigation links to detail tabs.",
       ppt:"Every slide title must be an assertion (a complete sentence stating a conclusion), never a topic label. The slide body must provide evidence supporting that assertion. Limit to 5 bullets maximum per slide. Include speaker notes with: key message, 3-4 supporting data points, anticipated questions, and transition to next slide.",
@@ -1391,7 +1400,7 @@ STANDARDS: All imports resolvable, no placeholder code. Logging over print. No h
       markdown:"Structure for rendering in GitHub, Notion, and Confluence simultaneously. Use a single H1, H2 for sections, H3 for subsections. Include a linked TOC for documents with 4+ sections. Use fenced code blocks with language tags.",
       html:"Produce semantic HTML5 with proper heading hierarchy (never skip levels). Include ARIA labels and skip-to-content links for accessibility. Use CSS custom properties for all colors and spacing. Ensure WCAG AA contrast ratios.",
       codeFile:"Include a file header with filename, description, and date. Group imports: stdlib, third-party, local. Add JSDoc/docstring with @param, @returns, @throws, @example on all public functions. Use strict type annotations throughout.",
-      plaintext:"Enforce strict 80-character line limit. Use ASCII only -- straight quotes, double-dash, three-dot ellipsis. Align table columns with spaces, right-align numerics. End with '--- END OF DOCUMENT ---'."
+      plaintext:"Enforce strict 80-character line limit. Use ASCII only: straight quotes, double-dash, three-dot ellipsis. Align table columns with spaces, right-align numerics. End with '--- END OF DOCUMENT ---'."
     };
     if(CLAUDE_FILE_TIPS[fileOutput]){
       claudeParts.push(CLAUDE_FILE_TIPS[fileOutput]);

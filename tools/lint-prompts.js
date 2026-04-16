@@ -70,13 +70,13 @@ const rules = [
   },
 
   {
-    id: 'em-dash-empty-cells',
+    id: 'empty-cell-handling',
     severity: 'error',
-    description: 'Table-bearing file types must require em-dash (--) for empty cells.',
+    description: 'Table-bearing file types must specify empty-cell handling (blank or dash) and ban N/A.',
     applies: (c) => TABLE_FILES.includes(c.fileOutput),
     check: (text) => {
-      if (!/em dash|em-dash|--/i.test(text)) {
-        return 'no em-dash empty-cell instruction found';
+      if (!/empty cells|Empty cells|leave blank|single dash/i.test(text)) {
+        return 'no empty-cell handling instruction found';
       }
       // Also assert that None / null / 0 are explicitly forbidden.
       if (!/NEVER.*N\/A|never use N\/A|never.*null|never.*None/i.test(text)) {
@@ -542,6 +542,86 @@ const rules = [
       return text.includes('</script>')
         ? 'generated prompt contains literal </script> — will break inline Babel in index.html'
         : null;
+    },
+  },
+
+  // ── Em dash discipline ──────────────────────────────────────────────
+  {
+    id: 'em-dash-prose-limit',
+    severity: 'warn',
+    description: 'Prompt instructions should not overuse "--" as a separator (model mimics the pattern).',
+    applies: () => true,
+    check: (text) => {
+      // Count standalone " -- " (the em-dash-as-separator pattern).
+      // Exclude lines that are teaching the model about empty cells or
+      // data formatting (those need to reference "--" as a value).
+      const lines = text.split('\n');
+      let count = 0;
+      for (const line of lines) {
+        if (/empty|missing|cell|data|dash/i.test(line)) continue;
+        const matches = line.match(/ -- /g);
+        if (matches) count += matches.length;
+      }
+      if (count > 5) {
+        return 'prompt uses " -- " as separator ' + count + ' times (model will mimic this). Target: 5 or fewer.';
+      }
+      return null;
+    },
+  },
+
+  // ── Column width / table fit rule ──────────────────────────────────
+  {
+    id: 'table-column-width-rule',
+    severity: 'error',
+    description: 'Document file types with tables must include column-width sizing instructions.',
+    applies: (c) => ['pdf', 'word', 'ppt'].includes(c.fileOutput),
+    check: (text) => {
+      if (!/column width|proportional to.*content|size.*column/i.test(text)) {
+        return 'missing column-width sizing rule for tables';
+      }
+      return null;
+    },
+  },
+
+  // ── Orphan header prevention ───────────────────────────────────────
+  {
+    id: 'orphan-header-rule',
+    severity: 'error',
+    description: 'Paged document file types (pdf, word) must include explicit orphan/widow header prevention.',
+    applies: (c) => ['pdf', 'word'].includes(c.fileOutput),
+    check: (text) => {
+      if (!/ORPHAN|orphan.*header|stranded.*header|widow/i.test(text)) {
+        return 'missing orphan/widow header prevention rule';
+      }
+      return null;
+    },
+  },
+
+  // ── Length enforcement ─────────────────────────────────────────────
+  {
+    id: 'length-hard-limit',
+    severity: 'warn',
+    description: 'Brief/Medium length prompts should include a hard limit enforcement statement.',
+    applies: (c) => c.length === 'Brief' || c.length === 'Medium',
+    check: (text) => {
+      if (!/HARD LIMIT|Do NOT exceed|not a suggestion/i.test(text)) {
+        return 'Brief/Medium prompt missing hard length enforcement statement';
+      }
+      return null;
+    },
+  },
+
+  // ── Em dash avoidance in avoid block ───────────────────────────────
+  {
+    id: 'avoid-em-dash-instruction',
+    severity: 'warn',
+    description: 'Avoid block should include anti-em-dash instruction.',
+    applies: (c) => c.subModelTier !== 'fast',
+    check: (text) => {
+      if (!/em dash|em-dash/i.test(text)) {
+        return 'avoid block missing anti-em-dash writing instruction';
+      }
+      return null;
     },
   },
 ];
