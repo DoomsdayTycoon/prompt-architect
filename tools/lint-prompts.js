@@ -145,7 +145,7 @@ const rules = [
     id: 'quality-gate-present',
     severity: 'error',
     description: 'Non-fast-tier file outputs must emit a quality_gate block.',
-    applies: (c) => c.fileOutput && c.subModelTier !== 'fast',
+    applies: (c) => c.fileOutput && c.fileOutput !== 'none' && c.subModelTier !== 'fast',
     check: (text, c) => {
       const isXml = MODELS[c.model]?.fmt === 'xml';
       // sec() helper turns "quality_gate" into "## Quality gate" (md) or
