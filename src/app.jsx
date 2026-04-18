@@ -1812,6 +1812,11 @@ function App(){
   const [labError,setLabError]=useState("");
   const [showPalette,setShowPalette]=useState(false);
   const [paletteQuery,setPaletteQuery]=useState("");
+  const [streamedText,setStreamedText]=useState("");
+  const [isStreaming,setIsStreaming]=useState(false);
+  const streamRef=useRef(null);
+  const [showCopyToast,setShowCopyToast]=useState(false);
+  const copyToastTimer=useRef(null);
   const paletteRef=useRef(null);
   const ref=useRef(null);
   const isExp=mode==="expert";
@@ -1931,6 +1936,31 @@ function App(){
     return ()=>window.removeEventListener("keydown",onKey);
   },[showAuth,showPaywall,showPalette]);
 
+  // Scroll-triggered reveal animations
+  useEffect(()=>{
+    const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add("visible");obs.unobserve(e.target);}});},{threshold:0.12,rootMargin:"0px 0px -40px 0px"});
+    document.querySelectorAll(".reveal").forEach(el=>obs.observe(el));
+    return ()=>obs.disconnect();
+  },[]);
+
+  // Animated counter hook
+  const useCounter=(target,duration=900)=>{
+    const [val,setVal]=useState(0);
+    const triggered=useRef(false);
+    const elRef=useRef(null);
+    useEffect(()=>{
+      if(!elRef.current)return;
+      const obs=new IntersectionObserver(([e])=>{if(e.isIntersecting&&!triggered.current){triggered.current=true;obs.disconnect();const start=performance.now();const step=(now)=>{const p=Math.min((now-start)/duration,1);setVal(Math.round(p*target));if(p<1)requestAnimationFrame(step);};requestAnimationFrame(step);}},{threshold:0.3});
+      obs.observe(elRef.current);
+      return ()=>obs.disconnect();
+    },[]);
+    return [val,elRef];
+  };
+
+  const [countIndustries,countIndRef]=useCounter(15,800);
+  const [countModels,countModRef]=useCounter(5,600);
+  const [countTasks,countTaskRef]=useCounter(15,800);
+
   // FREE LIMITS: 2 simple prompts, 1 expert prompt
   const FREE_SIMPLE=2;
   const FREE_EXPERT=1;
@@ -1963,6 +1993,13 @@ function App(){
     setShow(true);
     setPromptGenerated(true);
     trackEvent("prompt_built",{mode:isExp?"expert":"simple",task,industry,model});
+    // Typewriter streaming effect
+    if(streamRef.current)cancelAnimationFrame(streamRef.current);
+    setStreamedText("");setIsStreaming(true);
+    const fullText=prompt;const len2=fullText.length;const charsPerFrame=Math.max(4,Math.ceil(len2/180));
+    let pos=0;
+    const tick=()=>{pos=Math.min(pos+charsPerFrame,len2);setStreamedText(fullText.slice(0,pos));if(pos<len2){streamRef.current=requestAnimationFrame(tick);}else{setIsStreaming(false);streamRef.current=null;}};
+    streamRef.current=requestAnimationFrame(tick);
     // Increment usage in DB
     supabase.rpc("increment_prompt_count",{mode:isExp?"expert":"simple"}).then(({data})=>{
       if(data)setUsage(data);
@@ -1979,7 +2016,10 @@ function App(){
   const watermark="\n\n---\nGenerated with Prompt Architect | proarch.tech";
   const copyText=isFree?prompt+watermark:prompt;
 
-  const cp=useCallback(()=>{try{navigator.clipboard.writeText(copyText).then(()=>{setCopied(true);trackEvent("prompt_copied",{mode:isExp?"expert":"simple",watermarked:isFree});setTimeout(()=>setCopied(false),2200);});}catch(e){const ta=document.createElement("textarea");ta.value=copyText;ta.style.cssText="position:fixed;left:-9999px;top:-9999px";document.body.appendChild(ta);ta.focus();ta.select();document.execCommand("copy");document.body.removeChild(ta);setCopied(true);setTimeout(()=>setCopied(false),2200);}},[copyText,isExp,isFree]);
+  const cp=useCallback(()=>{
+    const done=()=>{setCopied(true);setShowCopyToast(true);trackEvent("prompt_copied",{mode:isExp?"expert":"simple",watermarked:isFree});if(copyToastTimer.current)clearTimeout(copyToastTimer.current);copyToastTimer.current=setTimeout(()=>{setCopied(false);setShowCopyToast(false);},2200);};
+    try{navigator.clipboard.writeText(copyText).then(done);}catch(e){const ta=document.createElement("textarea");ta.value=copyText;ta.style.cssText="position:fixed;left:-9999px;top:-9999px";document.body.appendChild(ta);ta.focus();ta.select();document.execCommand("copy");document.body.removeChild(ta);done();}
+  },[copyText,isExp,isFree]);
 
   const exportTxt=useCallback(()=>{const blob=new Blob([copyText],{type:"text/plain"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="prompt-"+(task)+"-"+Date.now()+".txt";a.click();URL.revokeObjectURL(url);},[copyText,task]);
 
@@ -2131,6 +2171,7 @@ function App(){
     setIncludes([]);setTechs([]);setAud("");setExtra("");setSpecial("");setLanguage("English");
     setFileOutput("none");setSelectedFirm("");setSelectedRole("");setHasAttachment(false);
     setShow(false);setPromptGenerated(false);
+    setStreamedText("");setIsStreaming(false);if(streamRef.current){cancelAnimationFrame(streamRef.current);streamRef.current=null;}
     // Show the undo toast for 5 seconds, then auto-dismiss and drop the snapshot.
     setShowResetUndo(true);
     if(resetUndoTimerRef.current)clearTimeout(resetUndoTimerRef.current);
@@ -2211,6 +2252,10 @@ function App(){
       @keyframes shimmer{0%{background-position:-200px 0}100%{background-position:calc(200px + 100%) 0}}
       .skeleton{background:linear-gradient(90deg,#e2e8f0 0px,#f1f5f9 40px,#e2e8f0 80px);background-size:200px 100%;animation:shimmer 1.5s infinite linear;border-radius:8px}
       @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+      @keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+      .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}.reveal.visible{opacity:1;transform:translateY(0)}
+      .toast-up{animation:slideUp .25s ease}
+      .strength-bar{height:6px;border-radius:3px;transition:width .4s ease,background .4s ease}
       body{background:#f8fafc;overflow-x:hidden}
       textarea:focus,input:focus{border-color:${ac}!important;box-shadow:0 0 0 3px ${ac}20}
       .main-grid{display:grid;grid-template-columns:1fr;gap:32px;align-items:start}
@@ -2304,11 +2349,11 @@ function App(){
             <h1 style={{fontSize:"clamp(26px, 3.5vw, 40px)",fontWeight:800,margin:"0 0 14px",lineHeight:1.15,color:"var(--t1)",letterSpacing:"-.4px"}}>{t("heroTitle1")} <span style={{color:ac}}>{t("heroTitle2")}</span></h1>
             <p style={{fontSize:"clamp(14px, 1.4vw, 17px)",color:"var(--t2)",margin:"0 auto",lineHeight:1.65,maxWidth:600}}>{t("heroSub")}</p>
             <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:16,marginTop:16,fontSize:12,color:"var(--t3)"}}>
-              <span style={{display:"flex",alignItems:"center",gap:4}}>{I.users(13,"var(--t3)")} {t("trustedBy")}</span>
+              <span ref={countTaskRef} style={{display:"flex",alignItems:"center",gap:4}}>{I.bolt(13,"var(--t3)")} <strong style={{fontVariantNumeric:"tabular-nums"}}>{countTasks}</strong> {uiLang==="no"?"oppgavetyper":"task types"}</span>
               <span style={{width:1,height:14,background:"var(--bd)"}}/>
-              <span style={{display:"flex",alignItems:"center",gap:4}}>{I.bolt(13,"var(--t3)")} {t("industryContexts")}</span>
+              <span ref={countIndRef} style={{display:"flex",alignItems:"center",gap:4}}>{I.layers(13,"var(--t3)")} <strong style={{fontVariantNumeric:"tabular-nums"}}>{countIndustries}</strong> {uiLang==="no"?"bransjer":"industries"}</span>
               <span style={{width:1,height:14,background:"var(--bd)"}} className="hero-art"/>
-              <span style={{display:"flex",alignItems:"center",gap:4}} className="hero-art">{I.sparkle(13,"var(--t3)")} {t("modelsSupported")}</span>
+              <span ref={countModRef} style={{display:"flex",alignItems:"center",gap:4}} className="hero-art">{I.sparkle(13,"var(--t3)")} <strong style={{fontVariantNumeric:"tabular-nums"}}>{countModels}</strong> {uiLang==="no"?"AI-modeller":"AI models"}</span>
             </div>
           </div>
 
@@ -2336,7 +2381,7 @@ function App(){
       </section>
 
       {/* WHY PROMPT ARCHITECT — value props */}
-      <section style={{padding:"clamp(28px,5vw,48px) clamp(12px,3vw,24px)",background:"var(--bg)"}}>
+      <section className="reveal" style={{padding:"clamp(28px,5vw,48px) clamp(12px,3vw,24px)",background:"var(--bg)"}}>
         <div style={{maxWidth:1200,margin:"0 auto"}}>
           <h2 style={{fontSize:"clamp(20px,2.5vw,26px)",fontWeight:800,textAlign:"center",margin:"0 0 8px",color:"var(--t1)",letterSpacing:"-.3px"}}>{t("vpTitle")}</h2>
           <p style={{fontSize:13,color:"var(--t3)",textAlign:"center",margin:"0 auto 28px",maxWidth:520}}>{t("vpSub")}</p>
@@ -2360,7 +2405,7 @@ function App(){
       </section>
 
       {/* COMPARISON TABLE */}
-      <section style={{padding:"0 clamp(12px,3vw,24px) clamp(28px,5vw,48px)",background:"var(--bg)"}}>
+      <section className="reveal" style={{padding:"0 clamp(12px,3vw,24px) clamp(28px,5vw,48px)",background:"var(--bg)"}}>
         <div style={{maxWidth:700,margin:"0 auto"}}>
           <h3 style={{fontSize:"clamp(17px,2vw,22px)",fontWeight:700,textAlign:"center",margin:"0 0 20px",color:"var(--t1)"}}>{t("compTitle")}</h3>
           <div style={{background:"var(--s1)",border:"1px solid var(--bd)",borderRadius:14,overflow:"hidden"}}>
@@ -2381,7 +2426,7 @@ function App(){
       </section>
 
       {/* USE CASES */}
-      <section style={{padding:"clamp(28px,5vw,48px) clamp(12px,3vw,24px) 0",background:"var(--bg)"}}>
+      <section className="reveal" style={{padding:"clamp(28px,5vw,48px) clamp(12px,3vw,24px) 0",background:"var(--bg)"}}>
         <div style={{maxWidth:1200,margin:"0 auto"}}>
           <h2 style={{fontSize:"clamp(18px,2.2vw,24px)",fontWeight:800,textAlign:"center",margin:"0 0 6px",color:"var(--t1)",letterSpacing:"-.2px"}}>{t("ucTitle")}</h2>
           <p style={{fontSize:13,color:"var(--t3)",textAlign:"center",margin:"0 auto 24px",maxWidth:460}}>{t("ucSub")}</p>
@@ -2695,6 +2740,24 @@ function App(){
           </div>
         </div>
 
+        {/* PROMPT STRENGTH */}
+        {topic.trim()&&(()=>{
+          const fields=[topic.length>20,task!=="writing",industry!=="general",output!=="document",isExp,techs.length>0,includes.length>0,aud.trim(),fileOutput!=="none",selectedFirm,extra.trim(),special.trim(),hasAttachment,language!=="English"];
+          const filled=fields.filter(Boolean).length;
+          const pct=Math.round((filled/fields.length)*100);
+          const label=pct<30?(uiLang==="no"?"Grunnleggende":"Basic"):pct<55?(uiLang==="no"?"God":"Good"):pct<80?(uiLang==="no"?"Sterk":"Strong"):(uiLang==="no"?"Ekspert":"Expert");
+          const barColor=pct<30?"#94a3b8":pct<55?"#F59E0B":pct<80?ac:"#10B981";
+          return <div style={{marginTop:8,padding:"10px 0"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5}}>
+              <span style={{fontSize:11,fontWeight:600,color:"var(--t2)",fontFamily:"var(--f)"}}>{uiLang==="no"?"Promptstyrke":"Prompt Depth"}</span>
+              <span style={{fontSize:11,fontWeight:700,color:barColor,fontFamily:"var(--f)"}}>{label}</span>
+            </div>
+            <div style={{height:6,borderRadius:3,background:"var(--s2)",overflow:"hidden"}}>
+              <div className="strength-bar" style={{width:pct+"%",background:barColor}}/>
+            </div>
+          </div>;
+        })()}
+
         {/* GENERATE + LAB */}
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:12,paddingTop:12,borderTop:"1px solid var(--bd)",marginTop:8}}>
           <div style={{display:"flex",gap:10,alignItems:"center"}}>
@@ -2734,7 +2797,7 @@ function App(){
               <button onClick={resetAll} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 12px",borderRadius:7,border:"1px solid #fca5a5",background:"#fff5f5",color:"#dc2626",fontWeight:600,fontSize:12,fontFamily:"var(--f)",cursor:"pointer",transition:"all .2s"}}>{I.plus(12,"#dc2626")} {t("newBtn")}</button>
             </div>
           </div>
-          <pre style={{padding:"20px 22px",margin:0,whiteSpace:"pre-wrap",wordWrap:"break-word",fontSize:12,lineHeight:1.8,fontFamily:"var(--m)",color:"var(--t2)",background:"var(--bg)",maxHeight:600,overflow:"auto"}}>{prompt}</pre>
+          <pre style={{padding:"20px 22px",margin:0,whiteSpace:"pre-wrap",wordWrap:"break-word",fontSize:12,lineHeight:1.8,fontFamily:"var(--m)",color:"var(--t2)",background:"var(--bg)",maxHeight:600,overflow:"auto"}}>{isStreaming?streamedText:prompt}{isStreaming&&<span style={{display:"inline-block",width:2,height:14,background:ac,marginLeft:1,animation:"pulse .8s infinite",verticalAlign:"text-bottom"}}/>}</pre>
           <div style={{padding:"10px 20px",borderTop:"1px solid var(--bd)",display:"flex",gap:14,flexWrap:"wrap",fontSize:11,color:"var(--t3)"}}>
             <span style={{display:"flex",alignItems:"center",gap:3}}>{I.hash(10,"var(--t3)")} {prompt.length} chars</span>
             <span style={{display:"flex",alignItems:"center",gap:3}}>{I.fileText(10,"var(--t3)")} ~{Math.ceil(prompt.split(/\s+/).length/0.75)} tokens</span>
@@ -2793,7 +2856,7 @@ function App(){
       </section>
 
       {/* EMAIL CAPTURE */}
-      <section style={{background:"var(--s1)",borderTop:"1px solid var(--bd)",padding:"40px 24px"}}>
+      <section className="reveal" style={{background:"var(--s1)",borderTop:"1px solid var(--bd)",padding:"40px 24px"}}>
         <div style={{maxWidth:480,margin:"0 auto",textAlign:"center"}}>
           <div style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:40,height:40,borderRadius:10,background:ac+"10",marginBottom:12}}>{I.mail(20,ac)}</div>
           <h3 style={{fontSize:18,fontWeight:700,margin:"0 0 6px",color:"var(--t1)"}}>Get prompt engineering tips</h3>
@@ -3138,6 +3201,14 @@ function App(){
     )}
 
     {/* COOKIE CONSENT */}
+    {/* COPY TOAST */}
+    {showCopyToast&&(
+      <div className="toast-up" style={{position:"fixed",bottom:32,left:"50%",transform:"translateX(-50%)",zIndex:3001,display:"flex",alignItems:"center",gap:8,padding:"10px 20px",borderRadius:10,background:"#10B981",color:"#fff",fontSize:13,fontWeight:600,fontFamily:"var(--f)",boxShadow:"0 8px 32px rgba(16,185,129,.3)",pointerEvents:"none"}}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        {t("copiedBtn")}
+      </div>
+    )}
+
     {showCookies&&(
       <div style={{position:"fixed",bottom:0,left:0,right:0,background:"var(--s1)",borderTop:"1px solid var(--bd)",padding:"14px 24px",display:"flex",alignItems:"center",justifyContent:"center",gap:16,flexWrap:"wrap",zIndex:3000,boxShadow:"0 -2px 12px rgba(0,0,0,.06)",animation:"up .3s ease"}}>
         <p style={{margin:0,fontSize:12,color:"var(--t2)",lineHeight:1.5,maxWidth:600}}>{t("cookieMsg")}</p>
