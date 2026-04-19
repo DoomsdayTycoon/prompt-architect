@@ -109,6 +109,7 @@ const MODELS={
 const SUB_MODELS={
   claude:[
     {id:"opus-4-7",name:"Opus 4.7",tier:"flagship",cost:"$$$",desc:"Most capable Claude. Complex reasoning, long documents, research. ~$15/M input tokens.",badge:"Most capable"},
+    {id:"opus-4-6",name:"Opus 4.6",tier:"flagship",cost:"$$$",desc:"Previous flagship. Strong reasoning and long-context work. ~$15/M input tokens.",badge:"Flagship"},
     {id:"sonnet-4-6",name:"Sonnet 4.6",tier:"balanced",cost:"$$",desc:"Best value. Fast and smart for most tasks. ~$3/M input tokens.",badge:"Best value"},
     {id:"haiku-4-5",name:"Haiku 4.5",tier:"fast",cost:"$",desc:"Fastest and cheapest. Quick edits, classification, summaries. ~$1/M input tokens.",badge:"Fastest"}
   ],
