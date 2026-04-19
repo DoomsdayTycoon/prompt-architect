@@ -108,39 +108,38 @@ const MODELS={
    desc: one-line usage guidance */
 const SUB_MODELS={
   claude:[
-    {id:"opus-4-6",name:"Opus 4.6",tier:"flagship",cost:"$$$",desc:"Most capable. Complex reasoning, long documents, research. ~$15/M input tokens.",badge:"Most capable"},
+    {id:"opus-4-7",name:"Opus 4.7",tier:"flagship",cost:"$$$",desc:"Most capable Claude. Complex reasoning, long documents, research. ~$15/M input tokens.",badge:"Most capable"},
     {id:"sonnet-4-6",name:"Sonnet 4.6",tier:"balanced",cost:"$$",desc:"Best value. Fast and smart for most tasks. ~$3/M input tokens.",badge:"Best value"},
-    {id:"haiku-4-5",name:"Haiku 4.5",tier:"fast",cost:"$",desc:"Fastest and cheapest. Quick edits, classification, summaries. ~$0.25/M input tokens.",badge:"Fastest"}
+    {id:"haiku-4-5",name:"Haiku 4.5",tier:"fast",cost:"$",desc:"Fastest and cheapest. Quick edits, classification, summaries. ~$1/M input tokens.",badge:"Fastest"}
   ],
   chatgpt:[
-    {id:"gpt-5.4",name:"GPT-5.4",tier:"flagship",cost:"$$$",desc:"OpenAI flagship. Best reasoning, coding, long documents, agent workflows. ~$2.50/M input tokens.",badge:"Most capable"},
-    {id:"gpt-5-mini",name:"GPT-5 Mini",tier:"balanced",cost:"$$",desc:"Great balance of speed and quality. Everyday tasks. ~$0.25/M input tokens.",badge:"Best value"},
-    {id:"gpt-4.1-nano",name:"GPT-4.1 Nano",tier:"fast",cost:"$",desc:"Ultra-fast, lowest cost. Simple queries and drafts. ~$0.10/M input tokens.",badge:"Fastest"}
+    {id:"gpt-5.1",name:"GPT-5.1",tier:"flagship",cost:"$$$",desc:"Strongest OpenAI model. Advanced reasoning, coding, long context. ~$3/M input tokens.",badge:"Most capable"},
+    {id:"gpt-5-mini",name:"GPT-5 Mini",tier:"balanced",cost:"$$",desc:"Great balance of speed and quality. Everyday tasks. ~$0.50/M input tokens.",badge:"Best value"},
+    {id:"gpt-5-nano",name:"GPT-5 Nano",tier:"fast",cost:"$",desc:"Ultra-fast, lowest cost. Simple queries and drafts. ~$0.10/M input tokens.",badge:"Fastest"}
   ],
   gpt4o:[
-    {id:"o3",name:"o3",tier:"flagship",cost:"$$$",desc:"Strongest reasoning model. Math, logic, multi-step analysis, coding. ~$2/M input tokens.",badge:"Most capable"},
-    {id:"o4-mini",name:"o4-mini",tier:"balanced",cost:"$$",desc:"Fast reasoning at lower cost. Outperforms o3-mini on most benchmarks. ~$1.10/M input tokens.",badge:"Best value"},
-    {id:"gpt-5-mini",name:"GPT-5 Mini",tier:"fast",cost:"$",desc:"Lightweight multimodal. Quick tasks with image+text. ~$0.25/M input tokens.",badge:"Fast"}
+    {id:"o3",name:"o3",tier:"flagship",cost:"$$$",desc:"Deep reasoning model. Math, science, complex multi-step tasks. ~$10/M input tokens.",badge:"Most capable"},
+    {id:"o4-mini",name:"o4-mini",tier:"balanced",cost:"$$",desc:"Fast reasoning. Strong on STEM and code at lower cost. ~$1.10/M input tokens.",badge:"Reasoning"},
+    {id:"gpt-4o",name:"GPT-4o",tier:"fast",cost:"$",desc:"Multimodal. Vision, audio, general tasks. ~$2.50/M input tokens.",badge:"Multimodal"}
   ],
   gemini:[
-    {id:"gemini-3.1-pro",name:"Gemini 3.1 Pro",tier:"flagship",cost:"$$$",desc:"Google flagship. Complex tasks, data synthesis, 1M+ context window. ~$1.25/M input tokens.",badge:"Most capable"},
-    {id:"gemini-3-flash",name:"Gemini 3 Flash",tier:"balanced",cost:"$$",desc:"Default Gemini model. Fast and capable for most tasks. ~$0.15/M input tokens.",badge:"Best value"},
-    {id:"gemini-3.1-flash-lite",name:"Gemini 3.1 Flash Lite",tier:"fast",cost:"$",desc:"Fastest Gemini. Simple tasks, high volume. ~$0.075/M input tokens.",badge:"Fastest"}
+    {id:"gemini-3-pro",name:"Gemini 3 Pro",tier:"flagship",cost:"$$$",desc:"Google flagship. Deep reasoning, 1M+ token context, multimodal. ~$2/M input tokens.",badge:"Most capable"},
+    {id:"gemini-2.5-pro",name:"Gemini 2.5 Pro",tier:"balanced",cost:"$$",desc:"Proven flagship tier. Long context, complex tasks. ~$1.25/M input tokens.",badge:"Best value"},
+    {id:"gemini-2.5-flash",name:"Gemini 2.5 Flash",tier:"fast",cost:"$",desc:"Fastest Gemini. High volume, simple to moderate tasks. ~$0.15/M input tokens.",badge:"Fastest"}
   ],
   grok:[
-    {id:"grok-4.20",name:"Grok 4.20",tier:"flagship",cost:"$$$",desc:"xAI flagship. Multi-agent capable, strong reasoning, real-time knowledge. SuperGrok / X Premium+.",badge:"Most capable"},
-    {id:"grok-4.1-fast",name:"Grok 4.1 Fast",tier:"balanced",cost:"$$",desc:"High throughput, lower latency. Enterprise API. Good for everyday use.",badge:"Best value"},
-    {id:"grok-3-mini",name:"Grok 3 Mini",tier:"fast",cost:"$",desc:"Lightweight reasoning. Cost-efficient logic tasks. Speed over depth.",badge:"Fastest"}
+    {id:"grok-4",name:"Grok 4",tier:"flagship",cost:"$$$",desc:"xAI flagship. Advanced reasoning with real-time knowledge. Included in X Premium+.",badge:"Most capable"},
+    {id:"grok-4-mini",name:"Grok 4 Mini",tier:"balanced",cost:"$$",desc:"Lighter, faster Grok. Good for everyday use. Included in X Premium.",badge:"Best value"}
   ],
   mistral:[
-    {id:"mistral-large-3",name:"Mistral Large 3",tier:"flagship",cost:"$$$",desc:"675B MoE (41B active). Complex reasoning, multilingual. ~$2/M input tokens.",badge:"Most capable"},
-    {id:"mistral-small-4",name:"Mistral Small 4",tier:"balanced",cost:"$$",desc:"Unified instruct, reasoning, coding, and multimodal. 256K context. ~$0.40/M input tokens.",badge:"Best value"},
-    {id:"mistral-small-3b",name:"Mistral 3B",tier:"fast",cost:"$",desc:"Dense 3B model. Edge-friendly, fast classification and drafts. ~$0.04/M input tokens.",badge:"Fastest"}
+    {id:"mistral-large-2",name:"Mistral Large 2",tier:"flagship",cost:"$$$",desc:"Most capable Mistral. Complex reasoning, multilingual. ~$2/M input tokens.",badge:"Most capable"},
+    {id:"mistral-medium-3",name:"Mistral Medium 3",tier:"balanced",cost:"$$",desc:"Balanced performance. Good for structured tasks. ~$0.40/M input tokens.",badge:"Best value"},
+    {id:"mistral-small-3",name:"Mistral Small 3",tier:"fast",cost:"$",desc:"Fast and efficient. Quick tasks, classification. ~$0.10/M input tokens.",badge:"Fastest"}
   ],
   llama:[
-    {id:"llama-4-maverick",name:"Llama 4 Maverick",tier:"flagship",cost:"$$$",desc:"Meta flagship. 128 experts MoE, strong reasoning. Free/open-weight.",badge:"Most capable"},
-    {id:"llama-4-scout",name:"Llama 4 Scout",tier:"balanced",cost:"$$",desc:"Efficient 17B active params. 10M token context. Free/open-weight.",badge:"Best value"},
-    {id:"llama-3.3-70b",name:"Llama 3.3 70B",tier:"fast",cost:"$",desc:"Proven workhorse. Fast, widely deployed. Free/open-weight.",badge:"Popular"}
+    {id:"llama-4-behemoth",name:"Llama 4 Behemoth",tier:"flagship",cost:"$$$",desc:"Meta flagship. Massive MoE, state-of-the-art open reasoning. Free/open-weight.",badge:"Most capable"},
+    {id:"llama-4-maverick",name:"Llama 4 Maverick",tier:"balanced",cost:"$$",desc:"128 experts MoE. Strong reasoning, widely deployed. Free/open-weight.",badge:"Best value"},
+    {id:"llama-4-scout",name:"Llama 4 Scout",tier:"fast",cost:"$",desc:"Efficient 17B active params. 10M token context. Free/open-weight.",badge:"Fastest"}
   ],
   perplexity:[
     {id:"sonar-reasoning-pro",name:"Sonar Reasoning Pro",tier:"flagship",cost:"$$$",desc:"Chain-of-thought search. Complex analytical research. ~$3/M input tokens.",badge:"Most capable"},
@@ -148,8 +147,8 @@ const SUB_MODELS={
     {id:"sonar",name:"Sonar",tier:"fast",cost:"$",desc:"Lightweight search. Fast fact-checking, 1200 tok/s. ~$1/M input tokens.",badge:"Fastest"}
   ],
   copilot:[
-    {id:"copilot-pro-plus",name:"Copilot Pro+",tier:"flagship",cost:"$$$",desc:"GPT-5.4 + Claude powered. Complex code gen, architecture, multi-model review.",badge:"Most capable"},
-    {id:"copilot-pro",name:"Copilot Pro",tier:"balanced",cost:"$$",desc:"Standard Copilot with GPT-4o. Everyday code assistance.",badge:"Best value"},
+    {id:"copilot-pro-plus",name:"Copilot Pro+",tier:"flagship",cost:"$$$",desc:"GPT-5 + Claude powered. Complex code gen, architecture, multi-model review.",badge:"Most capable"},
+    {id:"copilot-pro",name:"Copilot Pro",tier:"balanced",cost:"$$",desc:"Standard Copilot. Everyday code assistance. Pro subscription.",badge:"Best value"},
     {id:"copilot-free",name:"Copilot Free",tier:"fast",cost:"$",desc:"Free tier. Basic code completion and chat. Limited monthly usage.",badge:"Free"}
   ],
   general:[
@@ -1759,7 +1758,7 @@ function App(){
   const [topic,setTopic]=useState("");
   const [task,setTask]=useState("writing");
   const [model,setModel]=useState("claude");
-  const [subModel,setSubModel]=useState("opus-4-6");
+  const [subModel,setSubModel]=useState("opus-4-7");
   const [industry,setIndustry]=useState("general");
   const [output,setOutput]=useState("document");
   const [style,setStyle]=useState("formal");
@@ -2166,7 +2165,7 @@ function App(){
       aud,extra,special,language,fileOutput,selectedFirm,selectedRole,hasAttachment,
       show,promptGenerated,
     };
-    setTopic("");setTask("writing");setIndustry("general");setOutput("document");setModel("claude");setSubModel("opus-4-6");
+    setTopic("");setTask("writing");setIndustry("general");setOutput("document");setModel("claude");setSubModel("opus-4-7");
     setStyle("formal");setTone("Professional");setLen("Medium");setFmt(["prose"]);
     setIncludes([]);setTechs([]);setAud("");setExtra("");setSpecial("");setLanguage("English");
     setFileOutput("none");setSelectedFirm("");setSelectedRole("");setHasAttachment(false);
