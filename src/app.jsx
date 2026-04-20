@@ -621,137 +621,138 @@ const IND_STYLE={
     label:"Professional Standard",
     fonts:{primary:"Arial",secondary:"Calibri",data:"Arial",mono:"Consolas"},
     colors:{primary:"#1B2A4A",secondary:"#4472C4",accent:"#0891B2",text:"#333333",muted:"#666666",headerBg:"#1B2A4A",headerText:"#FFFFFF",altRow:"#F8F9FA",border:"#D0D5DD",negative:"#CC0000",positive:"#006100"},
-    ref:"General professional standard"
+    ref:"general professional formatting"
   },
   finance:{
-    label:"Investment Banking Standard (Goldman Sachs / J.P. Morgan)",
+    label:"Investment Banking Standard",
     fonts:{primary:"Garamond",secondary:"Arial",data:"Arial",mono:"Consolas"},
     colors:{primary:"#00205B",secondary:"#003DA5",accent:"#B4975A",text:"#333333",muted:"#666666",headerBg:"#00205B",headerText:"#FFFFFF",altRow:"#F5F6F8",border:"#C4C8D0",negative:"#CC0000",positive:"#006100"},
-    ref:"Goldman Sachs pitch books, J.P. Morgan equity research"
+    ref:"institutional pitch-book and equity-research formatting"
   },
   tech:{
-    label:"Tech Industry Standard (Google / Microsoft)",
+    label:"Tech Industry Standard",
     fonts:{primary:"Segoe UI",secondary:"Roboto",data:"Roboto",mono:"Roboto Mono"},
     colors:{primary:"#1A73E8",secondary:"#4285F4",accent:"#0078D4",text:"#202124",muted:"#5F6368",headerBg:"#1A73E8",headerText:"#FFFFFF",altRow:"#F8F9FA",border:"#DADCE0",negative:"#D93025",positive:"#1E8E3E"},
-    ref:"Google documentation, Microsoft corporate reports"
+    ref:"enterprise software documentation formatting"
   },
   healthcare:{
-    label:"Healthcare / Pharma Standard (Pfizer / Mayo Clinic)",
+    label:"Healthcare / Pharma Standard",
     fonts:{primary:"Noto Sans",secondary:"Arial",data:"Arial",mono:"Consolas"},
     colors:{primary:"#0058A3",secondary:"#00857C",accent:"#1B365D",text:"#333333",muted:"#666666",headerBg:"#0058A3",headerText:"#FFFFFF",altRow:"#F4F8FB",border:"#C8D6E0",negative:"#CC0000",positive:"#00857C"},
-    ref:"Pfizer reports, Mayo Clinic publications, FDA submission style"
+    ref:"clinical-report and regulatory-submission formatting"
   },
   legal:{
-    label:"Legal Standard (White-Shoe Law Firms)",
+    label:"Legal Standard",
     fonts:{primary:"Times New Roman",secondary:"Book Antiqua",data:"Arial",mono:"Courier New"},
     colors:{primary:"#002855",secondary:"#1C2B39",accent:"#8B0000",text:"#000000",muted:"#555555",headerBg:"#002855",headerText:"#FFFFFF",altRow:"#F7F8F9",border:"#C0C5CC",negative:"#8B0000",positive:"#2E5A1E"},
-    ref:"Sullivan & Cromwell, Skadden Arps, Kirkland & Ellis memo formatting"
+    ref:"top-tier transactional-law memo formatting"
   },
   marketing:{
-    label:"Marketing / Advertising Standard (Ogilvy / Nike)",
+    label:"Marketing / Advertising Standard",
     fonts:{primary:"Helvetica Neue",secondary:"Futura",data:"Arial",mono:"Consolas"},
     colors:{primary:"#000000",secondary:"#E60012",accent:"#FF6600",text:"#1A1A1A",muted:"#555555",headerBg:"#1A1A1A",headerText:"#FFFFFF",altRow:"#F5F5F5",border:"#D0D0D0",negative:"#CC0000",positive:"#2D8C3C"},
-    ref:"WPP / Ogilvy strategy decks, Nike brand guidelines"
+    ref:"award-grade brand-strategy and campaign-deck formatting"
   },
   consulting:{
-    label:"Strategy Consulting Standard (McKinsey / BCG / Bain)",
+    label:"Strategy Consulting Standard",
     fonts:{primary:"Helvetica Neue",secondary:"Georgia",data:"Arial",mono:"Consolas"},
     colors:{primary:"#003865",secondary:"#2FB551",accent:"#CC0000",text:"#000000",muted:"#666666",headerBg:"#003865",headerText:"#FFFFFF",altRow:"#F5F7F9",border:"#C8CDD4",negative:"#CC0000",positive:"#2FB551"},
-    ref:"McKinsey slide decks, BCG strategy reports, Bain case presentations"
+    ref:"top-tier strategy deck and case-presentation formatting"
   },
   education:{
-    label:"Academic Institution Standard (Harvard / MIT)",
+    label:"Academic Institution Standard",
     fonts:{primary:"EB Garamond",secondary:"Helvetica",data:"Arial",mono:"Courier New"},
     colors:{primary:"#A51C30",secondary:"#002147",accent:"#8C1515",text:"#333333",muted:"#666666",headerBg:"#A51C30",headerText:"#FFFFFF",altRow:"#FAF7F7",border:"#D4C5C7",negative:"#CC0000",positive:"#2E5A1E"},
-    ref:"Harvard case studies, MIT course materials, university press standards"
+    ref:"leading-university case-study and course-material formatting"
   },
   ecommerce:{
-    label:"E-Commerce Standard (Amazon / Shopify)",
+    label:"E-Commerce Standard",
     fonts:{primary:"Arial",secondary:"Calibri",data:"Arial",mono:"Consolas"},
     colors:{primary:"#232F3E",secondary:"#FF9900",accent:"#146EB4",text:"#0F1111",muted:"#565959",headerBg:"#232F3E",headerText:"#FFFFFF",altRow:"#F7F8F9",border:"#D5D9D9",negative:"#B12704",positive:"#007600"},
-    ref:"Amazon shareholder letters, AWS whitepapers, Shopify reports"
+    ref:"digital retail investor-letter and whitepaper formatting"
   },
   realestate:{
-    label:"Commercial Real Estate Standard (CBRE / JLL)",
+    label:"Commercial Real Estate Standard",
     fonts:{primary:"Calibri",secondary:"Arial",data:"Arial",mono:"Consolas"},
     colors:{primary:"#003F2D",secondary:"#00A34E",accent:"#002A3A",text:"#333333",muted:"#666666",headerBg:"#003F2D",headerText:"#FFFFFF",altRow:"#F4F8F6",border:"#B8CABE",negative:"#CC0000",positive:"#00A34E"},
-    ref:"CBRE market reports, JLL research, Brookfield investor materials"
+    ref:"institutional market-report and investor-material formatting"
   },
   media:{
-    label:"Media / Entertainment Standard (Netflix / Disney)",
+    label:"Media / Entertainment Standard",
     fonts:{primary:"Gotham",secondary:"Avenir",data:"Arial",mono:"Consolas"},
     colors:{primary:"#E50914",secondary:"#003DA5",accent:"#1A1A2E",text:"#141414",muted:"#666666",headerBg:"#141414",headerText:"#FFFFFF",altRow:"#F5F5F5",border:"#D0D0D0",negative:"#E50914",positive:"#2D8C3C"},
-    ref:"Netflix corporate reports, Disney investor presentations, NYT formatting"
+    ref:"media corporate-report and investor-presentation formatting"
   },
   hr:{
-    label:"Human Capital Standard (Mercer / Workday)",
+    label:"Human Capital Standard",
     fonts:{primary:"Helvetica Neue",secondary:"Calibri",data:"Calibri",mono:"Consolas"},
     colors:{primary:"#002C77",secondary:"#0062E3",accent:"#005EB8",text:"#333333",muted:"#666666",headerBg:"#002C77",headerText:"#FFFFFF",altRow:"#F2F6FC",border:"#B8C8E0",negative:"#D0271D",positive:"#006100"},
-    ref:"Mercer compensation surveys, Workday reports, ADP benchmarking"
+    ref:"compensation-survey and HR-benchmarking report formatting"
   },
   manufacturing:{
-    label:"Industrial / Manufacturing Standard (Siemens / Bosch)",
+    label:"Industrial / Manufacturing Standard",
     fonts:{primary:"Arial",secondary:"Calibri",data:"Arial",mono:"Consolas"},
     colors:{primary:"#009999",secondary:"#005691",accent:"#EA0016",text:"#333333",muted:"#666666",headerBg:"#009999",headerText:"#FFFFFF",altRow:"#F2FAFA",border:"#B0D4D4",negative:"#EA0016",positive:"#007000"},
-    ref:"Siemens technical documentation, Bosch spec sheets, ISO document standards"
+    ref:"industrial technical-documentation and ISO standard formatting"
   },
   government:{
-    label:"Public Sector Standard (World Bank / United Nations)",
+    label:"Public Sector Standard",
     fonts:{primary:"Open Sans",secondary:"Roboto",data:"Arial",mono:"Consolas"},
     colors:{primary:"#002244",secondary:"#4B92DB",accent:"#F7941D",text:"#333333",muted:"#666666",headerBg:"#002244",headerText:"#FFFFFF",altRow:"#F4F7FB",border:"#B8C8D8",negative:"#CC0000",positive:"#006100"},
-    ref:"World Bank publications, UN reports, RAND Corporation formatting"
+    ref:"multilateral-institution publication and policy-report formatting"
   },
   research:{
-    label:"Academic Research Standard (Nature / NIH / DeepMind)",
+    label:"Academic Research Standard",
     fonts:{primary:"Times New Roman",secondary:"Helvetica",data:"Helvetica",mono:"Courier New"},
     colors:{primary:"#C2372E",secondary:"#20639B",accent:"#003366",text:"#333333",muted:"#666666",headerBg:"#003366",headerText:"#FFFFFF",altRow:"#F5F7FA",border:"#C0C8D4",negative:"#CC0000",positive:"#2E7D32"},
-    ref:"Nature journal formatting, NIH grant standards, arXiv paper conventions"
+    ref:"peer-reviewed journal and grant-submission formatting"
   }
 };
 
 const ROLE_DEEP={
-  writing:"a senior professional writer and content strategist with 15+ years crafting award-winning narratives, persuasive copy, and audience-tailored content for Fortune 500 brands, bestselling authors, and high-stakes corporate communications",
-  coding:"a principal software engineer and architect with 20+ years shipping production systems at FAANG-scale companies, deep expertise across languages, design patterns, testing, distributed systems, and secure production-grade engineering",
-  analysis:"a senior analyst and strategic consultant with 20+ years at top-tier firms (McKinsey, Bain, BCG, Goldman Sachs) combining quantitative rigor, structured decision frameworks, and board-ready deliverable craft",
-  brainstorm:"a creative strategist and innovation consultant (IDEO, frog design, Ideo caliber) combining design thinking, lateral thinking, and structured ideation frameworks used by product teams at Apple, Google, and venture-backed startups",
-  summarize:"an expert editor and information architect with 15+ years as a senior editor at McKinsey Insights, Harvard Business Review, and The Economist, specializing in distilling complex material into clear, executive-ready summaries",
-  translate:"a professional translator with native fluency, graduate-level linguistics training, deep cultural understanding, and domain-specific terminology expertise certified for legal, medical, and diplomatic translation",
-  image:"an expert AI image prompt engineer with deep knowledge of composition, lighting, color theory, and model-specific syntax (Midjourney v6, DALL-E 3, Stable Diffusion XL, Flux)",
+  writing:"a senior professional writer and content strategist with 15+ years crafting award-winning narratives, persuasive copy, and audience-tailored content for enterprise brands, bestselling authors, and high-stakes corporate communications",
+  coding:"a principal software engineer and architect with 20+ years shipping production systems at large-scale technology organizations, with deep expertise across languages, design patterns, testing, distributed systems, and secure production-grade engineering",
+  analysis:"a senior analyst and strategic consultant with 20+ years at top-tier strategy and financial advisory firms, combining quantitative rigor, structured decision frameworks, and board-ready deliverable craft",
+  brainstorm:"a creative strategist and innovation consultant combining design thinking, lateral thinking, and structured ideation frameworks used by world-class product organizations",
+  summarize:"an expert editor and information architect with 15+ years of senior editorial experience at leading business and research publications, specializing in distilling complex material into clear, executive-ready summaries",
+  translate:"a professional translator with native fluency, graduate-level linguistics training, deep cultural understanding, and certified domain-specific terminology expertise across legal, medical, and diplomatic contexts",
+  image:"an expert AI image prompt engineer with deep knowledge of composition, lighting, color theory, and model-specific syntax for leading generative image systems",
   roleplay:"a skilled domain expert capable of embodying specific personas with authentic voice, consistent character, and genuine subject-matter depth",
-  email:"a professional communications specialist with 15+ years in executive communications and crisis comms, expert in business writing, persuasion psychology, and C-suite stakeholder management",
-  learning:"an expert educator with 15+ years designing curricula for MIT OpenCourseWare, Khan Academy, and executive education programs, applying Bloom's taxonomy, scaffolded learning, and active recall techniques",
-  strategy:"a senior strategy partner at a top-tier consulting firm (McKinsey/BCG/Bain caliber) with 20+ years advising C-suite executives on market entry, competitive positioning, M&A, and organizational transformation across Fortune 500 and high-growth companies",
-  debug:"a principal engineer and incident commander with 20+ years resolving production outages at FAANG scale, deep expertise in root cause analysis, systematic debugging methodologies, and post-mortem discipline across distributed architectures",
+  email:"a professional communications specialist with 15+ years in executive communications and crisis communications, expert in business writing, persuasion psychology, and senior-stakeholder management",
+  learning:"an expert educator with 15+ years designing curricula for leading online learning platforms and executive education programs, applying Bloom's taxonomy, scaffolded learning, and active recall techniques",
+  strategy:"a senior strategy partner with 20+ years advising C-suite executives on market entry, competitive positioning, M&A, and organizational transformation across large enterprises and high-growth companies",
+  debug:"a principal engineer and incident commander with 20+ years resolving production outages at large scale, with deep expertise in root cause analysis, systematic debugging methodologies, and post-mortem discipline across distributed architectures",
   review:"a senior editorial director and quality assurance lead who has reviewed thousands of board-level documents, production codebases, and executive deliverables with a forensic eye for gaps, inconsistencies, and missed opportunities",
-  decision:"a decision science expert with 20+ years combining behavioral economics (Kahneman/Tversky), game theory, and structured decision analysis (multi-criteria, decision trees, Monte Carlo) helping CEOs and boards make high-stakes choices under uncertainty",
-  persuade:"a master negotiator and communications strategist trained in principled negotiation (Harvard PON), influence psychology (Cialdini), and stakeholder management across Fortune 500 boardrooms, M&A transactions, and cross-cultural diplomacy"
+  decision:"a decision science expert with 20+ years combining behavioral economics, game theory, and structured decision analysis (multi-criteria, decision trees, Monte Carlo) to help leaders make high-stakes choices under uncertainty",
+  persuade:"a master negotiator and communications strategist trained in principled negotiation, influence psychology, and cross-cultural stakeholder management across executive boardrooms and high-stakes transactions"
 };
 
 /* Firm-signature methodology. When a firm is selected, this injects the
    firm's recognized analytical signature so the prompt inherits named
-   frameworks rather than generic "adopt the methodology" hand-waves. */
+   frameworks. No firm names appear in the emitted text — only the
+   methodology description — so the output stays universally reusable. */
 const FIRM_SIGNATURE={
-  goldman:"Goldman Sachs signature: rigorous equity research discipline, Conviction Buy list methodology, proprietary sector frameworks, client-ready IC memo craft with bull/base/bear cases and 12-month price targets.",
-  jpmorgan:"JP Morgan signature: institutional research rigor, consensus-vs-surprise earnings framing, credit-quality decomposition, management-guidance triangulation, and decisive actionable ratings.",
-  blackrock:"BlackRock signature: Aladdin-grade risk decomposition, multi-factor portfolio construction, top-down asset allocation with strategic + tactical tilts, fee-aware implementation, and institutional IPS deliverable format.",
-  morganstanley:"Morgan Stanley signature: VP-banker-grade DCF craftsmanship, WACC build, sensitivity grids, comparable-company and precedent-transaction triangulation, clear fairness-memo verdict language.",
-  citadel:"Citadel signature: quant-trader discipline, edge quantification, Sharpe-aware sizing, regime-conditional backtests, microstructure awareness, latency-aware execution.",
-  mckinsey_health:"McKinsey Health signature: MECE structuring, hypothesis-driven analysis, pyramid-principle communication, day-1 answer with structured proof, implications-for-action framing.",
-  pfizer:"Pfizer signature: Phase I-III clinical rigor, regulatory-pathway awareness (FDA/EMA), benefit-risk assessment, and GxP-compliant documentation standards.",
-  unitedhealth:"UnitedHealth signature: population-health analytics, value-based-care economics, HEDIS/STAR metrics, actuarial rigor, and payer-provider integration lens.",
-  jnj:"Johnson & Johnson signature: medical-device lifecycle craft, clinical evidence generation, global regulatory strategy, pharmacovigilance discipline.",
-  mayo:"Mayo Clinic signature: evidence-based clinical protocol craft, multidisciplinary care pathway design, outcome-measure rigor, patient-centered quality improvement.",
-  sullivan:"Sullivan & Cromwell signature: white-shoe corporate-law rigor, deal-precedent mastery, SEC disclosure craft, and conservative defensible counsel voice.",
-  skadden:"Skadden signature: cross-border M&A mastery, antitrust and FCPA vigilance, capital-markets deal-doc precision, decisive counsel on high-stakes transactions.",
-  kirkland:"Kirkland & Ellis signature: PE-sponsor-aligned counsel, distressed and restructuring mastery, fund-formation and LPA rigor, aggressive deal-execution mindset.",
-  wachtell:"Wachtell Lipton signature: takeover-defense strategy, M&A playbook mastery, Delaware case-law fluency, activism response and corporate-governance craft.",
-  latham:"Latham & Watkins signature: full-service deal execution, cross-border complexity, project-finance rigor, tech-transactions and regulatory craft.",
-  wpp:"WPP/Ogilvy signature: big-idea brand craft, Effie-award-grade campaign thinking, consumer-insight depth, creative-strategy linkage, measurable campaign KPIs.",
-  google:"Google signature: design-doc rigor, scalability-first thinking, data-driven decisions with A/B experimentation, and SRE-grade reliability discipline.",
-  apple:"Apple signature: product-excellence obsession, end-to-end hardware-software integration mindset, privacy-by-design, minimalist craft.",
-  microsoft:"Microsoft signature: enterprise-grade architecture, Azure-native design patterns, security-first posture, and decisive product-leadership voice.",
-  meta:"Meta signature: move-fast product velocity, ML-scale infrastructure, growth-loop thinking, and platform ecosystem lens.",
-  amazon:"Amazon signature: working-backwards from the customer (PR/FAQ), 6-pager narrative rigor, two-pizza-team ownership, and operational-metric discipline."
+  goldman:"Apply rigorous equity research discipline: proprietary sector frameworks, conviction-rated recommendations, client-ready investment-committee memo craft with bull / base / bear cases and 12-month price targets.",
+  jpmorgan:"Apply institutional research rigor: consensus-vs-surprise earnings framing, credit-quality decomposition, management-guidance triangulation, and decisive actionable ratings.",
+  blackrock:"Apply institutional risk-management discipline: multi-factor risk decomposition, top-down strategic and tactical asset allocation, fee-aware implementation, and formal investment-policy-statement deliverable format.",
+  morganstanley:"Apply banker-grade DCF craftsmanship: explicit WACC build, sensitivity grids, comparable-company and precedent-transaction triangulation, and clear fairness-opinion verdict language.",
+  citadel:"Apply quantitative trading discipline: edge quantification, Sharpe-aware sizing, regime-conditional backtests, microstructure awareness, and latency-aware execution.",
+  mckinsey_health:"Apply top-tier consulting structure: MECE decomposition, hypothesis-driven analysis, pyramid-principle communication, day-1 answer with structured proof, and implications-for-action framing.",
+  pfizer:"Apply pharmaceutical R&D discipline: Phase I-III clinical rigor, regulatory-pathway awareness (FDA / EMA), benefit-risk assessment, and GxP-compliant documentation standards.",
+  unitedhealth:"Apply managed-care analytics: population-health framing, value-based-care economics, HEDIS / STAR quality metrics, actuarial rigor, and payer-provider integration lens.",
+  jnj:"Apply medical-device and pharma discipline: full product lifecycle craft, clinical evidence generation, global regulatory strategy, and pharmacovigilance rigor.",
+  mayo:"Apply leading-clinical-institution standards: evidence-based protocol craft, multidisciplinary care-pathway design, outcome-measure rigor, and patient-centered quality improvement.",
+  sullivan:"Apply white-shoe corporate-law rigor: deal-precedent mastery, SEC disclosure craft, and conservative defensible counsel voice.",
+  skadden:"Apply top-tier transactional-law discipline: cross-border M&A mastery, antitrust and anti-corruption vigilance, capital-markets documentation precision, and decisive high-stakes counsel.",
+  kirkland:"Apply private-equity legal discipline: sponsor-aligned counsel, distressed and restructuring mastery, fund-formation and LPA rigor, and aggressive deal-execution mindset.",
+  wachtell:"Apply takeover-defense and M&A craft: playbook mastery, Delaware case-law fluency, activism response, and corporate-governance rigor.",
+  latham:"Apply full-service deal execution: cross-border complexity, project-finance rigor, technology-transactions and regulatory craft.",
+  wpp:"Apply world-class advertising discipline: big-idea brand craft, award-grade campaign thinking, consumer-insight depth, creative-strategy linkage, and measurable campaign KPIs.",
+  google:"Apply web-scale engineering discipline: design-doc rigor, scalability-first thinking, data-driven decisions with A / B experimentation, and SRE-grade reliability standards.",
+  apple:"Apply premium-product engineering discipline: product-excellence obsession, end-to-end hardware-software integration mindset, privacy-by-design, and minimalist craft.",
+  microsoft:"Apply enterprise-platform discipline: enterprise-grade architecture, cloud-native design patterns, security-first posture, and decisive product-leadership voice.",
+  meta:"Apply consumer-internet platform discipline: move-fast product velocity, ML-scale infrastructure, growth-loop thinking, and platform-ecosystem lens.",
+  amazon:"Apply customer-obsessed product discipline: working-backwards method (press-release / FAQ), 6-page narrative rigor, small-team ownership, and operational-metric accountability."
 };
 
 const METHODOLOGY={
@@ -923,7 +924,7 @@ function getSmartEnhancements(topic,taskType,industry,output){
       marketing:{analysis:"CMOs and growth leads",writing:"brand managers and marketing directors",brainstorm:"creative directors and growth teams"},
       tech:{coding:"senior developers who will maintain this code",analysis:"CTOs and engineering managers",writing:"technical product managers and engineering leads",learning:"developers with 1-3 years experience"},
       education:{learning:"students (assume foundational knowledge in the subject area)",writing:"educators and curriculum designers"},
-      consulting:{analysis:"C-suite clients expecting McKinsey-level deliverables",writing:"senior stakeholders who need to make decisions based on this"},
+      consulting:{analysis:"C-suite clients expecting top-tier consulting deliverables",writing:"senior stakeholders who need to make decisions based on this"},
     };
     const fallback={analysis:"knowledgeable professionals who expect depth and precision",writing:"engaged professionals who value clarity and actionable insight",coding:"experienced developers who value clean, maintainable code",brainstorm:"cross-functional team members evaluating ideas for feasibility",summarize:"busy decision-makers who need the key points fast",email:"professional recipients who expect clear, action-oriented communication",learning:"motivated learners with foundational knowledge in the subject",translate:"native speakers of the target language",image:"users familiar with AI image generation tools",roleplay:"an audience that expects authentic, consistent persona responses"};
     const indMap=audienceMap[industry]||{};
@@ -1033,11 +1034,14 @@ function buildPrompt(p){
   const sys=[];
   sys.push("You are "+(ROLE_DEEP[taskType]||"a helpful expert assistant")+".");
   if(industry!=="general"&&IND_CONTEXT[industry])sys.push(IND_CONTEXT[industry]);
-  if(selectedFirm&&SECTOR_FIRMS[industry]?.firms[selectedFirm]){
-    const firmData=SECTOR_FIRMS[industry].firms[selectedFirm];
-    sys.push("Adopt the methodology and deliverable quality of "+firmData.name+".");
-    if(selectedRole)sys.push("Role: "+selectedRole+" at "+firmData.name+".");
-    if(FIRM_SIGNATURE[selectedFirm])sys.push(FIRM_SIGNATURE[selectedFirm]);
+  // Firm / role selection shapes the methodology and seniority of the
+  // emitted prompt but no firm or role names leak into the text — the
+  // output stays universal and reusable across contexts.
+  if(selectedFirm&&FIRM_SIGNATURE[selectedFirm]){
+    sys.push(FIRM_SIGNATURE[selectedFirm]);
+  }
+  if(selectedRole){
+    sys.push("Write at the seniority and analytical depth of a "+selectedRole.toLowerCase()+".");
   }
   const audienceEnhancement=(getSmartEnhancements(topic,taskType,industry,output)).find(e=>e.type==="audience");
   if(audience)sys.push("Audience: "+audience+".");
@@ -1238,7 +1242,7 @@ The disposition effect holds when $PGR > PLR$.
 FINAL CHECK before writing any equation: does it fit on one line without the tag? Is the tag ≤ 3 characters? Is there only ONE formula in this $$...$$ block? Are parameters in surrounding prose, not in the block? If any answer is no, split or rewrite. Formulas must look like a published textbook, not a chat transcript.`;
 
   const FILE_INST={
-    pdf:`PDF, institutional quality (Goldman Sachs / J.P. Morgan standard).
+    pdf:`PDF, institutional investment-bank quality.
 STRUCTURE: Title page (title 28pt, subtitle 16pt, date Month DD YYYY, classification), then TOC, then body sections, then Glossary at end. DO NOT number section headers; use clean text headers only (e.g. "Executive Summary" not "1.0 Executive Summary").
 TYPOGRAPHY: Arial throughout. Body 10.5pt #333333. H1 20pt bold #1B2A4A with 1pt rule below, 18pt space above, 8pt below. H2 14pt bold #1B2A4A, 14pt above, 6pt below. H3 11pt bold #333333, 10pt above, 4pt below. Margins 1in L/R, 0.75in T/B. 6pt paragraph spacing. Left-aligned (not justified). Callouts: #EBF5FB background, 1pt #1B2A4A left border, 8px padding.
 ORPHAN/WIDOW PREVENTION (MANDATORY): A header (H1, H2, H3) must NEVER appear at the bottom of a page with fewer than 4 lines of body text following it before the page break. If a header would be stranded, move the entire header and its content to the next page. Similarly, never leave fewer than 2 lines of a paragraph at the top or bottom of a page.
@@ -1249,7 +1253,7 @@ CHARTS: Title as insight statement (not generic label). Navy/steel blue/teal pal
 PAGE FLOW: Hard page break before each H1. Never split a table from its title. Min 2 rows per page side. If less than 30% page remaining, start table on next page. No page less than 40% filled. Last page must be more than 40% filled; extend glossary or add appendix if needed.
 `+FORMULA_RULES,
 
-    word:`DOCX, Big 4 consulting / top-tier law firm standard.
+    word:`DOCX, top-tier consulting / transactional-law firm standard.
 STRUCTURE: Title page (Calibri 26pt, date, version, confidentiality), then TOC via Heading styles, then body sections, then Glossary at end. DO NOT number section headers; use clean text headers only.
 TYPOGRAPHY: Calibri throughout. Body 11pt #333333, 1.25 line spacing, 6pt after paragraph. H1 18pt bold #1B2A4A with bottom border, 18pt above, 8pt below. H2 14pt bold #1B2A4A, 14pt above, 6pt below. H3 11.5pt bold #333333, 10pt above, 4pt below. Callouts: #EBF5FB background, 1pt #1B2A4A left border.
 ORPHAN/WIDOW PREVENTION (MANDATORY): A header must NEVER appear at the bottom of a page with fewer than 4 lines of body text following it before the page break. If stranded, move the header and its content to the next page. Never leave fewer than 2 lines of a paragraph at the top or bottom of a page.
@@ -1260,7 +1264,7 @@ CHARTS: Title as insight statement, never a generic label (e.g. "Revenue grew 23
 PAGE FLOW: Table title + body on same page. Never split with fewer than 2 rows per side. Source on same page as table.
 `+FORMULA_RULES,
 
-    excel:`XLSX, investment-bank-grade (Goldman Sachs / J.P. Morgan standard).
+    excel:`XLSX, investment-bank-grade workbook standard.
 STRUCTURE: Named tabs ("Summary", "Revenue Build", etc.). One analytical purpose per tab. Summary tab first with navigation links.
 LAYOUT: Rows 1-3 title block (company, title, date). Row 5+ data. Freeze Row 5 + Col A. Hide gridlines.
 - Headers: 10pt bold, white (#FFFFFF) on #1B2A4A, 22px row height
@@ -1272,7 +1276,7 @@ FORMATTING: Section totals: bold, 1pt navy top border, #E8EEF4 background. Grand
 "Table N: [Title]" cell above every table. Source line in 8pt italic gray cell below every table. Define abbreviations in a glossary tab.
 CHARTS: Insight statement titles (e.g. "Revenue grew 23% driven by pricing" not "Revenue Overview"). Navy/steel blue/teal palette, max 5 colors. 8pt labels. Data labels on bars. Source line below.`,
 
-    ppt:`PPTX, pitchbook standard (Goldman Sachs / McKinsey quality), 16:9 aspect ratio.
+    ppt:`PPTX, top-tier pitchbook-quality standard, 16:9 aspect ratio.
 STRUCTURE: Title slide (28pt white on navy, subtitle, date, confidentiality), then Agenda, then Section dividers (navy background), then Content slides, then Summary + Next Steps, then Appendix. DO NOT number slide titles.
 SLIDE RULES:
 - Assertion-Evidence format: slide title IS the conclusion, body proves it with data.
