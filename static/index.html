@@ -782,21 +782,48 @@ const IND_STYLE={
 };
 
 const ROLE_DEEP={
-  writing:"a senior professional writer and content strategist with 15+ years crafting compelling narratives, persuasive copy, and audience-tailored content across industries",
-  coding:"a principal software engineer and architect with deep expertise across languages, design patterns, testing, and production-grade systems",
-  analysis:"a senior analyst and strategic consultant with expertise in quantitative/qualitative research, statistical reasoning, and structured decision frameworks",
-  brainstorm:"a creative strategist and innovation consultant combining design thinking, lateral thinking, and structured ideation frameworks",
-  summarize:"an expert editor and information architect specializing in distilling complex material into clear, accurate, well-structured summaries",
-  translate:"a professional translator with native fluency, deep cultural understanding, and domain-specific terminology expertise",
-  image:"an expert AI image prompt engineer with deep knowledge of composition, lighting, color theory, and model-specific syntax (Midjourney, DALL-E, SD, Flux)",
-  roleplay:"a skilled domain expert capable of embodying specific personas with authentic voice and consistent character",
-  email:"a professional communications specialist expert in business writing, persuasion psychology, and stakeholder management",
-  learning:"an expert educator applying Bloom's taxonomy, scaffolded learning, and active recall techniques",
-  strategy:"a senior strategy partner at a top-tier consulting firm (McKinsey/BCG/Bain caliber) with 20+ years advising C-suite executives on market entry, competitive positioning, M&A, and organizational transformation",
-  debug:"a principal engineer and incident commander with deep expertise in root cause analysis, systematic debugging methodologies, and production system troubleshooting across distributed architectures",
-  review:"a senior editorial director and quality assurance lead who has reviewed thousands of documents, codebases, and deliverables with a forensic eye for gaps, inconsistencies, and missed opportunities",
-  decision:"a decision science expert combining behavioral economics, game theory, and structured decision analysis (multi-criteria, decision trees, scenario modeling) to help leaders make high-stakes choices under uncertainty",
-  persuade:"a master negotiator and communications strategist trained in principled negotiation (Harvard PON), influence psychology (Cialdini), and stakeholder management across cultures and power dynamics"
+  writing:"a senior professional writer and content strategist with 15+ years crafting award-winning narratives, persuasive copy, and audience-tailored content for Fortune 500 brands, bestselling authors, and high-stakes corporate communications",
+  coding:"a principal software engineer and architect with 20+ years shipping production systems at FAANG-scale companies, deep expertise across languages, design patterns, testing, distributed systems, and secure production-grade engineering",
+  analysis:"a senior analyst and strategic consultant with 20+ years at top-tier firms (McKinsey, Bain, BCG, Goldman Sachs) combining quantitative rigor, structured decision frameworks, and board-ready deliverable craft",
+  brainstorm:"a creative strategist and innovation consultant (IDEO, frog design, Ideo caliber) combining design thinking, lateral thinking, and structured ideation frameworks used by product teams at Apple, Google, and venture-backed startups",
+  summarize:"an expert editor and information architect with 15+ years as a senior editor at McKinsey Insights, Harvard Business Review, and The Economist, specializing in distilling complex material into clear, executive-ready summaries",
+  translate:"a professional translator with native fluency, graduate-level linguistics training, deep cultural understanding, and domain-specific terminology expertise certified for legal, medical, and diplomatic translation",
+  image:"an expert AI image prompt engineer with deep knowledge of composition, lighting, color theory, and model-specific syntax (Midjourney v6, DALL-E 3, Stable Diffusion XL, Flux)",
+  roleplay:"a skilled domain expert capable of embodying specific personas with authentic voice, consistent character, and genuine subject-matter depth",
+  email:"a professional communications specialist with 15+ years in executive communications and crisis comms, expert in business writing, persuasion psychology, and C-suite stakeholder management",
+  learning:"an expert educator with 15+ years designing curricula for MIT OpenCourseWare, Khan Academy, and executive education programs, applying Bloom's taxonomy, scaffolded learning, and active recall techniques",
+  strategy:"a senior strategy partner at a top-tier consulting firm (McKinsey/BCG/Bain caliber) with 20+ years advising C-suite executives on market entry, competitive positioning, M&A, and organizational transformation across Fortune 500 and high-growth companies",
+  debug:"a principal engineer and incident commander with 20+ years resolving production outages at FAANG scale, deep expertise in root cause analysis, systematic debugging methodologies, and post-mortem discipline across distributed architectures",
+  review:"a senior editorial director and quality assurance lead who has reviewed thousands of board-level documents, production codebases, and executive deliverables with a forensic eye for gaps, inconsistencies, and missed opportunities",
+  decision:"a decision science expert with 20+ years combining behavioral economics (Kahneman/Tversky), game theory, and structured decision analysis (multi-criteria, decision trees, Monte Carlo) helping CEOs and boards make high-stakes choices under uncertainty",
+  persuade:"a master negotiator and communications strategist trained in principled negotiation (Harvard PON), influence psychology (Cialdini), and stakeholder management across Fortune 500 boardrooms, M&A transactions, and cross-cultural diplomacy"
+};
+
+/* Firm-signature methodology. When a firm is selected, this injects the
+   firm's recognized analytical signature so the prompt inherits named
+   frameworks rather than generic "adopt the methodology" hand-waves. */
+const FIRM_SIGNATURE={
+  goldman:"Goldman Sachs signature: rigorous equity research discipline, Conviction Buy list methodology, proprietary sector frameworks, client-ready IC memo craft with bull/base/bear cases and 12-month price targets.",
+  jpmorgan:"JP Morgan signature: institutional research rigor, consensus-vs-surprise earnings framing, credit-quality decomposition, management-guidance triangulation, and decisive actionable ratings.",
+  blackrock:"BlackRock signature: Aladdin-grade risk decomposition, multi-factor portfolio construction, top-down asset allocation with strategic + tactical tilts, fee-aware implementation, and institutional IPS deliverable format.",
+  morganstanley:"Morgan Stanley signature: VP-banker-grade DCF craftsmanship, WACC build, sensitivity grids, comparable-company and precedent-transaction triangulation, clear fairness-memo verdict language.",
+  citadel:"Citadel signature: quant-trader discipline, edge quantification, Sharpe-aware sizing, regime-conditional backtests, microstructure awareness, latency-aware execution.",
+  mckinsey_health:"McKinsey Health signature: MECE structuring, hypothesis-driven analysis, pyramid-principle communication, day-1 answer with structured proof, implications-for-action framing.",
+  pfizer:"Pfizer signature: Phase I-III clinical rigor, regulatory-pathway awareness (FDA/EMA), benefit-risk assessment, and GxP-compliant documentation standards.",
+  unitedhealth:"UnitedHealth signature: population-health analytics, value-based-care economics, HEDIS/STAR metrics, actuarial rigor, and payer-provider integration lens.",
+  jnj:"Johnson & Johnson signature: medical-device lifecycle craft, clinical evidence generation, global regulatory strategy, pharmacovigilance discipline.",
+  mayo:"Mayo Clinic signature: evidence-based clinical protocol craft, multidisciplinary care pathway design, outcome-measure rigor, patient-centered quality improvement.",
+  sullivan:"Sullivan & Cromwell signature: white-shoe corporate-law rigor, deal-precedent mastery, SEC disclosure craft, and conservative defensible counsel voice.",
+  skadden:"Skadden signature: cross-border M&A mastery, antitrust and FCPA vigilance, capital-markets deal-doc precision, decisive counsel on high-stakes transactions.",
+  kirkland:"Kirkland & Ellis signature: PE-sponsor-aligned counsel, distressed and restructuring mastery, fund-formation and LPA rigor, aggressive deal-execution mindset.",
+  wachtell:"Wachtell Lipton signature: takeover-defense strategy, M&A playbook mastery, Delaware case-law fluency, activism response and corporate-governance craft.",
+  latham:"Latham & Watkins signature: full-service deal execution, cross-border complexity, project-finance rigor, tech-transactions and regulatory craft.",
+  wpp:"WPP/Ogilvy signature: big-idea brand craft, Effie-award-grade campaign thinking, consumer-insight depth, creative-strategy linkage, measurable campaign KPIs.",
+  google:"Google signature: design-doc rigor, scalability-first thinking, data-driven decisions with A/B experimentation, and SRE-grade reliability discipline.",
+  apple:"Apple signature: product-excellence obsession, end-to-end hardware-software integration mindset, privacy-by-design, minimalist craft.",
+  microsoft:"Microsoft signature: enterprise-grade architecture, Azure-native design patterns, security-first posture, and decisive product-leadership voice.",
+  meta:"Meta signature: move-fast product velocity, ML-scale infrastructure, growth-loop thinking, and platform ecosystem lens.",
+  amazon:"Amazon signature: working-backwards from the customer (PR/FAQ), 6-pager narrative rigor, two-pizza-team ownership, and operational-metric discipline."
 };
 
 const METHODOLOGY={
@@ -1377,6 +1404,7 @@ function buildPrompt(p){
     const firmData=SECTOR_FIRMS[industry].firms[selectedFirm];
     sys.push("Adopt the methodology and deliverable quality of "+firmData.name+".");
     if(selectedRole)sys.push("Role: "+selectedRole+" at "+firmData.name+".");
+    if(FIRM_SIGNATURE[selectedFirm])sys.push(FIRM_SIGNATURE[selectedFirm]);
   }
   const audienceEnhancement=(getSmartEnhancements(topic,taskType,industry,output)).find(e=>e.type==="audience");
   if(audience)sys.push("Audience: "+audience+".");
@@ -1404,6 +1432,17 @@ function buildPrompt(p){
   else if(tier==="balanced")taskParts.push("Be thorough but efficient. Prioritize actionable insights.");
   else taskParts.push("Be concise and direct. Focus on the most important points.");
   sec("task",taskParts.join("\n\n"));
+
+  // Methodology deliverables — task-type-specific bullet list that tells
+  // the model exactly how to structure the work. This gives generated
+  // prompts the concrete, bullet-by-bullet structure of reference-quality
+  // finance/consulting prompts rather than a generic "do a good job".
+  if(METHODOLOGY[taskType]&&METHODOLOGY[taskType].length>0){
+    sec("methodology",METHODOLOGY[taskType].map(x=>"- "+x).join("\n"));
+  }
+  if(QUALITY[taskType]){
+    sec("quality_bar",QUALITY[taskType]);
+  }
 
   // Includes (required sections) -- only if user selected any
   if(includes.length>0){
