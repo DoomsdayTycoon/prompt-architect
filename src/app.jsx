@@ -255,9 +255,9 @@ const UI={
   promptHistory:{en:"Prompt History",no:"Prompthistorikk"},
 
   // Hero
-  heroBadge:{en:"Smart Prompt Engineering",no:"Smart Prompt-utforming"},
-  heroTitle1:{en:"Stop struggling with AI.",no:"Slutt å slite med AI."},
-  heroTitle2:{en:"Start getting expert results.",no:"Få ekspertresultater."},
+  heroBadge:{en:"AI Prompt Intelligence",no:"AI Prompt-intelligens"},
+  heroTitle1:{en:"Your AI is only as smart",no:"AI-en din er bare så smart"},
+  heroTitle2:{en:"as your prompt.",no:"som prompten din."},
   heroSub:{en:"Your AI is only as smart as your prompt. Describe any goal and we inject strategy, structure, and domain expertise automatically -- so every AI interaction delivers.",no:"AI-en din er bare så smart som prompten din. Beskriv et mål, så legger vi til strategi, struktur og domenekunnskap automatisk -- slik at hver AI-interaksjon leverer."},
   trustedBy:{en:"Trusted by professionals",no:"Brukt av profesjonelle"},
   industryContexts:{en:"15 industry contexts",no:"15 bransjer"},
@@ -2330,8 +2330,8 @@ function App(){
 
   return <>
     <style>{`
-      @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap');
-      :root{--f:'Instrument Sans',-apple-system,sans-serif;--m:'IBM Plex Mono',monospace;--bg:#f8fafc;--s1:#ffffff;--s2:#f1f5f9;--bd:#e2e8f0;--t1:#0f172a;--t2:#475569;--t3:#94a3b8;--ac:${ac};--ac-rgb:${acRgb}}
+      @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+      :root{--f:'DM Sans',-apple-system,system-ui,sans-serif;--fh:'Space Grotesk','DM Sans',-apple-system,sans-serif;--m:'JetBrains Mono','IBM Plex Mono',monospace;--bg:#f5f7fb;--s1:#ffffff;--s2:#f0f3f9;--bd:rgba(59,130,246,.14);--bd2:rgba(0,0,0,.07);--t1:#0b1422;--t2:#4a5a78;--t3:#8a9bb8;--head:#0b1422;--ac:${ac};--ac-rgb:${acRgb};--rd:14px;--rds:10px;--glow:${ac}33;--dim:${ac}14}
       *{box-sizing:border-box}::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}::-webkit-scrollbar-track{background:transparent}
       @keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
       @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -2344,7 +2344,8 @@ function App(){
       .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}.reveal.visible{opacity:1;transform:translateY(0)}
       .toast-up{animation:slideUp .25s ease}
       .strength-bar{height:6px;border-radius:3px;transition:width .4s ease,background .4s ease}
-      body{background:#f8fafc;overflow-x:hidden}
+      body{background:var(--bg);overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-feature-settings:'ss01','cv11'}
+      h1,h2,h3,h4,h5{font-family:var(--fh);letter-spacing:-.025em}
       textarea:focus,input:focus{border-color:${ac}!important;box-shadow:0 0 0 3px ${ac}20}
       .main-grid{display:grid;grid-template-columns:1fr;gap:32px;align-items:start}
       @media(max-width:640px){
@@ -2368,16 +2369,16 @@ function App(){
       {t("welcomeOffer")}
     </div>}
     {/* STICKY NAV */}
-    <nav style={{position:"fixed",top:(!user||!usage.is_paid)?28:0,left:0,right:0,background:"rgba(255,255,255,.85)",backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)",borderBottom:"1px solid var(--bd)",zIndex:1000,padding:"0 24px",transition:"top .2s"}}>
-      <div style={{maxWidth:1200,margin:"0 auto",display:"flex",justifyContent:"space-between",alignItems:"center",height:56}}>
+    <nav style={{position:"fixed",top:(!user||!usage.is_paid)?28:0,left:0,right:0,background:"rgba(255,255,255,.78)",backdropFilter:"blur(16px) saturate(180%)",WebkitBackdropFilter:"blur(16px) saturate(180%)",borderBottom:"1px solid var(--bd)",zIndex:1000,padding:"0 28px",transition:"top .2s"}}>
+      <div style={{maxWidth:1240,margin:"0 auto",display:"flex",justifyContent:"space-between",alignItems:"center",height:64}}>
         <div style={{display:"flex",alignItems:"center",gap:10}}>
-          <svg width="30" height="30" viewBox="0 0 48 48" fill="none">
+          <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
             <circle cx="24" cy="24" r="23" stroke={ac} strokeWidth="1.8" fill={ac+"08"}/>
             <path d="M12 24h6l3-6 4.5 12 3-6H35" stroke={ac} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
             <circle cx="12" cy="24" r="2" fill={ac}/>
             <circle cx="35" cy="24" r="2" fill={ac}/>
           </svg>
-          <span style={{fontWeight:700,fontSize:17,color:"var(--t1)",letterSpacing:"-.3px"}}>Prompt Architect</span>
+          <span style={{fontFamily:"var(--fh)",fontWeight:500,fontSize:18,color:"var(--head)",letterSpacing:"-.02em"}}>Prompt<span style={{fontWeight:700}}>Architect</span></span>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:12}}>
           <button onClick={toggleUiLang} style={{display:"flex",alignItems:"center",gap:5,padding:"5px 10px",borderRadius:7,border:"1px solid var(--bd)",background:"var(--s2)",cursor:"pointer",fontFamily:"var(--f)",fontSize:11.5,fontWeight:600,color:"var(--t2)",transition:"all .15s"}} title={uiLang==="en"?"Bytt til norsk":"Switch to English"}>
@@ -2425,7 +2426,7 @@ function App(){
       </div>
     </nav>
 
-    <div style={{minHeight:"100vh",background:"var(--bg)",color:"var(--t1)",fontFamily:"var(--f)",paddingTop:(!user||!usage.is_paid)?84:56}}>
+    <div style={{minHeight:"100vh",background:"var(--bg)",color:"var(--t1)",fontFamily:"var(--f)",paddingTop:(!user||!usage.is_paid)?92:64}}>
 
       {/* COMPACT HERO + HOW IT WORKS — all one seamless section */}
       <section style={{background:"linear-gradient(180deg, #f0f9ff 0%, var(--bg) 100%)",padding:"clamp(20px,4vw,32px) clamp(12px,3vw,24px) 0",position:"relative",overflow:"hidden"}}>
@@ -2433,8 +2434,8 @@ function App(){
         <div style={{maxWidth:1200,margin:"0 auto"}}>
           {/* Hero copy — transformation-led */}
           <div style={{textAlign:"center",maxWidth:720,margin:"0 auto 28px"}}>
-            <div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"5px 14px",borderRadius:20,background:ac+"10",marginBottom:16,fontSize:12,fontWeight:600,color:ac}}>{t("heroBadge")}</div>
-            <h1 style={{fontSize:"clamp(26px, 3.5vw, 40px)",fontWeight:800,margin:"0 0 14px",lineHeight:1.15,color:"var(--t1)",letterSpacing:"-.4px"}}>{t("heroTitle1")} <span style={{color:ac}}>{t("heroTitle2")}</span></h1>
+            <div style={{display:"inline-flex",alignItems:"center",gap:8,padding:"6px 14px",borderRadius:100,background:ac+"10",border:"1px solid "+ac+"22",marginBottom:20,fontSize:11.5,fontWeight:600,color:ac,letterSpacing:".3px",textTransform:"uppercase"}}><span style={{width:6,height:6,borderRadius:"50%",background:ac,animation:"pulse 1.8s ease-in-out infinite"}}/>{t("heroBadge")}</div>
+            <h1 style={{fontSize:"clamp(36px, 5.5vw, 68px)",fontWeight:600,margin:"0 0 18px",lineHeight:1.05,color:"var(--head)",fontFamily:"var(--fh)",letterSpacing:"-.03em"}}>{t("heroTitle1")} <span style={{background:`linear-gradient(135deg, ${ac} 0%, #6366f1 55%, #8b5cf6 100%)`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text"}}>{t("heroTitle2")}</span></h1>
             <p style={{fontSize:"clamp(14px, 1.4vw, 17px)",color:"var(--t2)",margin:"0 auto",lineHeight:1.65,maxWidth:600}}>{t("heroSub")}</p>
             <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:16,marginTop:16,fontSize:12,color:"var(--t3)"}}>
               <span ref={countTaskRef} style={{display:"flex",alignItems:"center",gap:4}}>{I.bolt(13,"var(--t3)")} <strong style={{fontVariantNumeric:"tabular-nums"}}>{countTasks}</strong> {uiLang==="no"?"oppgavetyper":"task types"}</span>
