@@ -187,6 +187,51 @@ const FMTS={prose:{l:"Prose paragraphs",i:"pen"},bullets:{l:"Bullet points",i:"c
 
 const FILE_OUTPUTS={none:{l:"No file (chat only)",i:"speaker"},pdf:{l:"PDF Document",i:"fileText"},word:{l:"Word / DOCX",i:"file"},excel:{l:"Excel / Spreadsheet",i:"chart"},ppt:{l:"PowerPoint / Slides",i:"layout"},markdown:{l:"Markdown (.md)",i:"hash"},html:{l:"HTML Page",i:"code"},json:{l:"JSON / Structured Data",i:"code"},csv:{l:"CSV / Data File",i:"chart"},plaintext:{l:"Plain Text",i:"fileText"},codeFile:{l:"Code File",i:"code"}};
 
+/* SKILL_MAP — model-specific add-ons (Claude Skills, Custom GPTs,
+   Gemini Gems) that materially improve the output for a given file
+   type. Keyed as SKILL_MAP[fileOutput][modelId] with a `universal`
+   fallback. Only high-confidence matches are listed — no entry =
+   no UI card rendered. Emission is UI-only: skill hints never enter
+   the copied prompt text, so the emitted prompt stays universal
+   (reusable in any fresh chat). See feedback_universal_prompts memory. */
+const SKILL_MAP={
+  pdf:{
+    claude:{label:"Anthropic PDF Skill",url:"https://github.com/anthropics/skills/tree/main/document-skills/pdf",desc:"Auto-renders structured PDFs with typography, tables, and layout when Claude Code runs the prompt."},
+    chatgpt:{label:"PDF Generator GPT",url:"https://chatgpt.com/gpts?category=productivity",desc:"Search 'PDF Generator' in the GPT Store — several well-rated Custom GPTs output styled PDFs directly in chat."},
+    gemini:{label:"Gemini Canvas for PDF",url:"https://gemini.google.com/app",desc:"Use Canvas mode in Gemini to draft the document, then export to PDF via the Canvas toolbar."},
+    universal:{label:"Agent Skills PDF Standard",url:"https://agentskills.io",desc:"Cross-tool skill spec that works with Cursor, VS Code, and any Agent Skills-compatible runtime."}
+  },
+  word:{
+    claude:{label:"Anthropic DOCX Skill",url:"https://github.com/anthropics/skills/tree/main/document-skills/docx",desc:"Produces native .docx files with styles, headings, and track-changes-ready formatting."},
+    chatgpt:{label:"Doc Maker / Word GPT",url:"https://chatgpt.com/gpts?category=productivity",desc:"'Doc Maker' in the GPT Store builds downloadable .docx files directly from your prompt."},
+    gemini:{label:"Google Docs export",url:"https://gemini.google.com/app",desc:"Gemini can push drafts directly into Google Docs via the side panel in Workspace."},
+    universal:{label:"Agent Skills DOCX Standard",url:"https://agentskills.io",desc:"Portable docx skill spec usable in any Agent Skills-compatible tool."}
+  },
+  excel:{
+    claude:{label:"Anthropic XLSX Skill",url:"https://github.com/anthropics/skills/tree/main/document-skills/xlsx",desc:"Builds real .xlsx workbooks with formulas, sheets, and number formatting instead of CSV mimicry."},
+    chatgpt:{label:"Spreadsheet / Excel GPT",url:"https://chatgpt.com/gpts?category=productivity",desc:"'Spreadsheet' Custom GPT generates downloadable .xlsx files with live formulas."},
+    gemini:{label:"Sheets-connected Gem",url:"https://gemini.google.com/gems/create",desc:"Create a Gem with Google Sheets connector to write real workbooks from a natural-language brief."},
+    universal:{label:"Agent Skills XLSX Standard",url:"https://agentskills.io",desc:"Cross-tool spreadsheet skill spec."}
+  },
+  ppt:{
+    claude:{label:"Anthropic PPTX Skill",url:"https://github.com/anthropics/skills/tree/main/document-skills/pptx",desc:"Generates proper .pptx decks with slide masters, layouts, and image placement."},
+    chatgpt:{label:"Slide Maker GPT",url:"https://chatgpt.com/gpts?category=productivity",desc:"'Slide Maker' Custom GPT produces downloadable .pptx decks from a topic brief."},
+    gemini:{label:"Slides-connected Gem",url:"https://gemini.google.com/gems/create",desc:"Create a Gem with Google Slides connector to draft decks directly in Slides."},
+    universal:{label:"Agent Skills PPTX Standard",url:"https://agentskills.io",desc:"Portable presentation skill spec."}
+  },
+  codeFile:{
+    claude:{label:"Claude Code CLI",url:"https://docs.claude.com/en/docs/claude-code/overview",desc:"Run this prompt in Claude Code and it can write, edit, and test code files directly in your repo."},
+    chatgpt:{label:"ChatGPT Code Interpreter",url:"https://chatgpt.com",desc:"Attach code files and enable Code Interpreter — ChatGPT can execute and iterate on your code in-session."},
+    copilot:{label:"GitHub Copilot Chat",url:"https://github.com/features/copilot",desc:"Paste this prompt into Copilot Chat inside VS Code / JetBrains — it has full repo context."},
+    universal:{label:"Cursor / Windsurf",url:"https://cursor.sh",desc:"Works in any agentic IDE (Cursor, Windsurf, Cline) with native file editing and terminal access."}
+  },
+  html:{
+    claude:{label:"Claude Artifacts",url:"https://www.anthropic.com/news/artifacts",desc:"Claude.ai renders HTML live in an Artifact panel — you see the page render as Claude writes it."},
+    chatgpt:{label:"Canvas / HTML preview",url:"https://chatgpt.com",desc:"Use Canvas mode — ChatGPT shows a live HTML preview pane alongside the code."},
+    universal:{label:"v0.dev",url:"https://v0.dev",desc:"Vercel's v0 renders UI prompts into live, editable React/HTML components."}
+  }
+};
+
 const INCLUDES={exec_summary:{l:"Executive Summary",i:"fileText"},examples:{l:"Real-World Examples",i:"lightbulb"},sources:{l:"Source Citations",i:"book"},action_items:{l:"Action Items / Next Steps",i:"checkList"},risks:{l:"Risk Assessment",i:"target"},comparison:{l:"Comparison Table",i:"layout"},timeline:{l:"Timeline / Milestones",i:"ruler"},metrics:{l:"KPIs / Metrics",i:"chart"},glossary:{l:"Glossary / Definitions",i:"book"},visuals:{l:"Visual Descriptions",i:"palette"}};
 
 const TECHS={cot:{l:"Chain of Thought",i:"brain"},fewshot:{l:"Few-Shot Examples",i:"layout"},constraints:{l:"Strict Constraints",i:"ruler"},selfcheck:{l:"Self-Verification",i:"target"},compare:{l:"Compare Options",i:"sliders"},iterative:{l:"Iterative Refine",i:"bolt"},roleplay:{l:"Role Assignment",i:"theater"},redteam:{l:"Red Team / Devil's Advocate",i:"microscope"},firstprinciples:{l:"First Principles Thinking",i:"lightbulb"},inversion:{l:"Inversion (Pre-mortem)",i:"chart"},multiagent:{l:"Multi-Perspective Panel",i:"users"},structured_debate:{l:"Structured Debate",i:"speaker"},systems:{l:"Systems Thinking",i:"sliders"},decompose:{l:"Task Decomposition",i:"layers"},meta:{l:"Meta-Reasoning",i:"brain"}};
@@ -2850,6 +2895,26 @@ function App(){
             {fileOutput!=="none"&&<span style={{display:"flex",alignItems:"center",gap:3}}>{I.download(10,"var(--t3)")} {tl(UI_FILE_OUTPUTS,fileOutput)}</span>}
             {language!=="English"&&<span style={{display:"flex",alignItems:"center",gap:3}}>{I.lang(10,"var(--t3)")} {language}</span>}
           </div>
+          {(()=>{
+            const bucket=SKILL_MAP[fileOutput];
+            if(!bucket)return null;
+            const skill=bucket[model]||bucket.universal;
+            if(!skill)return null;
+            const modelLabel=MODELS[model]?.name||"this model";
+            return (
+              <div style={{padding:"14px 20px",background:"linear-gradient(135deg, "+ac+"08, "+ac+"04)",borderTop:"1px solid "+ac+"20",display:"flex",alignItems:"flex-start",gap:12}}>
+                <div style={{width:32,height:32,borderRadius:8,background:ac+"15",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{I.sparkle(16,ac)}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:3,flexWrap:"wrap"}}>
+                    <span style={{fontSize:11,fontWeight:700,color:ac,textTransform:"uppercase",letterSpacing:.4}}>Recommended add-on for {modelLabel}</span>
+                  </div>
+                  <div style={{fontSize:13,fontWeight:640,color:"var(--t1)",marginBottom:3}}>{skill.label}</div>
+                  <div style={{fontSize:12,color:"var(--t3)",lineHeight:1.5,marginBottom:6}}>{skill.desc}</div>
+                  <a href={skill.url} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:11,fontWeight:600,color:ac,textDecoration:"none"}}>Open {I.share(10,ac)}</a>
+                </div>
+              </div>
+            );
+          })()}
           <div style={{padding:"16px 20px",background:"var(--bg)",borderTop:"1px solid var(--bd)",fontSize:12,color:"var(--t3)",lineHeight:1.6}}>
             <p style={{margin:0}}>{t("resultInfo")}</p>
             {isFree&&<p style={{margin:"10px 0 0",fontSize:11,color:ac,fontWeight:500}}>Copies include "Generated with Prompt Architect" attribution. <span style={{textDecoration:"underline",cursor:"pointer"}} onClick={()=>setShowPaywall(true)}>Upgrade to Pro</span> to remove it.</p>}
