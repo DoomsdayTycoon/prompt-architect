@@ -2048,6 +2048,90 @@ function App(){
   const [countIndustries,countIndRef]=useCounter(15,800);
   const [countModels,countModRef]=useCounter(5,600);
   const [countTasks,countTaskRef]=useCounter(15,800);
+  const [wowStatsFirms,wowStatsFirmsRef]=useCounter(70,1100);
+  const [wowStatsRoles,wowStatsRolesRef]=useCounter(350,1400);
+  const [wowStatsTechs,wowStatsTechsRef]=useCounter(15,800);
+  const [wowStatsTasks,wowStatsTasksRef]=useCounter(15,800);
+  const [wowStatsInd,wowStatsIndRef]=useCounter(15,800);
+
+  // WOW hero animations
+  const wowCanvasRef=useRef(null);
+  const [wowScrambleWord,setWowScrambleWord]=useState("prompt");
+  const [wowTyped,setWowTyped]=useState("");
+  const [wowDemoIdx,setWowDemoIdx]=useState(0);
+  const wowDemoIns=["Write a market analysis","Create a strategic plan","Draft a legal memo"];
+  const wowDemoTags=[["Finance","Global Bank","Expert Mode"],["Consulting","Tier-1 Firm","Expert Mode"],["Legal","Top Firm","Expert Mode"]];
+  const wowDemoOuts=[
+    "Act as a senior equity analyst.\nConduct investment-grade market analysis:\nTAM/SAM/SOM sizing (DCF-backed)\nPorter's Five Forces framework\nRegulatory risk assessment\nBull/base/bear price scenarios\nOutput: executive memo, 3-page max.",
+    "You are a senior strategy partner.\nDevelop a strategic framework using:\nMECE issue tree decomposition\n3-horizon growth mapping\nHypothesis-driven structure\nPyramid Principle output\nDeliver: board-ready deck.",
+    "As a senior partner at a top law firm:\nJurisdictional precedent mapping\nRisk matrix & regulatory exposure\nCompliance framework\nPlain-language executive summary\nFormat: ABA standards.",
+  ];
+  // Particles canvas
+  useEffect(()=>{
+    const c=wowCanvasRef.current;if(!c)return;
+    const ctx=c.getContext("2d");let W=0,H=0,pts=[],raf=0;
+    const resize=()=>{W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;};
+    resize();
+    const ro=new ResizeObserver(resize);if(c.parentElement)ro.observe(c.parentElement);
+    const N=55;
+    for(let i=0;i<N;i++)pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*1.5+.5});
+    const draw=()=>{
+      ctx.clearRect(0,0,W,H);
+      const pc="rgba(59,130,246,";
+      pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;});
+      for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
+        const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);
+        if(d<130){ctx.beginPath();ctx.strokeStyle=pc+(1-d/130)*0.14+")";ctx.lineWidth=.8;ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.stroke();}
+      }
+      pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=pc+".35)";ctx.fill();});
+      raf=requestAnimationFrame(draw);
+    };
+    draw();
+    return()=>{cancelAnimationFrame(raf);ro.disconnect();};
+  },[]);
+  // Word scramble cycle
+  useEffect(()=>{
+    const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const words=["prompt","results","output"];let wi=0;let timer=null;let intv=null;
+    const scramble=(target,cb)=>{
+      let iter=0;const total=18;
+      intv=setInterval(()=>{
+        const mapped=target.split("").map((_,i)=>i<Math.floor(iter/total*target.length)?target[i]:chars[Math.floor(Math.random()*chars.length)]).join("");
+        setWowScrambleWord(mapped);
+        if(++iter>total){setWowScrambleWord(target);clearInterval(intv);intv=null;timer=setTimeout(cb,3200);}
+      },55);
+    };
+    const cycle=()=>{wi=(wi+1)%words.length;scramble(words[wi],cycle);};
+    timer=setTimeout(cycle,2500);
+    return()=>{if(timer)clearTimeout(timer);if(intv)clearInterval(intv);};
+  },[]);
+  // Typewriter demo
+  useEffect(()=>{
+    let typeTimer=null;let nextTimer=null;let cancelled=false;
+    const type=(txt,cb)=>{
+      let i=0;setWowTyped("");
+      const tick=()=>{
+        if(cancelled)return;
+        if(i<txt.length){setWowTyped(txt.slice(0,++i));typeTimer=setTimeout(tick,i<50?15:10);}
+        else{nextTimer=setTimeout(cb,3000);}
+      };
+      tick();
+    };
+    const run=()=>{
+      type(wowDemoOuts[wowDemoIdx],()=>{if(!cancelled)setWowDemoIdx(p=>(p+1)%wowDemoOuts.length);});
+    };
+    const kick=setTimeout(run,400);
+    return()=>{cancelled=true;clearTimeout(kick);if(typeTimer)clearTimeout(typeTimer);if(nextTimer)clearTimeout(nextTimer);};
+  },[wowDemoIdx]);
+  // Feature card shine
+  useEffect(()=>{
+    const cards=document.querySelectorAll(".wow-fcard");
+    const handler=(e)=>{const card=e.currentTarget;const r=card.getBoundingClientRect();card.style.setProperty("--mx",(e.clientX-r.left)+"px");card.style.setProperty("--my",(e.clientY-r.top)+"px");};
+    cards.forEach(c=>c.addEventListener("mousemove",handler));
+    return()=>cards.forEach(c=>c.removeEventListener("mousemove",handler));
+  },[]);
+  // Technique pill toggle (local)
+  const [wowActivePills,setWowActivePills]=useState({"Chain of Thought":true,"Option Comparison":true,"First Principles":true,"Task Decomposition":true});
 
   // FREE LIMITS: 2 simple prompts, 1 expert prompt
   const FREE_SIMPLE=2;
@@ -2363,6 +2447,142 @@ function App(){
       .profile-dd{position:absolute;top:100%;right:0;margin-top:8px;background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:6px;min-width:200px;box-shadow:0 10px 40px rgba(0,0,0,.12);animation:slideDown .15s ease;z-index:1001}
       .profile-dd button{display:flex;align-items:center;gap:10px;width:100%;padding:10px 14px;border:none;background:transparent;color:var(--t2);font-size:13px;font-family:var(--f);cursor:pointer;border-radius:8px;transition:background .15s}
       .profile-dd button:hover{background:var(--s2)}
+
+      /* ── WOW HERO + MARKETING ── */
+      @keyframes morph{0%,100%{transform:translate(0,0) scale(1) rotate(0deg);border-radius:50%}33%{transform:translate(30px,-20px) scale(1.08) rotate(120deg);border-radius:40% 60% 55% 45%}66%{transform:translate(-20px,25px) scale(.94) rotate(240deg);border-radius:60% 40% 45% 55%}}
+      @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+      @keyframes cblink{50%{opacity:0}}
+      @keyframes apulse{0%,100%{box-shadow:0 0 0 0 var(--glow)}50%{box-shadow:0 0 0 8px rgba(0,0,0,0)}}
+      @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+      @keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+      @property --deg{syntax:'<angle>';initial-value:0deg;inherits:false}
+      @keyframes spin-border{to{--deg:360deg}}
+
+      .wow-hero{position:relative;padding:120px 32px 80px;text-align:center;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center}
+      .wow-canvas{position:absolute;inset:0;z-index:0;pointer-events:none}
+      .wow-blob{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;animation:morph 8s ease-in-out infinite;z-index:0}
+      .wow-blob1{width:600px;height:500px;background:${ac}2E;top:-10%;left:-10%;animation-delay:0s}
+      .wow-blob2{width:500px;height:400px;background:#a78bfa24;top:20%;right:-8%;animation-delay:-3s}
+      .wow-blob3{width:400px;height:350px;background:#fbbf2419;bottom:-5%;left:30%;animation-delay:-5s}
+      .wow-hero-content{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;width:100%;max-width:1140px;margin:0 auto}
+      .wow-badge{display:inline-flex;align-items:center;gap:8px;background:var(--dim);border:1px solid var(--bd);border-radius:100px;padding:6px 16px;margin-bottom:26px;font-size:13px;font-weight:500;color:${ac};animation:fadeUp .6s ease both;font-family:var(--f)}
+      .wow-bdot{width:6px;height:6px;border-radius:50%;background:${ac};animation:blink 2.5s ease-in-out infinite}
+      .wow-h1{font-family:var(--fh);font-size:clamp(40px,6vw,78px);font-weight:700;line-height:1.04;letter-spacing:-.035em;color:var(--head);max-width:900px;margin:0;animation:fadeUp .7s .1s ease both}
+      .wow-gt{background:linear-gradient(135deg,var(--head) 10%,${ac} 80%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+      .wow-hero-sub{font-size:clamp(15px,1.6vw,18px);color:var(--t2);max-width:560px;margin:18px auto 36px;line-height:1.65;animation:fadeUp .7s .2s ease both;font-family:var(--f)}
+      .wow-acts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;animation:fadeUp .7s .3s ease both}
+      .wow-btn-p{background:${ac};color:#fff;border:none;padding:14px 32px;border-radius:11px;font-size:15px;font-weight:600;cursor:pointer;font-family:var(--f);box-shadow:0 0 0 4px var(--glow),0 8px 32px var(--glow);transition:all .25s;text-decoration:none;display:inline-flex;align-items:center;gap:9px;position:relative;overflow:hidden}
+      .wow-btn-p::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transform:translateX(-100%);transition:transform .5s}
+      .wow-btn-p:hover::before{transform:translateX(100%)}
+      .wow-btn-p:hover{transform:translateY(-2px);box-shadow:0 0 0 6px var(--glow),0 16px 40px var(--glow)}
+      .wow-btn-g{background:var(--s1);color:var(--t2);border:1px solid var(--bd2);padding:14px 32px;border-radius:11px;font-size:15px;font-weight:500;cursor:pointer;font-family:var(--f);transition:all .25s;text-decoration:none;display:inline-flex;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+      .wow-btn-g:hover{border-color:var(--bd);color:var(--t1);box-shadow:0 4px 20px rgba(0,0,0,.1)}
+      .wow-demo{margin-top:60px;width:100%;max-width:740px;animation:fadeUp .8s .45s ease both}
+      .wow-demo-card{background:var(--s1);border:1px solid var(--bd2);border-radius:20px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.1),0 0 0 1px rgba(59,130,246,.06);transition:all .4s}
+      .wow-demo-card:hover{box-shadow:0 40px 100px rgba(0,0,0,.14),0 0 0 1px var(--bd)}
+      .wow-demo-top{background:var(--s2);padding:13px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--bd2)}
+      .wow-tls{display:flex;gap:6px}
+      .wow-tls span{width:11px;height:11px;border-radius:50%}
+      .wow-tl-r{background:#ff5f57}.wow-tl-y{background:#febc2e}.wow-tl-g{background:#28c840}
+      .wow-demo-ttl{font-family:var(--m);font-size:11px;color:var(--t3);flex:1;text-align:center;letter-spacing:.03em}
+      .wow-demo-body{padding:24px;display:grid;grid-template-columns:1fr 44px 1fr;gap:16px;align-items:start}
+      .wow-dpanel{display:flex;flex-direction:column;gap:8px}
+      .wow-dlbl{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--t3)}
+      .wow-din{background:var(--s2);border:1px solid var(--bd2);border-radius:10px;padding:14px;font-size:14px;font-family:var(--f);color:var(--t2);line-height:1.5;min-height:90px}
+      .wow-dout{background:var(--dim);border:1px solid var(--bd);border-radius:10px;padding:14px;font-size:12px;font-family:var(--m);color:${ac};line-height:1.65;min-height:90px;white-space:pre-wrap}
+      .wow-dcur{display:inline-block;width:2px;height:13px;background:${ac};animation:cblink .8s step-end infinite;vertical-align:text-bottom}
+      .wow-dmid{display:flex;align-items:center;justify-content:center;padding-top:22px}
+      .wow-darr{width:32px;height:32px;border-radius:50%;background:${ac}26;border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;animation:apulse 2.4s ease-in-out infinite}
+      .wow-dtags{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+      .wow-tag{font-size:11px;padding:3px 10px;border-radius:100px;background:var(--dim);border:1px solid var(--bd);color:${ac};font-weight:500}
+      .wow-tag.gold{background:#f59e0b1f;border-color:#f59e0b33;color:#d97706}
+
+      .wow-stats{border-top:1px solid var(--bd2);border-bottom:1px solid var(--bd2);background:var(--s1);display:flex;justify-content:center}
+      .wow-si{flex:1;max-width:210px;padding:32px 20px;text-align:center;border-right:1px solid var(--bd2)}
+      .wow-si:last-child{border-right:none}
+      .wow-snum{font-family:var(--fh);font-size:40px;font-weight:700;letter-spacing:-.03em;background:linear-gradient(135deg,${ac},#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+      .wow-slbl{font-size:12px;color:var(--t3);margin-top:4px;font-weight:500}
+
+      .wow-sec{padding:100px 32px;max-width:1140px;margin:0 auto}
+      .wow-stag{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:${ac};margin-bottom:14px}
+      .wow-stag::before{content:'';display:block;width:16px;height:2px;background:${ac};border-radius:1px}
+      .wow-h2{font-family:var(--fh);font-size:clamp(28px,3.5vw,48px);font-weight:700;letter-spacing:-.025em;color:var(--head);line-height:1.1;margin:0}
+      .wow-ssub{font-size:16px;color:var(--t2);margin-top:14px;max-width:520px;line-height:1.65;font-family:var(--f)}
+
+      .wow-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:56px;border:1px solid var(--bd2);border-radius:var(--rd);overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.05);background:var(--bd2)}
+      .wow-step{background:var(--s1);padding:38px 30px;transition:background .25s;position:relative;overflow:hidden}
+      .wow-step::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 0% 0%,var(--dim),transparent 60%);opacity:0;transition:opacity .4s}
+      .wow-step:hover{background:var(--s2)}
+      .wow-step:hover::before{opacity:1}
+      .wow-step-n{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:${ac};margin-bottom:20px;display:flex;align-items:center;gap:8px;position:relative;z-index:1}
+      .wow-step-nd{width:22px;height:22px;border-radius:50%;background:var(--dim);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:${ac};font-family:var(--fh)}
+      .wow-step-ico{margin-bottom:18px;position:relative;z-index:1}
+      .wow-step h3{font-family:var(--fh);font-size:18px;font-weight:600;color:var(--head);margin:0 0 10px;position:relative;z-index:1}
+      .wow-step p{font-size:14px;color:var(--t2);line-height:1.65;position:relative;z-index:1;margin:0}
+
+      .wow-fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1px;margin-top:56px;border:1px solid var(--bd2);border-radius:var(--rd);overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.05);background:var(--bd2)}
+      .wow-fcard{background:var(--s1);padding:32px;position:relative;overflow:hidden;transition:background .25s;cursor:default}
+      .wow-fcard-shine{position:absolute;inset:0;pointer-events:none;background:radial-gradient(600px circle at var(--mx,50%) var(--my,50%),${ac}14,transparent 50%);opacity:0;transition:opacity .3s;z-index:0}
+      .wow-fcard:hover .wow-fcard-shine{opacity:1}
+      .wow-fcard-ico{width:42px;height:42px;border-radius:10px;background:var(--dim);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;margin-bottom:18px;color:${ac};position:relative;z-index:1;transition:transform .2s,box-shadow .2s}
+      .wow-fcard:hover .wow-fcard-ico{transform:scale(1.08);box-shadow:0 4px 16px var(--glow)}
+      .wow-fcard h3{font-family:var(--fh);font-size:17px;font-weight:600;color:var(--head);margin:0 0 8px;position:relative;z-index:1}
+      .wow-fcard p{font-size:13.5px;color:var(--t2);line-height:1.65;position:relative;z-index:1;margin:0}
+      .wow-cbadge{display:inline-block;margin-top:14px;font-size:11px;font-weight:700;padding:3px 11px;border-radius:100px;background:#f59e0b1f;border:1px solid #f59e0b33;color:#d97706;position:relative;z-index:1}
+
+      .wow-mq-sec{padding:52px 0;overflow:hidden;border-top:1px solid var(--bd2);border-bottom:1px solid var(--bd2);background:var(--s2)}
+      .wow-mq-lbl{text-align:center;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:26px}
+      .wow-mq-track{display:flex;overflow:hidden;mask-image:linear-gradient(90deg,transparent,black 15%,black 85%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,black 15%,black 85%,transparent)}
+      .wow-mq-inner{display:flex;animation:mq 30s linear infinite;white-space:nowrap}
+      .wow-chip{display:inline-flex;align-items:center;padding:8px 22px;border-right:1px solid var(--bd2);font-size:13px;font-weight:600;color:var(--t3);white-space:nowrap;transition:color .2s;letter-spacing:.02em;font-family:var(--fh)}
+      .wow-chip:hover{color:var(--t2)}
+
+      .wow-tpills{display:flex;flex-wrap:wrap;gap:9px;margin-top:38px}
+      .wow-tpill{padding:9px 18px;border-radius:100px;border:1px solid var(--bd2);background:var(--s1);font-size:13.5px;color:var(--t2);font-weight:500;transition:all .22s;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.05);font-family:var(--f)}
+      .wow-tpill:hover{border-color:var(--bd);color:var(--t1);background:var(--s2);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
+      .wow-tpill.on{border-color:var(--bd);background:var(--dim);color:${ac}}
+
+      .wow-mgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:44px}
+      .wow-mcard{background:var(--s1);border:1px solid var(--bd2);border-radius:var(--rd);padding:28px 16px;text-align:center;transition:all .25s;box-shadow:0 1px 4px rgba(0,0,0,.05);position:relative;overflow:hidden}
+      .wow-mcard::before{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,${ac},#7c3aed);transform:scaleX(0);transition:transform .3s;transform-origin:left}
+      .wow-mcard:hover::before{transform:scaleX(1)}
+      .wow-mcard:hover{border-color:var(--bd);transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.1)}
+      .wow-mico{margin-bottom:10px;color:${ac};display:flex;justify-content:center}
+      .wow-mname{font-family:var(--fh);font-size:14px;font-weight:600;color:var(--head)}
+      .wow-mby{font-size:11px;color:var(--t3);margin-top:3px}
+
+      .wow-pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:56px}
+      .wow-pcard{background:var(--s1);border:1px solid var(--bd2);border-radius:18px;padding:34px;position:relative;transition:all .3s;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+      .wow-pcard:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.1)}
+      .wow-pcard.feat{border-color:var(--bd);background:linear-gradient(160deg,${ac}0D,#fff 55%);isolation:isolate}
+      .wow-pcard.feat::after{content:'';position:absolute;inset:-1px;border-radius:19px;z-index:-1;background:conic-gradient(from var(--deg),${ac},#d97706,${ac});animation:spin-border 4s linear infinite}
+      .wow-fbadge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:${ac};color:#fff;font-size:10px;font-weight:700;padding:4px 14px;border-radius:100px;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap}
+      .wow-ptier{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:18px}
+      .wow-pamount{display:flex;align-items:baseline;gap:3px;margin-bottom:6px}
+      .wow-pnum{font-family:var(--fh);font-size:48px;font-weight:700;color:var(--head);letter-spacing:-.04em}
+      .wow-pper{font-size:14px;color:var(--t3)}
+      .wow-pdesc{font-size:13.5px;color:var(--t2);margin-bottom:26px;line-height:1.5}
+      .wow-pfeats{list-style:none;padding:0;display:flex;flex-direction:column;gap:11px;margin:0 0 28px}
+      .wow-pfeats li{font-size:13.5px;color:var(--t2);display:flex;align-items:center;gap:10px}
+      .wow-pfeats li::before{content:'';width:16px;height:16px;border-radius:50%;flex-shrink:0;background:var(--dim);border:1px solid var(--bd);background-image:url("data:image/svg+xml,%3Csvg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 5l2.5 2.5L8 3' stroke='%233b82f6' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center;background-size:10px}
+      .wow-pbtn{width:100%;padding:11px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--f);transition:all .25s;border:1px solid var(--bd2);background:transparent;color:var(--t2)}
+      .wow-pbtn:hover{border-color:var(--bd);color:var(--t1);background:var(--s2)}
+      .wow-pbtn.f{background:${ac};color:#fff;border-color:transparent;box-shadow:0 0 0 3px var(--glow)}
+      .wow-pbtn.f:hover{box-shadow:0 0 0 5px var(--glow);transform:translateY(-1px)}
+
+      .wow-cta{margin:0 32px 96px;padding:80px 56px;border-radius:24px;text-align:center;position:relative;overflow:hidden;border:1px solid var(--bd);background:linear-gradient(135deg,${ac}26,${ac}14);box-shadow:0 0 0 1px var(--bd),0 20px 60px var(--glow)}
+      .wow-cta::before{content:'';position:absolute;top:-60%;left:-10%;width:120%;height:200%;background:radial-gradient(ellipse at 50% 0%,var(--glow),transparent 60%);pointer-events:none}
+      .wow-cta h2{font-size:clamp(28px,3.5vw,46px);position:relative;margin:0}
+      .wow-cta p{font-size:16px;color:var(--t2);margin:14px auto 36px;max-width:460px;position:relative;font-family:var(--f)}
+
+      @media(max-width:768px){
+        .wow-steps,.wow-pgrid{grid-template-columns:1fr}
+        .wow-mgrid{grid-template-columns:repeat(3,1fr)}
+        .wow-stats{flex-wrap:wrap}
+        .wow-demo-body{grid-template-columns:1fr}.wow-dmid{display:none}
+        .wow-sec{padding:60px 20px}
+        .wow-cta{margin:0 16px 60px;padding:50px 24px}
+      }
     `}</style>
     {/* TOP OFFER BANNER */}
     {(!user||!usage.is_paid)&&<div style={{position:"fixed",top:0,left:0,right:0,zIndex:1001,background:ac,color:"#fff",textAlign:"center",padding:"6px 16px",fontSize:12,fontWeight:500,letterSpacing:.2}}>
@@ -2428,115 +2648,178 @@ function App(){
 
     <div style={{minHeight:"100vh",background:"var(--bg)",color:"var(--t1)",fontFamily:"var(--f)",paddingTop:(!user||!usage.is_paid)?92:64}}>
 
-      {/* COMPACT HERO + HOW IT WORKS — all one seamless section */}
-      <section style={{background:"linear-gradient(180deg, #f0f9ff 0%, var(--bg) 100%)",padding:"clamp(20px,4vw,32px) clamp(12px,3vw,24px) 0",position:"relative",overflow:"hidden"}}>
-        <div style={{position:"absolute",top:-100,right:-80,width:350,height:350,borderRadius:"50%",background:`radial-gradient(circle, ${ac}06 0%, transparent 70%)`,pointerEvents:"none"}}/>
-        <div style={{maxWidth:1200,margin:"0 auto"}}>
-          {/* Hero copy — transformation-led */}
-          <div style={{textAlign:"center",maxWidth:720,margin:"0 auto 28px"}}>
-            <div style={{display:"inline-flex",alignItems:"center",gap:8,padding:"6px 14px",borderRadius:100,background:ac+"10",border:"1px solid "+ac+"22",marginBottom:20,fontSize:11.5,fontWeight:600,color:ac,letterSpacing:".3px",textTransform:"uppercase"}}><span style={{width:6,height:6,borderRadius:"50%",background:ac,animation:"pulse 1.8s ease-in-out infinite"}}/>{t("heroBadge")}</div>
-            <h1 style={{fontSize:"clamp(36px, 5.5vw, 68px)",fontWeight:600,margin:"0 0 18px",lineHeight:1.05,color:"var(--head)",fontFamily:"var(--fh)",letterSpacing:"-.03em"}}>{t("heroTitle1")} <span style={{background:`linear-gradient(135deg, ${ac} 0%, #6366f1 55%, #8b5cf6 100%)`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text"}}>{t("heroTitle2")}</span></h1>
-            <p style={{fontSize:"clamp(14px, 1.4vw, 17px)",color:"var(--t2)",margin:"0 auto",lineHeight:1.65,maxWidth:600}}>{t("heroSub")}</p>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:16,marginTop:16,fontSize:12,color:"var(--t3)"}}>
-              <span ref={countTaskRef} style={{display:"flex",alignItems:"center",gap:4}}>{I.bolt(13,"var(--t3)")} <strong style={{fontVariantNumeric:"tabular-nums"}}>{countTasks}</strong> {uiLang==="no"?"oppgavetyper":"task types"}</span>
-              <span style={{width:1,height:14,background:"var(--bd)"}}/>
-              <span ref={countIndRef} style={{display:"flex",alignItems:"center",gap:4}}>{I.layers(13,"var(--t3)")} <strong style={{fontVariantNumeric:"tabular-nums"}}>{countIndustries}</strong> {uiLang==="no"?"bransjer":"industries"}</span>
-              <span style={{width:1,height:14,background:"var(--bd)"}} className="hero-art"/>
-              <span ref={countModRef} style={{display:"flex",alignItems:"center",gap:4}} className="hero-art">{I.sparkle(13,"var(--t3)")} <strong style={{fontVariantNumeric:"tabular-nums"}}>{countModels}</strong> {uiLang==="no"?"AI-modeller":"AI models"}</span>
-            </div>
+      {/* WOW HERO */}
+      <section className="wow-hero">
+        <canvas ref={wowCanvasRef} className="wow-canvas"/>
+        <div className="wow-blob wow-blob1"/>
+        <div className="wow-blob wow-blob2"/>
+        <div className="wow-blob wow-blob3"/>
+        <div className="wow-hero-content">
+          <div className="wow-badge"><span className="wow-bdot"/>Professional AI Prompt Engineering</div>
+          <h1 className="wow-h1">Your AI is only as smart<br/>as your <span className="wow-gt">{wowScrambleWord}</span></h1>
+          <p className="wow-hero-sub">Transform vague ideas into expert-level, structured prompts in seconds. Works with ChatGPT, Claude, Gemini, Llama, and any AI model.</p>
+          <div className="wow-acts">
+            <a href="#tool" className="wow-btn-p" onClick={e=>{e.preventDefault();document.getElementById("tool").scrollIntoView({behavior:"smooth",block:"start"});}}>
+              Start for free
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </a>
+            <a href="#wow-hiw" className="wow-btn-g" onClick={e=>{e.preventDefault();document.getElementById("wow-hiw").scrollIntoView({behavior:"smooth",block:"start"});}}>See how it works</a>
           </div>
-
-          {/* HOW IT WORKS — horizontal, seamless, no box */}
-          <div id="features" style={{display:"flex",justifyContent:"center",gap:"clamp(16px, 4vw, 56px)",flexWrap:"wrap",paddingBottom:28,borderBottom:"1px solid var(--bd)"}}>
-            {[
-              {ic:"pen",n:"1",tt:t("step1t"),s:t("step1s")},
-              {ic:"wand",n:"2",tt:t("step2t"),s:t("step2s")},
-              {ic:"copy",n:"3",tt:t("step3t"),s:t("step3s")},
-            ].map(({ic,n,tt,s},i)=>(
-              <React.Fragment key={i}>
-                <div style={{display:"flex",alignItems:"center",gap:14,padding:"4px 0"}}>
-                  <div style={{width:36,height:36,borderRadius:"50%",background:"var(--dim)",border:"1px solid var(--bd)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,color:ac,fontSize:14,fontWeight:700,fontFamily:"var(--fh)"}}>{n}</div>
-                  <div>
-                    <div style={{fontSize:13.5,fontWeight:600,color:"var(--head)",fontFamily:"var(--fh)",letterSpacing:"-.01em"}}>{tt}</div>
-                    <div style={{fontSize:12,color:"var(--t2)",lineHeight:1.4,marginTop:1}}>{s}</div>
+          <div className="wow-demo">
+            <div className="wow-demo-card">
+              <div className="wow-demo-top">
+                <div className="wow-tls"><span className="wow-tl-r"/><span className="wow-tl-y"/><span className="wow-tl-g"/></div>
+                <span className="wow-demo-ttl">proarch.tech — Smart Enhancement Engine</span>
+              </div>
+              <div className="wow-demo-body">
+                <div className="wow-dpanel">
+                  <div className="wow-dlbl">Your input</div>
+                  <div className="wow-din">{wowDemoIns[wowDemoIdx]}</div>
+                  <div className="wow-dtags">
+                    {wowDemoTags[wowDemoIdx].map((tag,i)=>(<span key={i} className={"wow-tag"+(i===2?" gold":"")}>{tag}</span>))}
                   </div>
                 </div>
-                {i<2&&<div style={{width:32,display:"flex",alignItems:"center",justifyContent:"center",color:"var(--t3)",opacity:.5}} className="hero-art"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>}
-              </React.Fragment>
-            ))}
-          </div>
-
-        </div>
-      </section>
-
-      {/* WHY PROMPT ARCHITECT — value props */}
-      <section className="reveal" style={{padding:"clamp(40px,6vw,72px) clamp(12px,3vw,24px)",background:"var(--bg)"}}>
-        <div style={{maxWidth:1240,margin:"0 auto"}}>
-          <h2 style={{fontSize:"clamp(28px,3.5vw,44px)",fontWeight:600,textAlign:"center",margin:"0 0 10px",color:"var(--head)",fontFamily:"var(--fh)",letterSpacing:"-.025em",lineHeight:1.1}}>{t("vpTitle")}</h2>
-          <p style={{fontSize:15,color:"var(--t2)",textAlign:"center",margin:"0 auto 36px",maxWidth:560,lineHeight:1.55}}>{t("vpSub")}</p>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(300px, 1fr))",gap:20}}>
-            {[
-              {ic:"brain",tt:t("vp1t"),d:t("vp1d")},
-              {ic:"wand",tt:t("vp2t"),d:t("vp2d")},
-              {ic:"layers",tt:t("vp3t"),d:t("vp3d")},
-              {ic:"target",tt:t("vp4t"),d:t("vp4d")},
-              {ic:"building",tt:t("vp5t"),d:t("vp5d")},
-              {ic:"cpu",tt:t("vp6t"),d:t("vp6d")},
-            ].map(({ic,tt,d},i)=>(
-              <div key={i} className="vp-card" style={{background:"var(--s1)",border:"1px solid var(--bd2)",borderRadius:"var(--rd)",padding:"24px 22px",transition:"transform .25s ease, box-shadow .25s ease, border-color .25s ease"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 32px "+ac+"18";e.currentTarget.style.borderColor=ac+"40";}} onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none";e.currentTarget.style.borderColor="var(--bd2)";}}>
-                <div style={{width:40,height:40,borderRadius:"var(--rds)",background:"var(--dim)",border:"1px solid "+ac+"22",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:14}}>{I[ic](19,ac)}</div>
-                <div style={{fontSize:16,fontWeight:600,color:"var(--head)",marginBottom:6,fontFamily:"var(--fh)",letterSpacing:"-.01em"}}>{tt}</div>
-                <div style={{fontSize:13.5,color:"var(--t2)",lineHeight:1.6}}>{d}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* COMPARISON TABLE */}
-      <section className="reveal" style={{padding:"0 clamp(12px,3vw,24px) clamp(40px,6vw,72px)",background:"var(--bg)"}}>
-        <div style={{maxWidth:760,margin:"0 auto"}}>
-          <h3 style={{fontSize:"clamp(22px,2.6vw,30px)",fontWeight:600,textAlign:"center",margin:"0 0 24px",color:"var(--head)",fontFamily:"var(--fh)",letterSpacing:"-.02em"}}>{t("compTitle")}</h3>
-          <div style={{background:"var(--s1)",border:"1px solid var(--bd2)",borderRadius:"var(--rd)",overflow:"hidden",boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",borderBottom:"1px solid var(--bd2)"}}>
-              <div style={{padding:"14px 18px",fontSize:11,fontWeight:600,color:"var(--t3)",letterSpacing:".5px",textTransform:"uppercase"}}></div>
-              <div style={{padding:"14px 18px",fontSize:11,fontWeight:600,color:"var(--t3)",letterSpacing:".5px",textTransform:"uppercase",textAlign:"center",borderLeft:"1px solid var(--bd2)"}}>{t("compManual")}</div>
-              <div style={{padding:"14px 18px",fontSize:11,fontWeight:700,color:ac,letterSpacing:".5px",textTransform:"uppercase",textAlign:"center",borderLeft:"1px solid var(--bd2)",background:"var(--dim)"}}>PromptArchitect</div>
-            </div>
-            {[t("comp1"),t("comp2"),t("comp3"),t("comp4"),t("comp5"),t("comp6")].map((row,i)=>(
-              <div key={i} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",borderBottom:i<5?"1px solid var(--bd2)":"none"}}>
-                <div style={{padding:"14px 18px",fontSize:13,fontWeight:600,color:"var(--head)",fontFamily:"var(--fh)"}}>{row[0]}</div>
-                <div style={{padding:"14px 18px",fontSize:13,color:"var(--t3)",textAlign:"center",borderLeft:"1px solid var(--bd2)"}}>{row[1]}</div>
-                <div style={{padding:"14px 18px",fontSize:13,color:ac,fontWeight:600,textAlign:"center",borderLeft:"1px solid var(--bd2)",background:"var(--dim)"}}>{row[2]}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* USE CASES */}
-      <section className="reveal" style={{padding:"clamp(40px,6vw,72px) clamp(12px,3vw,24px) 0",background:"var(--bg)"}}>
-        <div style={{maxWidth:1240,margin:"0 auto"}}>
-          <h2 style={{fontSize:"clamp(28px,3.5vw,44px)",fontWeight:600,textAlign:"center",margin:"0 0 10px",color:"var(--head)",fontFamily:"var(--fh)",letterSpacing:"-.025em",lineHeight:1.1}}>{t("ucTitle")}</h2>
-          <p style={{fontSize:15,color:"var(--t2)",textAlign:"center",margin:"0 auto 36px",maxWidth:560,lineHeight:1.55}}>{t("ucSub")}</p>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(280px, 1fr))",gap:20,maxWidth:760,margin:"0 auto"}}>
-            {[
-              {role:t("uc1r"),task:t("uc1t"),ic:"chart"},
-              {role:t("uc2r"),task:t("uc2t"),ic:"code"},
-              {role:t("uc3r"),task:t("uc3t"),ic:"target"},
-              {role:t("uc4r"),task:t("uc4t"),ic:"building"},
-            ].map(({role,task,ic},i)=>(
-              <div key={i} style={{background:"var(--s1)",border:"1px solid var(--bd2)",borderRadius:"var(--rd)",padding:"24px 22px",transition:"transform .25s ease, box-shadow .25s ease, border-color .25s ease"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 32px "+ac+"18";e.currentTarget.style.borderColor=ac+"40";}} onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none";e.currentTarget.style.borderColor="var(--bd2)";}}>
-                <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}>
-                  <div style={{width:40,height:40,borderRadius:"var(--rds)",background:"var(--dim)",border:"1px solid "+ac+"22",display:"flex",alignItems:"center",justifyContent:"center"}}>{I[ic](19,ac)}</div>
-                  <span style={{fontSize:16,fontWeight:600,color:"var(--head)",fontFamily:"var(--fh)",letterSpacing:"-.01em"}}>{role}</span>
+                <div className="wow-dmid">
+                  <div className="wow-darr">
+                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 3l4 4-4 4" stroke={ac} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </div>
                 </div>
-                <p style={{fontSize:13.5,color:"var(--t2)",margin:0,lineHeight:1.6}}>{task}</p>
+                <div className="wow-dpanel">
+                  <div className="wow-dlbl">Expert prompt</div>
+                  <div className="wow-dout">{wowTyped}<span className="wow-dcur"/></div>
+                </div>
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </section>
+
+      {/* WOW STATS */}
+      <div className="wow-stats">
+        <div className="wow-si"><div ref={wowStatsTasksRef} className="wow-snum" style={{fontVariantNumeric:"tabular-nums"}}>{wowStatsTasks}</div><div className="wow-slbl">Task Types</div></div>
+        <div className="wow-si"><div ref={wowStatsIndRef} className="wow-snum" style={{fontVariantNumeric:"tabular-nums"}}>{wowStatsInd}</div><div className="wow-slbl">Industries</div></div>
+        <div className="wow-si"><div ref={wowStatsFirmsRef} className="wow-snum" style={{fontVariantNumeric:"tabular-nums"}}>{wowStatsFirms}</div><div className="wow-slbl">Firms</div></div>
+        <div className="wow-si"><div ref={wowStatsRolesRef} className="wow-snum" style={{fontVariantNumeric:"tabular-nums"}}>{wowStatsRoles}</div><div className="wow-slbl">Professional Roles</div></div>
+        <div className="wow-si"><div ref={wowStatsTechsRef} className="wow-snum" style={{fontVariantNumeric:"tabular-nums"}}>{wowStatsTechs}</div><div className="wow-slbl">Advanced Techniques</div></div>
+      </div>
+
+      {/* WOW HOW IT WORKS */}
+      <section className="wow-sec" id="wow-hiw">
+        <div className="wow-stag">Process</div>
+        <h2 className="wow-h2">Multi-stage <span className="wow-gt">engineering pipeline</span></h2>
+        <p className="wow-ssub">A systematic approach that turns plain language into precision-crafted prompts for dramatically better AI results.</p>
+        <div className="wow-steps">
+          <div className="wow-step">
+            <div className="wow-step-n"><span className="wow-step-nd">1</span>Describe</div>
+            <div className="wow-step-ico"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke={ac} strokeWidth="1.6" strokeLinecap="round"><rect x="3" y="3" width="20" height="20" rx="4"/><path d="M8 10h10M8 13h7M8 16h5"/></svg></div>
+            <h3>State your goal</h3>
+            <p>Describe what you need in plain language. No prompt engineering knowledge required — just say what you want to accomplish.</p>
+          </div>
+          <div className="wow-step">
+            <div className="wow-step-n"><span className="wow-step-nd">2</span>Configure</div>
+            <div className="wow-step-ico"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke={ac} strokeWidth="1.6" strokeLinecap="round"><circle cx="13" cy="13" r="3"/><path d="M13 3v3M13 20v3M3 13h3M20 13h3M5.64 5.64l2.12 2.12M18.24 18.24l2.12 2.12M5.64 20.36l2.12-2.12M18.24 7.76l2.12-2.12"/></svg></div>
+            <h3>Set your context</h3>
+            <p>Choose task type, industry, tone, writing style, target AI model, and desired output format from expert-curated options.</p>
+          </div>
+          <div className="wow-step">
+            <div className="wow-step-n"><span className="wow-step-nd">3</span>Generate</div>
+            <div className="wow-step-ico"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke={ac} strokeWidth="1.6" strokeLinecap="round"><path d="M13 3l2.5 8H23l-6.8 4.9 2.6 8L13 19.2l-5.8 4.7 2.6-8L3 11h7.5z"/></svg></div>
+            <h3>Get expert results</h3>
+            <p>The Smart Enhancement Engine analyzes, enriches, and structures your input into a precision-engineered prompt ready to paste.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* WOW MARQUEE */}
+      <div className="wow-mq-sec">
+        <div className="wow-mq-lbl">Adopt the working style of world-class firms</div>
+        <div className="wow-mq-track">
+          <div className="wow-mq-inner">
+            {["Goldman Sachs","McKinsey","Google","Pfizer","Sullivan & Cromwell","Amazon","Nike","Harvard","Netflix","CBRE","Mercer","Siemens","World Bank","DeepMind","J.P. Morgan","BCG","Deloitte","Bain","Goldman Sachs","McKinsey","Google","Pfizer","Sullivan & Cromwell","Amazon","Nike","Harvard","Netflix","CBRE","Mercer","Siemens","World Bank","DeepMind","J.P. Morgan","BCG","Deloitte","Bain"].map((f,i)=>(<span key={i} className="wow-chip">{f}</span>))}
+          </div>
+        </div>
+      </div>
+
+      {/* WOW FEATURES */}
+      <section className="wow-sec" id="features">
+        <div className="wow-stag">Capabilities</div>
+        <h2 className="wow-h2">Everything you need for <span className="wow-gt">expert prompts</span></h2>
+        <p className="wow-ssub">Comprehensive coverage across industries, roles, task types, and output formats — all in one tool.</p>
+        <div className="wow-fgrid">
+          <div className="wow-fcard"><div className="wow-fcard-shine"/><div className="wow-fcard-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l3 2"/></svg></div><h3>Task Type Engine</h3><p>15 specialized task types, each with its own methodology, quality standards, and output structure.</p><span className="wow-cbadge">15 task types</span></div>
+          <div className="wow-fcard"><div className="wow-fcard-shine"/><div className="wow-fcard-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M10 2l2 6h6l-5 3.6 1.9 5.8L10 14l-4.9 3.4L7 11.6 2 8h6z"/></svg></div><h3>Industry Expertise</h3><p>Deep domain context for 15 industries. Finance, healthcare, legal, consulting, tech — specialized standards for each.</p><span className="wow-cbadge">15 industries</span></div>
+          <div className="wow-fcard"><div className="wow-fcard-shine"/><div className="wow-fcard-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><rect x="2" y="6" width="16" height="12" rx="2"/><path d="M6 6V4a4 4 0 018 0v2"/></svg></div><h3>Firm &amp; Role Selection</h3><p>Expert mode lets you adopt the working style of 70 top firms across 14 sectors with 350 professional roles.</p><span className="wow-cbadge">70 firms · 350 roles</span></div>
+          <div className="wow-fcard"><div className="wow-fcard-shine"/><div className="wow-fcard-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><rect x="4" y="2" width="12" height="16" rx="2"/><path d="M8 7h4M8 11h4M8 15h2"/></svg></div><h3>Professional File Output</h3><p>Prompts optimized for 10 file formats — PDF, Word, Excel, PowerPoint, Markdown, HTML, JSON and more.</p><span className="wow-cbadge">10 output formats</span></div>
+          <div className="wow-fcard"><div className="wow-fcard-shine"/><div className="wow-fcard-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M10 2v4M10 14v4M2 10h4M14 10h4M4.93 4.93l2.83 2.83M12.24 12.24l2.83 2.83M4.93 15.07l2.83-2.83M12.24 7.76l2.83-2.83"/></svg></div><h3>Smart Enhancement Engine</h3><p>Automatically detects vague language, infers missing audience, and injects expert reasoning strategies.</p><span className="wow-cbadge">Built-in intelligence</span></div>
+          <div className="wow-fcard"><div className="wow-fcard-shine"/><div className="wow-fcard-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg></div><h3>Industry-Standard Design</h3><p>Authentic typography and color palettes from real firm deliverables. Goldman navy, McKinsey blue, Pfizer blue.</p><span className="wow-cbadge">15 design systems</span></div>
+        </div>
+      </section>
+
+      {/* WOW TECHNIQUES */}
+      <section className="wow-sec">
+        <div className="wow-stag">Advanced</div>
+        <h2 className="wow-h2">15 prompt engineering <span className="wow-gt">techniques</span></h2>
+        <p className="wow-ssub">Combine advanced techniques for maximum effectiveness. Each adds specific instructions that dramatically improve AI response quality.</p>
+        <div className="wow-tpills">
+          {["Chain of Thought","Few-Shot Examples","Strict Constraints","Self-Verification","Option Comparison","Iterative Refinement","Role Assignment","Red Team Analysis","First Principles","Pre-Mortem Analysis","Multi-Perspective Panel","Structured Debate","Systems Thinking","Task Decomposition","Meta-Reasoning"].map((tp,i)=>(<span key={i} className={"wow-tpill"+(wowActivePills[tp]?" on":"")} onClick={()=>setWowActivePills(p=>({...p,[tp]:!p[tp]}))}>{tp}</span>))}
+        </div>
+      </section>
+
+      {/* WOW MODELS */}
+      <section className="wow-sec" id="models">
+        <div className="wow-stag">Compatibility</div>
+        <h2 className="wow-h2">Works with every <span className="wow-gt">AI model</span></h2>
+        <p className="wow-ssub">Model-specific formatting for optimal parsing. Each AI receives prompts structured exactly the way it works best.</p>
+        <div className="wow-mgrid">
+          <div className="wow-mcard"><div className="wow-mico"><svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke={ac} strokeWidth="1.5" strokeLinecap="round"><circle cx="14" cy="14" r="10"/><path d="M10 11a4 4 0 018 0v3a4 4 0 01-8 0v-3zM8 20c1.5-1 3.5-1.5 6-1.5s4.5.5 6 1.5"/></svg></div><div className="wow-mname">Claude</div><div className="wow-mby">Anthropic</div></div>
+          <div className="wow-mcard"><div className="wow-mico"><svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke={ac} strokeWidth="1.5" strokeLinecap="round"><rect x="4" y="4" width="20" height="20" rx="5"/><path d="M10 14h8M14 10v8"/></svg></div><div className="wow-mname">ChatGPT</div><div className="wow-mby">OpenAI</div></div>
+          <div className="wow-mcard"><div className="wow-mico"><svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke={ac} strokeWidth="1.5" strokeLinecap="round"><polygon points="14,4 24,22 4,22"/><path d="M11 16h6"/></svg></div><div className="wow-mname">Gemini</div><div className="wow-mby">Google</div></div>
+          <div className="wow-mcard"><div className="wow-mico"><svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke={ac} strokeWidth="1.5" strokeLinecap="round"><ellipse cx="14" cy="14" rx="10" ry="6"/><path d="M14 8v12M4 14h20"/></svg></div><div className="wow-mname">Llama</div><div className="wow-mby">Meta</div></div>
+          <div className="wow-mcard"><div className="wow-mico"><svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke={ac} strokeWidth="1.5" strokeLinecap="round"><circle cx="14" cy="14" r="10"/><circle cx="14" cy="14" r="3" fill={ac}/><path d="M14 4v7M14 17v7M4 14h7M17 14h7"/></svg></div><div className="wow-mname">Universal</div><div className="wow-mby">Any model</div></div>
+        </div>
+      </section>
+
+      {/* WOW PRICING */}
+      <section className="wow-sec" id="pricing">
+        <div className="wow-stag">Pricing</div>
+        <h2 className="wow-h2">Simple, transparent <span className="wow-gt">pricing</span></h2>
+        <p className="wow-ssub">Start free. Upgrade when you need unlimited power.</p>
+        <div className="wow-pgrid">
+          <div className="wow-pcard">
+            <div className="wow-ptier">Free</div>
+            <div className="wow-pamount"><span className="wow-pnum">$0</span><span className="wow-pper">/ forever</span></div>
+            <p className="wow-pdesc">Get started and see the difference expert prompts make.</p>
+            <ul className="wow-pfeats"><li>2 Simple prompts</li><li>1 Expert prompt</li><li>All task types</li><li>All AI models</li></ul>
+            <button className="wow-pbtn" onClick={()=>document.getElementById("tool").scrollIntoView({behavior:"smooth",block:"start"})}>Start free</button>
+          </div>
+          <div className="wow-pcard feat">
+            <div className="wow-fbadge">Most Popular</div>
+            <div className="wow-ptier">Pro Monthly</div>
+            <div className="wow-pamount"><span className="wow-pnum">$9</span><span className="wow-pper">/ month</span></div>
+            <p className="wow-pdesc">Unlimited prompts. Full access to all features.</p>
+            <ul className="wow-pfeats"><li>Unlimited prompts</li><li>All 15 industries</li><li>All 70 firms &amp; 350 roles</li><li>All 15 techniques</li><li>All file formats</li><li>Smart Enhancement Engine</li></ul>
+            <button className="wow-pbtn f" onClick={()=>document.getElementById("tool").scrollIntoView({behavior:"smooth",block:"start"})}>Get Pro</button>
+          </div>
+          <div className="wow-pcard">
+            <div className="wow-ptier">Pro Annual</div>
+            <div className="wow-pamount"><span className="wow-pnum">$6</span><span className="wow-pper">/ month</span></div>
+            <p className="wow-pdesc">Save 33% with annual billing. $72 billed once per year.</p>
+            <ul className="wow-pfeats"><li>Everything in Pro Monthly</li><li>33% savings vs monthly</li><li>Priority support</li></ul>
+            <button className="wow-pbtn" onClick={()=>document.getElementById("tool").scrollIntoView({behavior:"smooth",block:"start"})}>Get Annual</button>
+          </div>
+        </div>
+      </section>
+
+      {/* WOW CTA */}
+      <div className="wow-cta">
+        <div className="wow-stag" style={{justifyContent:"center"}}>Get Started</div>
+        <h2 className="wow-h2 wow-gt">Stop settling for mediocre AI output</h2>
+        <p>The difference between a good prompt and a great prompt is the difference between a generic summary and a board-ready strategic analysis.</p>
+        <a href="#tool" className="wow-btn-p" onClick={e=>{e.preventDefault();document.getElementById("tool").scrollIntoView({behavior:"smooth",block:"start"});}} style={{display:"inline-flex"}}>
+          Try Prompt Architect free
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        </a>
+      </div>
 
       {/* MAIN CONTENT */}
       <div style={{maxWidth:1200,margin:"0 auto",padding:"clamp(16px,4vw,28px) clamp(12px,3vw,24px) 60px"}}>
