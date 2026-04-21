@@ -1110,7 +1110,7 @@ function buildPrompt(p){
       taskParts.push("Files attached. Use as primary data source. Reference specific figures. State gaps.");
     }
   }else{
-    taskParts.push("No files attached. Use realistic figures, label estimates, note what source data would strengthen the analysis.");
+    taskParts.push("No files attached. SOURCING RULES (strict):\n- Any current market figure — share price, market cap, FX rate, commodity price, yield, index level, benchmark rate — MUST be retrieved via live web search before use. Do NOT estimate, assume, or extrapolate from memory.\n- Any time-sensitive fact — latest earnings, most recent quarterly filing, current headcount, live subscription count, today's news — MUST be confirmed via web search with the source URL cited inline.\n- If web search is unavailable or a live figure cannot be confirmed, label the field exactly [UNVERIFIED — INPUT REQUIRED] and mark every downstream output that depends on it (ratios, valuations, implied returns, delta-vs-target) as non-computable. Do not substitute a placeholder number.\n- Distinguish strictly: (A) audited / filed figures with source, (B) consensus from a named provider with date, (C) analyst model output. Never present (C) as (A) or (B). Current spot prices must be (A) or (B).\n- For historical or structural context (methodology, frameworks, qualitative analysis), reasoning from training is fine — clearly label such sections as based on general knowledge rather than live data.\n- Flag upcoming catalysts (earnings dates, policy meetings, contract expirations) within the relevant risk/timing section if discoverable.");
   }
   // Risk level (inline)
   const risk=riskLevel||"medium";
@@ -2454,14 +2454,14 @@ function App(){
               {ic:"copy",n:"3",tt:t("step3t"),s:t("step3s")},
             ].map(({ic,n,tt,s},i)=>(
               <React.Fragment key={i}>
-                <div style={{display:"flex",alignItems:"center",gap:12,padding:"4px 0"}}>
-                  <div style={{width:34,height:34,borderRadius:9,background:ac+"10",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,color:ac,fontSize:14,fontWeight:700}}>{n}</div>
+                <div style={{display:"flex",alignItems:"center",gap:14,padding:"4px 0"}}>
+                  <div style={{width:36,height:36,borderRadius:"50%",background:"var(--dim)",border:"1px solid var(--bd)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,color:ac,fontSize:14,fontWeight:700,fontFamily:"var(--fh)"}}>{n}</div>
                   <div>
-                    <div style={{fontSize:13,fontWeight:620,color:"var(--t1)"}}>{tt}</div>
-                    <div style={{fontSize:11.5,color:"var(--t3)",lineHeight:1.3}}>{s}</div>
+                    <div style={{fontSize:13.5,fontWeight:600,color:"var(--head)",fontFamily:"var(--fh)",letterSpacing:"-.01em"}}>{tt}</div>
+                    <div style={{fontSize:12,color:"var(--t2)",lineHeight:1.4,marginTop:1}}>{s}</div>
                   </div>
                 </div>
-                {i<2&&<div style={{width:32,display:"flex",alignItems:"center",justifyContent:"center",color:"var(--bd)"}} className="hero-art"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>}
+                {i<2&&<div style={{width:32,display:"flex",alignItems:"center",justifyContent:"center",color:"var(--t3)",opacity:.5}} className="hero-art"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>}
               </React.Fragment>
             ))}
           </div>
