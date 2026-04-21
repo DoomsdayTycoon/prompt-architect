@@ -2470,11 +2470,11 @@ function App(){
       </section>
 
       {/* WHY PROMPT ARCHITECT — value props */}
-      <section className="reveal" style={{padding:"clamp(28px,5vw,48px) clamp(12px,3vw,24px)",background:"var(--bg)"}}>
-        <div style={{maxWidth:1200,margin:"0 auto"}}>
-          <h2 style={{fontSize:"clamp(20px,2.5vw,26px)",fontWeight:800,textAlign:"center",margin:"0 0 8px",color:"var(--t1)",letterSpacing:"-.3px"}}>{t("vpTitle")}</h2>
-          <p style={{fontSize:13,color:"var(--t3)",textAlign:"center",margin:"0 auto 28px",maxWidth:520}}>{t("vpSub")}</p>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(300px, 1fr))",gap:16}}>
+      <section className="reveal" style={{padding:"clamp(40px,6vw,72px) clamp(12px,3vw,24px)",background:"var(--bg)"}}>
+        <div style={{maxWidth:1240,margin:"0 auto"}}>
+          <h2 style={{fontSize:"clamp(28px,3.5vw,44px)",fontWeight:600,textAlign:"center",margin:"0 0 10px",color:"var(--head)",fontFamily:"var(--fh)",letterSpacing:"-.025em",lineHeight:1.1}}>{t("vpTitle")}</h2>
+          <p style={{fontSize:15,color:"var(--t2)",textAlign:"center",margin:"0 auto 36px",maxWidth:560,lineHeight:1.55}}>{t("vpSub")}</p>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(300px, 1fr))",gap:20}}>
             {[
               {ic:"brain",tt:t("vp1t"),d:t("vp1d")},
               {ic:"wand",tt:t("vp2t"),d:t("vp2d")},
@@ -2483,10 +2483,10 @@ function App(){
               {ic:"building",tt:t("vp5t"),d:t("vp5d")},
               {ic:"cpu",tt:t("vp6t"),d:t("vp6d")},
             ].map(({ic,tt,d},i)=>(
-              <div key={i} style={{background:"var(--s1)",border:"1px solid var(--bd)",borderRadius:12,padding:"20px 18px"}}>
-                <div style={{width:34,height:34,borderRadius:9,background:ac+"10",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:10}}>{I[ic](17,ac)}</div>
-                <div style={{fontSize:14,fontWeight:650,color:"var(--t1)",marginBottom:4}}>{tt}</div>
-                <div style={{fontSize:12.5,color:"var(--t3)",lineHeight:1.55}}>{d}</div>
+              <div key={i} className="vp-card" style={{background:"var(--s1)",border:"1px solid var(--bd2)",borderRadius:"var(--rd)",padding:"24px 22px",transition:"transform .25s ease, box-shadow .25s ease, border-color .25s ease"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 32px "+ac+"18";e.currentTarget.style.borderColor=ac+"40";}} onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none";e.currentTarget.style.borderColor="var(--bd2)";}}>
+                <div style={{width:40,height:40,borderRadius:"var(--rds)",background:"var(--dim)",border:"1px solid "+ac+"22",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:14}}>{I[ic](19,ac)}</div>
+                <div style={{fontSize:16,fontWeight:600,color:"var(--head)",marginBottom:6,fontFamily:"var(--fh)",letterSpacing:"-.01em"}}>{tt}</div>
+                <div style={{fontSize:13.5,color:"var(--t2)",lineHeight:1.6}}>{d}</div>
               </div>
             ))}
           </div>
@@ -2494,20 +2494,20 @@ function App(){
       </section>
 
       {/* COMPARISON TABLE */}
-      <section className="reveal" style={{padding:"0 clamp(12px,3vw,24px) clamp(28px,5vw,48px)",background:"var(--bg)"}}>
-        <div style={{maxWidth:700,margin:"0 auto"}}>
-          <h3 style={{fontSize:"clamp(17px,2vw,22px)",fontWeight:700,textAlign:"center",margin:"0 0 20px",color:"var(--t1)"}}>{t("compTitle")}</h3>
-          <div style={{background:"var(--s1)",border:"1px solid var(--bd)",borderRadius:14,overflow:"hidden"}}>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",borderBottom:"1px solid var(--bd)"}}>
-              <div style={{padding:"12px 16px",fontSize:12,fontWeight:700,color:"var(--t3)"}}></div>
-              <div style={{padding:"12px 16px",fontSize:12,fontWeight:700,color:"var(--t3)",textAlign:"center",borderLeft:"1px solid var(--bd)"}}>{t("compManual")}</div>
-              <div style={{padding:"12px 16px",fontSize:12,fontWeight:700,color:ac,textAlign:"center",borderLeft:"1px solid var(--bd)",background:ac+"06"}}>Prompt Architect</div>
+      <section className="reveal" style={{padding:"0 clamp(12px,3vw,24px) clamp(40px,6vw,72px)",background:"var(--bg)"}}>
+        <div style={{maxWidth:760,margin:"0 auto"}}>
+          <h3 style={{fontSize:"clamp(22px,2.6vw,30px)",fontWeight:600,textAlign:"center",margin:"0 0 24px",color:"var(--head)",fontFamily:"var(--fh)",letterSpacing:"-.02em"}}>{t("compTitle")}</h3>
+          <div style={{background:"var(--s1)",border:"1px solid var(--bd2)",borderRadius:"var(--rd)",overflow:"hidden",boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",borderBottom:"1px solid var(--bd2)"}}>
+              <div style={{padding:"14px 18px",fontSize:11,fontWeight:600,color:"var(--t3)",letterSpacing:".5px",textTransform:"uppercase"}}></div>
+              <div style={{padding:"14px 18px",fontSize:11,fontWeight:600,color:"var(--t3)",letterSpacing:".5px",textTransform:"uppercase",textAlign:"center",borderLeft:"1px solid var(--bd2)"}}>{t("compManual")}</div>
+              <div style={{padding:"14px 18px",fontSize:11,fontWeight:700,color:ac,letterSpacing:".5px",textTransform:"uppercase",textAlign:"center",borderLeft:"1px solid var(--bd2)",background:"var(--dim)"}}>PromptArchitect</div>
             </div>
             {[t("comp1"),t("comp2"),t("comp3"),t("comp4"),t("comp5"),t("comp6")].map((row,i)=>(
-              <div key={i} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",borderBottom:i<5?"1px solid var(--bd)":"none"}}>
-                <div style={{padding:"10px 16px",fontSize:12,fontWeight:600,color:"var(--t1)"}}>{row[0]}</div>
-                <div style={{padding:"10px 16px",fontSize:12,color:"var(--t3)",textAlign:"center",borderLeft:"1px solid var(--bd)"}}>{row[1]}</div>
-                <div style={{padding:"10px 16px",fontSize:12,color:ac,fontWeight:600,textAlign:"center",borderLeft:"1px solid var(--bd)",background:ac+"06"}}>{row[2]}</div>
+              <div key={i} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",borderBottom:i<5?"1px solid var(--bd2)":"none"}}>
+                <div style={{padding:"14px 18px",fontSize:13,fontWeight:600,color:"var(--head)",fontFamily:"var(--fh)"}}>{row[0]}</div>
+                <div style={{padding:"14px 18px",fontSize:13,color:"var(--t3)",textAlign:"center",borderLeft:"1px solid var(--bd2)"}}>{row[1]}</div>
+                <div style={{padding:"14px 18px",fontSize:13,color:ac,fontWeight:600,textAlign:"center",borderLeft:"1px solid var(--bd2)",background:"var(--dim)"}}>{row[2]}</div>
               </div>
             ))}
           </div>
@@ -2515,23 +2515,23 @@ function App(){
       </section>
 
       {/* USE CASES */}
-      <section className="reveal" style={{padding:"clamp(28px,5vw,48px) clamp(12px,3vw,24px) 0",background:"var(--bg)"}}>
-        <div style={{maxWidth:1200,margin:"0 auto"}}>
-          <h2 style={{fontSize:"clamp(18px,2.2vw,24px)",fontWeight:800,textAlign:"center",margin:"0 0 6px",color:"var(--t1)",letterSpacing:"-.2px"}}>{t("ucTitle")}</h2>
-          <p style={{fontSize:13,color:"var(--t3)",textAlign:"center",margin:"0 auto 24px",maxWidth:460}}>{t("ucSub")}</p>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(280px, 1fr))",gap:14,maxWidth:720,margin:"0 auto"}}>
+      <section className="reveal" style={{padding:"clamp(40px,6vw,72px) clamp(12px,3vw,24px) 0",background:"var(--bg)"}}>
+        <div style={{maxWidth:1240,margin:"0 auto"}}>
+          <h2 style={{fontSize:"clamp(28px,3.5vw,44px)",fontWeight:600,textAlign:"center",margin:"0 0 10px",color:"var(--head)",fontFamily:"var(--fh)",letterSpacing:"-.025em",lineHeight:1.1}}>{t("ucTitle")}</h2>
+          <p style={{fontSize:15,color:"var(--t2)",textAlign:"center",margin:"0 auto 36px",maxWidth:560,lineHeight:1.55}}>{t("ucSub")}</p>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(280px, 1fr))",gap:20,maxWidth:760,margin:"0 auto"}}>
             {[
               {role:t("uc1r"),task:t("uc1t"),ic:"chart"},
               {role:t("uc2r"),task:t("uc2t"),ic:"code"},
               {role:t("uc3r"),task:t("uc3t"),ic:"target"},
               {role:t("uc4r"),task:t("uc4t"),ic:"building"},
             ].map(({role,task,ic},i)=>(
-              <div key={i} style={{background:"var(--s1)",border:"1px solid var(--bd)",borderRadius:12,padding:"18px 16px"}}>
-                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
-                  <div style={{width:28,height:28,borderRadius:7,background:ac+"10",display:"flex",alignItems:"center",justifyContent:"center"}}>{I[ic](14,ac)}</div>
-                  <span style={{fontSize:13,fontWeight:650,color:"var(--t1)"}}>{role}</span>
+              <div key={i} style={{background:"var(--s1)",border:"1px solid var(--bd2)",borderRadius:"var(--rd)",padding:"24px 22px",transition:"transform .25s ease, box-shadow .25s ease, border-color .25s ease"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 32px "+ac+"18";e.currentTarget.style.borderColor=ac+"40";}} onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none";e.currentTarget.style.borderColor="var(--bd2)";}}>
+                <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}>
+                  <div style={{width:40,height:40,borderRadius:"var(--rds)",background:"var(--dim)",border:"1px solid "+ac+"22",display:"flex",alignItems:"center",justifyContent:"center"}}>{I[ic](19,ac)}</div>
+                  <span style={{fontSize:16,fontWeight:600,color:"var(--head)",fontFamily:"var(--fh)",letterSpacing:"-.01em"}}>{role}</span>
                 </div>
-                <p style={{fontSize:12,color:"var(--t3)",margin:0,lineHeight:1.55}}>{task}</p>
+                <p style={{fontSize:13.5,color:"var(--t2)",margin:0,lineHeight:1.6}}>{task}</p>
               </div>
             ))}
           </div>
@@ -2993,7 +2993,7 @@ function App(){
               <circle cx="12" cy="24" r="2" fill={ac}/>
               <circle cx="35" cy="24" r="2" fill={ac}/>
             </svg>
-            <span style={{fontSize:14,fontWeight:600,color:"var(--t1)"}}>Prompt Architect</span>
+            <span style={{fontSize:15,fontWeight:500,color:"var(--head)",fontFamily:"var(--fh)",letterSpacing:"-.02em"}}>Prompt<span style={{fontWeight:700}}>Architect</span></span>
           </div>
           <div style={{display:"flex",gap:"clamp(12px,3vw,24px)",alignItems:"center",flexWrap:"wrap"}}>
             <span style={{fontSize:"clamp(10px,2.5vw,12px)",color:"var(--t3)"}}>Prompt generation runs entirely in your browser. Your data stays private.</span>
