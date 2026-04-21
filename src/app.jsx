@@ -249,6 +249,14 @@ const UI={
   proMember:{en:"Pro member",no:"Pro-medlem"},
   upgradePro:{en:"Upgrade to Pro",no:"Oppgrader til Pro"},
   referFriend:{en:"Refer a friend",no:"Inviter en venn"},
+  refTitle:{en:"Give 3 months, get 3 months",no:"Gi 3 måneder, få 3 måneder"},
+  refSub:{en:"Share your referral link. When someone signs up and subscribes, you both get 3 months of Pro free — a $27 value for each of you.",no:"Del din henvisningslenke. Når noen melder seg på og abonnerer, får dere begge 3 måneder med Pro gratis — verdt 27 USD hver."},
+  refShareX:{en:"Share on X",no:"Del på X"},
+  refShareLi:{en:"Share on LinkedIn",no:"Del på LinkedIn"},
+  refTweet:{en:"I use Prompt Architect to turn vague ideas into expert AI prompts. Get 3 months of Pro free through my link:",no:"Jeg bruker Prompt Architect for å gjøre vage ideer til ekspertprompter. Få 3 måneder med Pro gratis via lenken min:"},
+  refClose:{en:"Close",no:"Lukk"},
+  refCopy:{en:"Copy",no:"Kopier"},
+  refCopied:{en:"Copied!",no:"Kopiert!"},
   manageSubscription:{en:"Manage subscription",no:"Administrer abonnement"},
   welcomeOffer:{en:"Use code WELCOME30 for 30% off your first month",no:"Bruk koden WELCOME30 for 30% avslag på første måned"},
   limitedOffer:{en:"Limited offer",no:"Begrenset tilbud"},
@@ -446,6 +454,124 @@ const UI={
   selectRole:{en:"Select a role",no:"Velg en rolle"},
   firmContext:{en:"Firm & role context",no:"Firma- og rollekontekst"},
   firmContextSub:{en:"Adopt a specific firm's methodology and role perspective",no:"Adopter et spesifikt firmas metodikk og rolleperspektiv"},
+
+  // WOW hero + marketing
+  wowBadge:{en:"Professional AI Prompt Engineering",no:"Profesjonell AI-promptteknikk"},
+  wowH1a:{en:"Your AI is only as smart",no:"AI-en din er bare så smart"},
+  wowH1b:{en:"as your",no:"som"},
+  wowScramblePrompt:{en:"prompt",no:"prompt"},
+  wowScrambleInput:{en:"input",no:"input"},
+  wowScrambleContext:{en:"context",no:"kontekst"},
+  wowScrambleIdea:{en:"idea",no:"ide"},
+  wowScrambleBrief:{en:"brief",no:"brief"},
+  wowHeroSub:{en:"Transform vague ideas into expert-level, structured prompts in seconds. Works with ChatGPT, Claude, Gemini, Llama, and any AI model.",no:"Forvandle vage ideer til ekspertnivå, strukturerte prompter på sekunder. Fungerer med ChatGPT, Claude, Gemini, Llama og alle AI-modeller."},
+  wowStartFree:{en:"Start for free",no:"Kom i gang gratis"},
+  wowSeeHow:{en:"See how it works",no:"Se hvordan det fungerer"},
+  wowDemoTitle:{en:"proarch.tech — Smart Enhancement Engine",no:"proarch.tech — Smart forbedringsmotor"},
+  wowDemoInput:{en:"Your input",no:"Din input"},
+  wowDemoOutput:{en:"Expert prompt",no:"Ekspertprompt"},
+  wowDemoIn1:{en:"Write a market analysis",no:"Skriv en markedsanalyse"},
+  wowDemoIn2:{en:"Create a strategic plan",no:"Lag en strategisk plan"},
+  wowDemoIn3:{en:"Draft a legal memo",no:"Utarbeid et juridisk notat"},
+  wowTagFinance:{en:"Finance",no:"Finans"},
+  wowTagGlobalBank:{en:"Global Bank",no:"Global bank"},
+  wowTagConsulting:{en:"Consulting",no:"Konsulent"},
+  wowTagTier1:{en:"Tier-1 Firm",no:"Tier-1 firma"},
+  wowTagLegal:{en:"Legal",no:"Juridisk"},
+  wowTagTopFirm:{en:"Top Firm",no:"Topp firma"},
+  wowTagExpert:{en:"Expert Mode",no:"Ekspertmodus"},
+
+  wowStatTasks:{en:"Task Types",no:"Oppgavetyper"},
+  wowStatIndustries:{en:"Industries",no:"Bransjer"},
+  wowStatFirms:{en:"Firms",no:"Firmaer"},
+  wowStatRoles:{en:"Professional Roles",no:"Profesjonelle roller"},
+  wowStatTechs:{en:"Advanced Techniques",no:"Avanserte teknikker"},
+
+  wowHiwTag:{en:"Process",no:"Prosess"},
+  wowHiwH2a:{en:"Multi-stage",no:"Flertrinns"},
+  wowHiwH2b:{en:"engineering pipeline",no:"ingeniørprosess"},
+  wowHiwSub:{en:"A systematic approach that turns plain language into precision-crafted prompts for dramatically better AI results.",no:"En systematisk tilnærming som gjør vanlig språk om til presisjonsbygde prompter for dramatisk bedre AI-resultater."},
+  wowStep1n:{en:"Describe",no:"Beskriv"},
+  wowStep1t:{en:"State your goal",no:"Angi målet ditt"},
+  wowStep1d:{en:"Describe what you need in plain language. No prompt engineering knowledge required — just say what you want to accomplish.",no:"Beskriv hva du trenger på vanlig språk. Ingen promptteknikk-kunnskap kreves — bare si hva du vil oppnå."},
+  wowStep2n:{en:"Configure",no:"Konfigurer"},
+  wowStep2t:{en:"Set your context",no:"Sett kontekst"},
+  wowStep2d:{en:"Choose task type, industry, tone, writing style, target AI model, and desired output format from expert-curated options.",no:"Velg oppgavetype, bransje, tone, skrivestil, AI-modell og ønsket utdataformat fra ekspertkuraterte alternativer."},
+  wowStep3n:{en:"Generate",no:"Generer"},
+  wowStep3t:{en:"Get expert results",no:"Få ekspertresultater"},
+  wowStep3d:{en:"The Smart Enhancement Engine analyzes, enriches, and structures your input into a precision-engineered prompt ready to paste.",no:"Smart forbedringsmotor analyserer, beriker og strukturerer inputen din til en presisjonsbygd prompt klar til å lime inn."},
+
+  wowMqLbl:{en:"Adopt the working style of world-class firms",no:"Adopter arbeidsstilen til verdensledende firmaer"},
+
+  wowFeatTag:{en:"Capabilities",no:"Funksjoner"},
+  wowFeatH2a:{en:"Everything you need for",no:"Alt du trenger for"},
+  wowFeatH2b:{en:"expert prompts",no:"ekspertprompter"},
+  wowFeatSub:{en:"Comprehensive coverage across industries, roles, task types, and output formats — all in one tool.",no:"Dekning på tvers av bransjer, roller, oppgavetyper og utdataformater — alt i ett verktøy."},
+  wowF1t:{en:"Task Type Engine",no:"Oppgavetype-motor"},
+  wowF1d:{en:"15 specialized task types, each with its own methodology, quality standards, and output structure.",no:"15 spesialiserte oppgavetyper, hver med egen metodikk, kvalitetsstandarder og utdatastruktur."},
+  wowF1b:{en:"15 task types",no:"15 oppgavetyper"},
+  wowF2t:{en:"Industry Expertise",no:"Bransjeekspertise"},
+  wowF2d:{en:"Deep domain context for 15 industries. Finance, healthcare, legal, consulting, tech — specialized standards for each.",no:"Dyp domenekontekst for 15 bransjer. Finans, helse, juridisk, konsulent, tech — spesialiserte standarder for hver."},
+  wowF2b:{en:"15 industries",no:"15 bransjer"},
+  wowF3t:{en:"Firm & Role Selection",no:"Firma- og rollevalg"},
+  wowF3d:{en:"Expert mode lets you adopt the working style of 70 top firms across 14 sectors with 350 professional roles.",no:"Ekspertmodus lar deg adoptere arbeidsstilen til 70 toppfirmaer på tvers av 14 sektorer med 350 profesjonelle roller."},
+  wowF3b:{en:"70 firms · 350 roles",no:"70 firmaer · 350 roller"},
+  wowF4t:{en:"Professional File Output",no:"Profesjonelle filformater"},
+  wowF4d:{en:"Prompts optimized for 10 file formats — PDF, Word, Excel, PowerPoint, Markdown, HTML, JSON and more.",no:"Prompter optimalisert for 10 filformater — PDF, Word, Excel, PowerPoint, Markdown, HTML, JSON og mer."},
+  wowF4b:{en:"10 output formats",no:"10 utdataformater"},
+  wowF5t:{en:"Smart Enhancement Engine",no:"Smart forbedringsmotor"},
+  wowF5d:{en:"Automatically detects vague language, infers missing audience, and injects expert reasoning strategies.",no:"Oppdager vagt språk automatisk, utleder manglende målgruppe og injiserer ekspertresonnement."},
+  wowF5b:{en:"Built-in intelligence",no:"Innebygget intelligens"},
+  wowF6t:{en:"Industry-Standard Design",no:"Bransjestandard design"},
+  wowF6d:{en:"Authentic typography and color palettes from real firm deliverables. Goldman navy, McKinsey blue, Pfizer blue.",no:"Autentisk typografi og fargepaletter fra ekte firmaleveranser. Goldman navy, McKinsey blå, Pfizer blå."},
+  wowF6b:{en:"15 design systems",no:"15 designsystemer"},
+
+  wowTechTag:{en:"Advanced",no:"Avansert"},
+  wowTechH2a:{en:"15 prompt engineering",no:"15 promptteknikk"},
+  wowTechH2b:{en:"techniques",no:"teknikker"},
+  wowTechSub:{en:"Combine advanced techniques for maximum effectiveness. Each adds specific instructions that dramatically improve AI response quality.",no:"Kombiner avanserte teknikker for maksimal effekt. Hver legger til spesifikke instruksjoner som dramatisk forbedrer AI-svar."},
+
+  wowModTag:{en:"Compatibility",no:"Kompatibilitet"},
+  wowModH2a:{en:"Works with every",no:"Fungerer med alle"},
+  wowModH2b:{en:"AI model",no:"AI-modeller"},
+  wowModSub:{en:"Model-specific formatting for optimal parsing. Each AI receives prompts structured exactly the way it works best.",no:"Modellspesifikk formatering for optimal parsing. Hver AI mottar prompter strukturert akkurat slik den fungerer best."},
+  wowModAny:{en:"Any model",no:"Enhver modell"},
+  wowModUniversal:{en:"Universal",no:"Universell"},
+
+  wowPrTag:{en:"Pricing",no:"Priser"},
+  wowPrH2a:{en:"Simple, transparent",no:"Enkel, transparent"},
+  wowPrH2b:{en:"pricing",no:"prising"},
+  wowPrSub:{en:"Start free. Upgrade when you need unlimited power.",no:"Start gratis. Oppgrader når du trenger ubegrenset kraft."},
+  wowPrFree:{en:"Free",no:"Gratis"},
+  wowPrForever:{en:"/ forever",no:"/ for alltid"},
+  wowPrFreeDesc:{en:"Get started and see the difference expert prompts make.",no:"Kom i gang og se forskjellen ekspertprompter gjor."},
+  wowPrF1:{en:"2 Simple prompts",no:"2 Enkel-prompter"},
+  wowPrF2:{en:"1 Expert prompt",no:"1 Ekspertprompt"},
+  wowPrF3:{en:"All task types",no:"Alle oppgavetyper"},
+  wowPrF4:{en:"All AI models",no:"Alle AI-modeller"},
+  wowPrStartFree:{en:"Start free",no:"Start gratis"},
+  wowPrPopular:{en:"Most Popular",no:"Mest populær"},
+  wowPrMonthly:{en:"Pro Monthly",no:"Pro Månedlig"},
+  wowPrMonth:{en:"/ month",no:"/ måned"},
+  wowPrMoDesc:{en:"Unlimited prompts. Full access to all features.",no:"Ubegrenset antall prompter. Full tilgang til alle funksjoner."},
+  wowPrM1:{en:"Unlimited prompts",no:"Ubegrenset antall prompter"},
+  wowPrM2:{en:"All 15 industries",no:"Alle 15 bransjer"},
+  wowPrM3:{en:"All 70 firms & 350 roles",no:"Alle 70 firmaer og 350 roller"},
+  wowPrM4:{en:"All 15 techniques",no:"Alle 15 teknikker"},
+  wowPrM5:{en:"All file formats",no:"Alle filformater"},
+  wowPrM6:{en:"Smart Enhancement Engine",no:"Smart forbedringsmotor"},
+  wowPrGetPro:{en:"Get Pro",no:"Få Pro"},
+  wowPrAnnual:{en:"Pro Annual",no:"Pro Årlig"},
+  wowPrAnDesc:{en:"Save 33% with annual billing. $72 billed once per year.",no:"Spar 33 % med årlig fakturering. 72 USD faktureres én gang i året."},
+  wowPrA1:{en:"Everything in Pro Monthly",no:"Alt i Pro Månedlig"},
+  wowPrA2:{en:"33% savings vs monthly",no:"33 % besparelser vs månedlig"},
+  wowPrA3:{en:"Priority support",no:"Prioritert støtte"},
+  wowPrGetAn:{en:"Get Annual",no:"Få Årlig"},
+
+  wowCtaTag:{en:"Get Started",no:"Kom i gang"},
+  wowCtaH2:{en:"Stop settling for mediocre AI output",no:"Slutt å nøye deg med middelmådige AI-svar"},
+  wowCtaP:{en:"The difference between a good prompt and a great prompt is the difference between a generic summary and a board-ready strategic analysis.",no:"Forskjellen mellom en god prompt og en fantastisk prompt er forskjellen mellom en generisk oppsummering og en styreklar strategisk analyse."},
+  wowCtaBtn:{en:"Try Prompt Architect free",no:"Prøv Prompt Architect gratis"},
 
   // Lab
   labBtn:{en:"Lab",no:"Lab"},
@@ -2056,16 +2182,22 @@ function App(){
 
   // WOW hero animations
   const wowCanvasRef=useRef(null);
-  const [wowScrambleWord,setWowScrambleWord]=useState("prompt");
+  const [wowScrambleWord,setWowScrambleWord]=useState(t("wowScramblePrompt"));
   const [wowTyped,setWowTyped]=useState("");
   const [wowDemoIdx,setWowDemoIdx]=useState(0);
-  const wowDemoIns=["Write a market analysis","Create a strategic plan","Draft a legal memo"];
-  const wowDemoTags=[["Finance","Global Bank","Expert Mode"],["Consulting","Tier-1 Firm","Expert Mode"],["Legal","Top Firm","Expert Mode"]];
-  const wowDemoOuts=[
+  const wowDemoIns=[t("wowDemoIn1"),t("wowDemoIn2"),t("wowDemoIn3")];
+  const wowDemoTags=[[t("wowTagFinance"),t("wowTagGlobalBank"),t("wowTagExpert")],[t("wowTagConsulting"),t("wowTagTier1"),t("wowTagExpert")],[t("wowTagLegal"),t("wowTagTopFirm"),t("wowTagExpert")]];
+  const wowDemoOutsEn=[
     "Act as a senior equity analyst.\nConduct investment-grade market analysis:\nTAM/SAM/SOM sizing (DCF-backed)\nPorter's Five Forces framework\nRegulatory risk assessment\nBull/base/bear price scenarios\nOutput: executive memo, 3-page max.",
     "You are a senior strategy partner.\nDevelop a strategic framework using:\nMECE issue tree decomposition\n3-horizon growth mapping\nHypothesis-driven structure\nPyramid Principle output\nDeliver: board-ready deck.",
     "As a senior partner at a top law firm:\nJurisdictional precedent mapping\nRisk matrix & regulatory exposure\nCompliance framework\nPlain-language executive summary\nFormat: ABA standards.",
   ];
+  const wowDemoOutsNo=[
+    "Opptre som en senior aksjeanalytiker.\nGjennomfor investeringsgrad markedsanalyse:\nTAM/SAM/SOM-sizing (DCF-basert)\nPorters fem krefter-rammeverk\nRegulatorisk risikovurdering\nBull/base/bear prisscenarier\nLeveranse: ledelsesnotat, maks 3 sider.",
+    "Du er en senior strategipartner.\nUtvikle et strategisk rammeverk med:\nMECE-problemtredekomponering\n3-horisont vekstkartlegging\nHypotesedrevet struktur\nPyramideprinsipp-utdata\nLever: styreklar presentasjon.",
+    "Som senior partner i et topp advokatfirma:\nJurisdiksjonell presedenskartlegging\nRisikomatrise og regulatorisk eksponering\nOverholdelsesrammeverk\nEnkel ledelsesoppsummering\nFormat: ABA-standarder.",
+  ];
+  const wowDemoOuts=uiLang==="no"?wowDemoOutsNo:wowDemoOutsEn;
   // Particles canvas
   useEffect(()=>{
     const c=wowCanvasRef.current;if(!c)return;
@@ -2092,7 +2224,9 @@ function App(){
   // Word scramble cycle
   useEffect(()=>{
     const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    const words=["prompt","results","output"];let wi=0;let timer=null;let intv=null;
+    const words=uiLang==="no"?["prompt","resultater","utdata"]:["prompt","results","output"];
+    setWowScrambleWord(words[0]);
+    let wi=0;let timer=null;let intv=null;
     const scramble=(target,cb)=>{
       let iter=0;const total=18;
       intv=setInterval(()=>{
@@ -2104,7 +2238,7 @@ function App(){
     const cycle=()=>{wi=(wi+1)%words.length;scramble(words[wi],cycle);};
     timer=setTimeout(cycle,2500);
     return()=>{if(timer)clearTimeout(timer);if(intv)clearInterval(intv);};
-  },[]);
+  },[uiLang]);
   // Typewriter demo
   useEffect(()=>{
     let typeTimer=null;let nextTimer=null;let cancelled=false;
@@ -2122,7 +2256,7 @@ function App(){
     };
     const kick=setTimeout(run,400);
     return()=>{cancelled=true;clearTimeout(kick);if(typeTimer)clearTimeout(typeTimer);if(nextTimer)clearTimeout(nextTimer);};
-  },[wowDemoIdx]);
+  },[wowDemoIdx,uiLang]);
   // Feature card shine
   useEffect(()=>{
     const cards=document.querySelectorAll(".wow-fcard");
@@ -2213,8 +2347,12 @@ function App(){
   },[nlEmail]);
 
   const referralLink=user?.id?`https://www.proarch.tech?ref=${user.id.slice(0,8)}`:"";
+  const [refCopied,setRefCopied]=useState(false);
   const copyReferral=useCallback(()=>{
-    navigator.clipboard.writeText(referralLink).then(()=>{trackEvent("referral_link_copied");setShowReferral(false);});
+    const fallback=()=>{const ta=document.createElement("textarea");ta.value=referralLink;ta.style.cssText="position:fixed;left:-9999px;top:-9999px";document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand("copy");}catch(e){}document.body.removeChild(ta);};
+    const done=()=>{trackEvent("referral_link_copied");setRefCopied(true);setTimeout(()=>setRefCopied(false),1800);};
+    try{navigator.clipboard.writeText(referralLink).then(done,()=>{fallback();done();});}
+    catch(e){fallback();done();}
   },[referralLink]);
 
   const loadExample=useCallback((ex)=>{setTopic(ex.topic);setTask(ex.task);setIndustry(ex.industry);setOutput(ex.output);setModel(ex.model);if(ex.style)setStyle(ex.style);if(ex.tone)setTone(ex.tone);if(ex.len)setLen(ex.len);if(ex.fileOutput)setFileOutput(ex.fileOutput);if(ex.includes)setIncludes(ex.includes);if(ex.techs)setTechs(ex.techs);setSelectedFirm("");setSelectedRole("");setShow(false);},[]);
@@ -2655,25 +2793,25 @@ function App(){
         <div className="wow-blob wow-blob2"/>
         <div className="wow-blob wow-blob3"/>
         <div className="wow-hero-content">
-          <div className="wow-badge"><span className="wow-bdot"/>Professional AI Prompt Engineering</div>
-          <h1 className="wow-h1">Your AI is only as smart<br/>as your <span className="wow-gt">{wowScrambleWord}</span></h1>
-          <p className="wow-hero-sub">Transform vague ideas into expert-level, structured prompts in seconds. Works with ChatGPT, Claude, Gemini, Llama, and any AI model.</p>
+          <div className="wow-badge"><span className="wow-bdot"/>{t("wowBadge")}</div>
+          <h1 className="wow-h1">{t("wowH1a")}<br/>{t("wowH1b")} <span className="wow-gt">{wowScrambleWord}</span></h1>
+          <p className="wow-hero-sub">{t("wowHeroSub")}</p>
           <div className="wow-acts">
             <a href="#tool" className="wow-btn-p" onClick={e=>{e.preventDefault();document.getElementById("tool").scrollIntoView({behavior:"smooth",block:"start"});}}>
-              Start for free
+              {t("wowStartFree")}
               <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </a>
-            <a href="#wow-hiw" className="wow-btn-g" onClick={e=>{e.preventDefault();document.getElementById("wow-hiw").scrollIntoView({behavior:"smooth",block:"start"});}}>See how it works</a>
+            <a href="#wow-hiw" className="wow-btn-g" onClick={e=>{e.preventDefault();document.getElementById("wow-hiw").scrollIntoView({behavior:"smooth",block:"start"});}}>{t("wowSeeHow")}</a>
           </div>
           <div className="wow-demo">
             <div className="wow-demo-card">
               <div className="wow-demo-top">
                 <div className="wow-tls"><span className="wow-tl-r"/><span className="wow-tl-y"/><span className="wow-tl-g"/></div>
-                <span className="wow-demo-ttl">proarch.tech — Smart Enhancement Engine</span>
+                <span className="wow-demo-ttl">{t("wowDemoTitle")}</span>
               </div>
               <div className="wow-demo-body">
                 <div className="wow-dpanel">
-                  <div className="wow-dlbl">Your input</div>
+                  <div className="wow-dlbl">{t("wowDemoInput")}</div>
                   <div className="wow-din">{wowDemoIns[wowDemoIdx]}</div>
                   <div className="wow-dtags">
                     {wowDemoTags[wowDemoIdx].map((tag,i)=>(<span key={i} className={"wow-tag"+(i===2?" gold":"")}>{tag}</span>))}
@@ -2685,7 +2823,7 @@ function App(){
                   </div>
                 </div>
                 <div className="wow-dpanel">
-                  <div className="wow-dlbl">Expert prompt</div>
+                  <div className="wow-dlbl">{t("wowDemoOutput")}</div>
                   <div className="wow-dout">{wowTyped}<span className="wow-dcur"/></div>
                 </div>
               </div>
@@ -2696,43 +2834,43 @@ function App(){
 
       {/* WOW STATS */}
       <div className="wow-stats">
-        <div className="wow-si"><div ref={wowStatsTasksRef} className="wow-snum" style={{fontVariantNumeric:"tabular-nums"}}>{wowStatsTasks}</div><div className="wow-slbl">Task Types</div></div>
-        <div className="wow-si"><div ref={wowStatsIndRef} className="wow-snum" style={{fontVariantNumeric:"tabular-nums"}}>{wowStatsInd}</div><div className="wow-slbl">Industries</div></div>
-        <div className="wow-si"><div ref={wowStatsFirmsRef} className="wow-snum" style={{fontVariantNumeric:"tabular-nums"}}>{wowStatsFirms}</div><div className="wow-slbl">Firms</div></div>
-        <div className="wow-si"><div ref={wowStatsRolesRef} className="wow-snum" style={{fontVariantNumeric:"tabular-nums"}}>{wowStatsRoles}</div><div className="wow-slbl">Professional Roles</div></div>
-        <div className="wow-si"><div ref={wowStatsTechsRef} className="wow-snum" style={{fontVariantNumeric:"tabular-nums"}}>{wowStatsTechs}</div><div className="wow-slbl">Advanced Techniques</div></div>
+        <div className="wow-si"><div ref={wowStatsTasksRef} className="wow-snum" style={{fontVariantNumeric:"tabular-nums"}}>{wowStatsTasks}</div><div className="wow-slbl">{t("wowStatTasks")}</div></div>
+        <div className="wow-si"><div ref={wowStatsIndRef} className="wow-snum" style={{fontVariantNumeric:"tabular-nums"}}>{wowStatsInd}</div><div className="wow-slbl">{t("wowStatIndustries")}</div></div>
+        <div className="wow-si"><div ref={wowStatsFirmsRef} className="wow-snum" style={{fontVariantNumeric:"tabular-nums"}}>{wowStatsFirms}</div><div className="wow-slbl">{t("wowStatFirms")}</div></div>
+        <div className="wow-si"><div ref={wowStatsRolesRef} className="wow-snum" style={{fontVariantNumeric:"tabular-nums"}}>{wowStatsRoles}</div><div className="wow-slbl">{t("wowStatRoles")}</div></div>
+        <div className="wow-si"><div ref={wowStatsTechsRef} className="wow-snum" style={{fontVariantNumeric:"tabular-nums"}}>{wowStatsTechs}</div><div className="wow-slbl">{t("wowStatTechs")}</div></div>
       </div>
 
       {/* WOW HOW IT WORKS */}
       <section className="wow-sec" id="wow-hiw">
-        <div className="wow-stag">Process</div>
-        <h2 className="wow-h2">Multi-stage <span className="wow-gt">engineering pipeline</span></h2>
-        <p className="wow-ssub">A systematic approach that turns plain language into precision-crafted prompts for dramatically better AI results.</p>
+        <div className="wow-stag">{t("wowHiwTag")}</div>
+        <h2 className="wow-h2">{t("wowHiwH2a")} <span className="wow-gt">{t("wowHiwH2b")}</span></h2>
+        <p className="wow-ssub">{t("wowHiwSub")}</p>
         <div className="wow-steps">
           <div className="wow-step">
-            <div className="wow-step-n"><span className="wow-step-nd">1</span>Describe</div>
+            <div className="wow-step-n"><span className="wow-step-nd">1</span>{t("wowStep1n")}</div>
             <div className="wow-step-ico"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke={ac} strokeWidth="1.6" strokeLinecap="round"><rect x="3" y="3" width="20" height="20" rx="4"/><path d="M8 10h10M8 13h7M8 16h5"/></svg></div>
-            <h3>State your goal</h3>
-            <p>Describe what you need in plain language. No prompt engineering knowledge required — just say what you want to accomplish.</p>
+            <h3>{t("wowStep1t")}</h3>
+            <p>{t("wowStep1d")}</p>
           </div>
           <div className="wow-step">
-            <div className="wow-step-n"><span className="wow-step-nd">2</span>Configure</div>
+            <div className="wow-step-n"><span className="wow-step-nd">2</span>{t("wowStep2n")}</div>
             <div className="wow-step-ico"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke={ac} strokeWidth="1.6" strokeLinecap="round"><circle cx="13" cy="13" r="3"/><path d="M13 3v3M13 20v3M3 13h3M20 13h3M5.64 5.64l2.12 2.12M18.24 18.24l2.12 2.12M5.64 20.36l2.12-2.12M18.24 7.76l2.12-2.12"/></svg></div>
-            <h3>Set your context</h3>
-            <p>Choose task type, industry, tone, writing style, target AI model, and desired output format from expert-curated options.</p>
+            <h3>{t("wowStep2t")}</h3>
+            <p>{t("wowStep2d")}</p>
           </div>
           <div className="wow-step">
-            <div className="wow-step-n"><span className="wow-step-nd">3</span>Generate</div>
+            <div className="wow-step-n"><span className="wow-step-nd">3</span>{t("wowStep3n")}</div>
             <div className="wow-step-ico"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke={ac} strokeWidth="1.6" strokeLinecap="round"><path d="M13 3l2.5 8H23l-6.8 4.9 2.6 8L13 19.2l-5.8 4.7 2.6-8L3 11h7.5z"/></svg></div>
-            <h3>Get expert results</h3>
-            <p>The Smart Enhancement Engine analyzes, enriches, and structures your input into a precision-engineered prompt ready to paste.</p>
+            <h3>{t("wowStep3t")}</h3>
+            <p>{t("wowStep3d")}</p>
           </div>
         </div>
       </section>
 
       {/* WOW MARQUEE */}
       <div className="wow-mq-sec">
-        <div className="wow-mq-lbl">Adopt the working style of world-class firms</div>
+        <div className="wow-mq-lbl">{t("wowMqLbl")}</div>
         <div className="wow-mq-track">
           <div className="wow-mq-inner">
             {["Goldman Sachs","McKinsey","Google","Pfizer","Sullivan & Cromwell","Amazon","Nike","Harvard","Netflix","CBRE","Mercer","Siemens","World Bank","DeepMind","J.P. Morgan","BCG","Deloitte","Bain","Goldman Sachs","McKinsey","Google","Pfizer","Sullivan & Cromwell","Amazon","Nike","Harvard","Netflix","CBRE","Mercer","Siemens","World Bank","DeepMind","J.P. Morgan","BCG","Deloitte","Bain"].map((f,i)=>(<span key={i} className="wow-chip">{f}</span>))}
@@ -2742,24 +2880,24 @@ function App(){
 
       {/* WOW FEATURES */}
       <section className="wow-sec" id="features">
-        <div className="wow-stag">Capabilities</div>
-        <h2 className="wow-h2">Everything you need for <span className="wow-gt">expert prompts</span></h2>
-        <p className="wow-ssub">Comprehensive coverage across industries, roles, task types, and output formats — all in one tool.</p>
+        <div className="wow-stag">{t("wowFeatTag")}</div>
+        <h2 className="wow-h2">{t("wowFeatH2a")} <span className="wow-gt">{t("wowFeatH2b")}</span></h2>
+        <p className="wow-ssub">{t("wowFeatSub")}</p>
         <div className="wow-fgrid">
-          <div className="wow-fcard"><div className="wow-fcard-shine"/><div className="wow-fcard-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l3 2"/></svg></div><h3>Task Type Engine</h3><p>15 specialized task types, each with its own methodology, quality standards, and output structure.</p><span className="wow-cbadge">15 task types</span></div>
-          <div className="wow-fcard"><div className="wow-fcard-shine"/><div className="wow-fcard-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M10 2l2 6h6l-5 3.6 1.9 5.8L10 14l-4.9 3.4L7 11.6 2 8h6z"/></svg></div><h3>Industry Expertise</h3><p>Deep domain context for 15 industries. Finance, healthcare, legal, consulting, tech — specialized standards for each.</p><span className="wow-cbadge">15 industries</span></div>
-          <div className="wow-fcard"><div className="wow-fcard-shine"/><div className="wow-fcard-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><rect x="2" y="6" width="16" height="12" rx="2"/><path d="M6 6V4a4 4 0 018 0v2"/></svg></div><h3>Firm &amp; Role Selection</h3><p>Expert mode lets you adopt the working style of 70 top firms across 14 sectors with 350 professional roles.</p><span className="wow-cbadge">70 firms · 350 roles</span></div>
-          <div className="wow-fcard"><div className="wow-fcard-shine"/><div className="wow-fcard-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><rect x="4" y="2" width="12" height="16" rx="2"/><path d="M8 7h4M8 11h4M8 15h2"/></svg></div><h3>Professional File Output</h3><p>Prompts optimized for 10 file formats — PDF, Word, Excel, PowerPoint, Markdown, HTML, JSON and more.</p><span className="wow-cbadge">10 output formats</span></div>
-          <div className="wow-fcard"><div className="wow-fcard-shine"/><div className="wow-fcard-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M10 2v4M10 14v4M2 10h4M14 10h4M4.93 4.93l2.83 2.83M12.24 12.24l2.83 2.83M4.93 15.07l2.83-2.83M12.24 7.76l2.83-2.83"/></svg></div><h3>Smart Enhancement Engine</h3><p>Automatically detects vague language, infers missing audience, and injects expert reasoning strategies.</p><span className="wow-cbadge">Built-in intelligence</span></div>
-          <div className="wow-fcard"><div className="wow-fcard-shine"/><div className="wow-fcard-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg></div><h3>Industry-Standard Design</h3><p>Authentic typography and color palettes from real firm deliverables. Goldman navy, McKinsey blue, Pfizer blue.</p><span className="wow-cbadge">15 design systems</span></div>
+          <div className="wow-fcard"><div className="wow-fcard-shine"/><div className="wow-fcard-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l3 2"/></svg></div><h3>{t("wowF1t")}</h3><p>{t("wowF1d")}</p><span className="wow-cbadge">{t("wowF1b")}</span></div>
+          <div className="wow-fcard"><div className="wow-fcard-shine"/><div className="wow-fcard-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M10 2l2 6h6l-5 3.6 1.9 5.8L10 14l-4.9 3.4L7 11.6 2 8h6z"/></svg></div><h3>{t("wowF2t")}</h3><p>{t("wowF2d")}</p><span className="wow-cbadge">{t("wowF2b")}</span></div>
+          <div className="wow-fcard"><div className="wow-fcard-shine"/><div className="wow-fcard-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><rect x="2" y="6" width="16" height="12" rx="2"/><path d="M6 6V4a4 4 0 018 0v2"/></svg></div><h3>{t("wowF3t")}</h3><p>{t("wowF3d")}</p><span className="wow-cbadge">{t("wowF3b")}</span></div>
+          <div className="wow-fcard"><div className="wow-fcard-shine"/><div className="wow-fcard-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><rect x="4" y="2" width="12" height="16" rx="2"/><path d="M8 7h4M8 11h4M8 15h2"/></svg></div><h3>{t("wowF4t")}</h3><p>{t("wowF4d")}</p><span className="wow-cbadge">{t("wowF4b")}</span></div>
+          <div className="wow-fcard"><div className="wow-fcard-shine"/><div className="wow-fcard-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M10 2v4M10 14v4M2 10h4M14 10h4M4.93 4.93l2.83 2.83M12.24 12.24l2.83 2.83M4.93 15.07l2.83-2.83M12.24 7.76l2.83-2.83"/></svg></div><h3>{t("wowF5t")}</h3><p>{t("wowF5d")}</p><span className="wow-cbadge">{t("wowF5b")}</span></div>
+          <div className="wow-fcard"><div className="wow-fcard-shine"/><div className="wow-fcard-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg></div><h3>{t("wowF6t")}</h3><p>{t("wowF6d")}</p><span className="wow-cbadge">{t("wowF6b")}</span></div>
         </div>
       </section>
 
       {/* WOW TECHNIQUES */}
       <section className="wow-sec">
-        <div className="wow-stag">Advanced</div>
-        <h2 className="wow-h2">15 prompt engineering <span className="wow-gt">techniques</span></h2>
-        <p className="wow-ssub">Combine advanced techniques for maximum effectiveness. Each adds specific instructions that dramatically improve AI response quality.</p>
+        <div className="wow-stag">{t("wowTechTag")}</div>
+        <h2 className="wow-h2">{t("wowTechH2a")} <span className="wow-gt">{t("wowTechH2b")}</span></h2>
+        <p className="wow-ssub">{t("wowTechSub")}</p>
         <div className="wow-tpills">
           {["Chain of Thought","Few-Shot Examples","Strict Constraints","Self-Verification","Option Comparison","Iterative Refinement","Role Assignment","Red Team Analysis","First Principles","Pre-Mortem Analysis","Multi-Perspective Panel","Structured Debate","Systems Thinking","Task Decomposition","Meta-Reasoning"].map((tp,i)=>(<span key={i} className={"wow-tpill"+(wowActivePills[tp]?" on":"")} onClick={()=>setWowActivePills(p=>({...p,[tp]:!p[tp]}))}>{tp}</span>))}
         </div>
@@ -2767,56 +2905,56 @@ function App(){
 
       {/* WOW MODELS */}
       <section className="wow-sec" id="models">
-        <div className="wow-stag">Compatibility</div>
-        <h2 className="wow-h2">Works with every <span className="wow-gt">AI model</span></h2>
-        <p className="wow-ssub">Model-specific formatting for optimal parsing. Each AI receives prompts structured exactly the way it works best.</p>
+        <div className="wow-stag">{t("wowModTag")}</div>
+        <h2 className="wow-h2">{t("wowModH2a")} <span className="wow-gt">{t("wowModH2b")}</span></h2>
+        <p className="wow-ssub">{t("wowModSub")}</p>
         <div className="wow-mgrid">
           <div className="wow-mcard"><div className="wow-mico"><svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke={ac} strokeWidth="1.5" strokeLinecap="round"><circle cx="14" cy="14" r="10"/><path d="M10 11a4 4 0 018 0v3a4 4 0 01-8 0v-3zM8 20c1.5-1 3.5-1.5 6-1.5s4.5.5 6 1.5"/></svg></div><div className="wow-mname">Claude</div><div className="wow-mby">Anthropic</div></div>
           <div className="wow-mcard"><div className="wow-mico"><svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke={ac} strokeWidth="1.5" strokeLinecap="round"><rect x="4" y="4" width="20" height="20" rx="5"/><path d="M10 14h8M14 10v8"/></svg></div><div className="wow-mname">ChatGPT</div><div className="wow-mby">OpenAI</div></div>
           <div className="wow-mcard"><div className="wow-mico"><svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke={ac} strokeWidth="1.5" strokeLinecap="round"><polygon points="14,4 24,22 4,22"/><path d="M11 16h6"/></svg></div><div className="wow-mname">Gemini</div><div className="wow-mby">Google</div></div>
           <div className="wow-mcard"><div className="wow-mico"><svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke={ac} strokeWidth="1.5" strokeLinecap="round"><ellipse cx="14" cy="14" rx="10" ry="6"/><path d="M14 8v12M4 14h20"/></svg></div><div className="wow-mname">Llama</div><div className="wow-mby">Meta</div></div>
-          <div className="wow-mcard"><div className="wow-mico"><svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke={ac} strokeWidth="1.5" strokeLinecap="round"><circle cx="14" cy="14" r="10"/><circle cx="14" cy="14" r="3" fill={ac}/><path d="M14 4v7M14 17v7M4 14h7M17 14h7"/></svg></div><div className="wow-mname">Universal</div><div className="wow-mby">Any model</div></div>
+          <div className="wow-mcard"><div className="wow-mico"><svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke={ac} strokeWidth="1.5" strokeLinecap="round"><circle cx="14" cy="14" r="10"/><circle cx="14" cy="14" r="3" fill={ac}/><path d="M14 4v7M14 17v7M4 14h7M17 14h7"/></svg></div><div className="wow-mname">{t("wowModUniversal")}</div><div className="wow-mby">{t("wowModAny")}</div></div>
         </div>
       </section>
 
       {/* WOW PRICING */}
       <section className="wow-sec" id="pricing">
-        <div className="wow-stag">Pricing</div>
-        <h2 className="wow-h2">Simple, transparent <span className="wow-gt">pricing</span></h2>
-        <p className="wow-ssub">Start free. Upgrade when you need unlimited power.</p>
+        <div className="wow-stag">{t("wowPrTag")}</div>
+        <h2 className="wow-h2">{t("wowPrH2a")} <span className="wow-gt">{t("wowPrH2b")}</span></h2>
+        <p className="wow-ssub">{t("wowPrSub")}</p>
         <div className="wow-pgrid">
           <div className="wow-pcard">
-            <div className="wow-ptier">Free</div>
-            <div className="wow-pamount"><span className="wow-pnum">$0</span><span className="wow-pper">/ forever</span></div>
-            <p className="wow-pdesc">Get started and see the difference expert prompts make.</p>
-            <ul className="wow-pfeats"><li>2 Simple prompts</li><li>1 Expert prompt</li><li>All task types</li><li>All AI models</li></ul>
-            <button className="wow-pbtn" onClick={()=>document.getElementById("tool").scrollIntoView({behavior:"smooth",block:"start"})}>Start free</button>
+            <div className="wow-ptier">{t("wowPrFree")}</div>
+            <div className="wow-pamount"><span className="wow-pnum">$0</span><span className="wow-pper">{t("wowPrForever")}</span></div>
+            <p className="wow-pdesc">{t("wowPrFreeDesc")}</p>
+            <ul className="wow-pfeats"><li>{t("wowPrF1")}</li><li>{t("wowPrF2")}</li><li>{t("wowPrF3")}</li><li>{t("wowPrF4")}</li></ul>
+            <button className="wow-pbtn" onClick={()=>document.getElementById("tool").scrollIntoView({behavior:"smooth",block:"start"})}>{t("wowPrStartFree")}</button>
           </div>
           <div className="wow-pcard feat">
-            <div className="wow-fbadge">Most Popular</div>
-            <div className="wow-ptier">Pro Monthly</div>
-            <div className="wow-pamount"><span className="wow-pnum">$9</span><span className="wow-pper">/ month</span></div>
-            <p className="wow-pdesc">Unlimited prompts. Full access to all features.</p>
-            <ul className="wow-pfeats"><li>Unlimited prompts</li><li>All 15 industries</li><li>All 70 firms &amp; 350 roles</li><li>All 15 techniques</li><li>All file formats</li><li>Smart Enhancement Engine</li></ul>
-            <button className="wow-pbtn f" onClick={()=>document.getElementById("tool").scrollIntoView({behavior:"smooth",block:"start"})}>Get Pro</button>
+            <div className="wow-fbadge">{t("wowPrPopular")}</div>
+            <div className="wow-ptier">{t("wowPrMonthly")}</div>
+            <div className="wow-pamount"><span className="wow-pnum">$9</span><span className="wow-pper">{t("wowPrMonth")}</span></div>
+            <p className="wow-pdesc">{t("wowPrMoDesc")}</p>
+            <ul className="wow-pfeats"><li>{t("wowPrM1")}</li><li>{t("wowPrM2")}</li><li>{t("wowPrM3")}</li><li>{t("wowPrM4")}</li><li>{t("wowPrM5")}</li><li>{t("wowPrM6")}</li></ul>
+            <button className="wow-pbtn f" onClick={()=>document.getElementById("tool").scrollIntoView({behavior:"smooth",block:"start"})}>{t("wowPrGetPro")}</button>
           </div>
           <div className="wow-pcard">
-            <div className="wow-ptier">Pro Annual</div>
-            <div className="wow-pamount"><span className="wow-pnum">$6</span><span className="wow-pper">/ month</span></div>
-            <p className="wow-pdesc">Save 33% with annual billing. $72 billed once per year.</p>
-            <ul className="wow-pfeats"><li>Everything in Pro Monthly</li><li>33% savings vs monthly</li><li>Priority support</li></ul>
-            <button className="wow-pbtn" onClick={()=>document.getElementById("tool").scrollIntoView({behavior:"smooth",block:"start"})}>Get Annual</button>
+            <div className="wow-ptier">{t("wowPrAnnual")}</div>
+            <div className="wow-pamount"><span className="wow-pnum">$6</span><span className="wow-pper">{t("wowPrMonth")}</span></div>
+            <p className="wow-pdesc">{t("wowPrAnDesc")}</p>
+            <ul className="wow-pfeats"><li>{t("wowPrA1")}</li><li>{t("wowPrA2")}</li><li>{t("wowPrA3")}</li></ul>
+            <button className="wow-pbtn" onClick={()=>document.getElementById("tool").scrollIntoView({behavior:"smooth",block:"start"})}>{t("wowPrGetAn")}</button>
           </div>
         </div>
       </section>
 
       {/* WOW CTA */}
       <div className="wow-cta">
-        <div className="wow-stag" style={{justifyContent:"center"}}>Get Started</div>
-        <h2 className="wow-h2 wow-gt">Stop settling for mediocre AI output</h2>
-        <p>The difference between a good prompt and a great prompt is the difference between a generic summary and a board-ready strategic analysis.</p>
+        <div className="wow-stag" style={{justifyContent:"center"}}>{t("wowCtaTag")}</div>
+        <h2 className="wow-h2 wow-gt">{t("wowCtaH2")}</h2>
+        <p>{t("wowCtaP")}</p>
         <a href="#tool" className="wow-btn-p" onClick={e=>{e.preventDefault();document.getElementById("tool").scrollIntoView({behavior:"smooth",block:"start"});}} style={{display:"inline-flex"}}>
-          Try Prompt Architect free
+          {t("wowCtaBtn")}
           <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
         </a>
       </div>
@@ -3348,17 +3486,17 @@ function App(){
           <div style={{display:"flex",justifyContent:"center",marginBottom:16}}>
             <div style={{width:52,height:52,borderRadius:14,background:ac+"10",display:"flex",alignItems:"center",justifyContent:"center"}}>{I.gift(26,ac)}</div>
           </div>
-          <h3 style={{fontSize:20,fontWeight:700,margin:"0 0 8px",textAlign:"center",color:"var(--t1)"}}>Give 30 days, get 30 days</h3>
-          <p style={{fontSize:13,color:"var(--t2)",margin:"0 0 20px",textAlign:"center",lineHeight:1.6}}>Share your referral link. When someone signs up and subscribes, you both get 30 days of Pro for free.</p>
+          <h3 style={{fontSize:20,fontWeight:700,margin:"0 0 8px",textAlign:"center",color:"var(--t1)"}}>{t("refTitle")}</h3>
+          <p style={{fontSize:13,color:"var(--t2)",margin:"0 0 20px",textAlign:"center",lineHeight:1.6}}>{t("refSub")}</p>
           <div style={{background:"var(--bg)",border:"1px solid var(--bd)",borderRadius:10,padding:"12px 14px",display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
             <code style={{flex:1,fontSize:12,color:"var(--t2)",fontFamily:"var(--m)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{referralLink}</code>
-            <button onClick={copyReferral} style={{padding:"6px 14px",borderRadius:7,border:"none",background:ac,color:"#fff",fontSize:12,fontWeight:600,fontFamily:"var(--f)",cursor:"pointer",whiteSpace:"nowrap"}}>{I.copy(12,"#fff")} Copy</button>
+            <button onClick={copyReferral} disabled={!referralLink} style={{padding:"6px 14px",borderRadius:7,border:"none",background:refCopied?"#10B981":ac,color:"#fff",fontSize:12,fontWeight:600,fontFamily:"var(--f)",cursor:referralLink?"pointer":"not-allowed",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:5,transition:"background .15s",opacity:referralLink?1:.5}}>{refCopied?I.check(12,"#fff"):I.copy(12,"#fff")} {refCopied?t("refCopied"):t("refCopy")}</button>
           </div>
           <div style={{display:"flex",gap:8}}>
-            <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent("I use Prompt Architect to turn vague ideas into expert AI prompts. Try it free:")}&url=${encodeURIComponent(referralLink)}`} target="_blank" rel="noopener" style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:6,padding:"10px",borderRadius:8,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",fontSize:12,fontWeight:600,fontFamily:"var(--f)",textDecoration:"none",cursor:"pointer"}}>Share on X</a>
-            <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(referralLink)}`} target="_blank" rel="noopener" style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:6,padding:"10px",borderRadius:8,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",fontSize:12,fontWeight:600,fontFamily:"var(--f)",textDecoration:"none",cursor:"pointer"}}>Share on LinkedIn</a>
+            <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(t("refTweet"))}&url=${encodeURIComponent(referralLink)}`} target="_blank" rel="noopener" style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:6,padding:"10px",borderRadius:8,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",fontSize:12,fontWeight:600,fontFamily:"var(--f)",textDecoration:"none",cursor:"pointer"}}>{t("refShareX")}</a>
+            <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(referralLink)}`} target="_blank" rel="noopener" style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:6,padding:"10px",borderRadius:8,border:"1px solid var(--bd)",background:"var(--s2)",color:"var(--t2)",fontSize:12,fontWeight:600,fontFamily:"var(--f)",textDecoration:"none",cursor:"pointer"}}>{t("refShareLi")}</a>
           </div>
-          <button onClick={()=>setShowReferral(false)} style={{width:"100%",marginTop:14,padding:"10px",borderRadius:8,border:"1px solid var(--bd)",background:"transparent",color:"var(--t3)",fontSize:12,fontWeight:500,fontFamily:"var(--f)",cursor:"pointer"}}>Close</button>
+          <button onClick={()=>setShowReferral(false)} style={{width:"100%",marginTop:14,padding:"10px",borderRadius:8,border:"1px solid var(--bd)",background:"transparent",color:"var(--t3)",fontSize:12,fontWeight:500,fontFamily:"var(--f)",cursor:"pointer"}}>{t("refClose")}</button>
         </div>
       </div>
     )}
