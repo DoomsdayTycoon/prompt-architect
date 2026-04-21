@@ -2108,6 +2108,15 @@ function App(){
     return ()=>subscription.unsubscribe();
   },[]);
 
+  // Disable browser scroll restoration so reloads always land at the top of the
+  // landing page instead of restoring the previous scroll position (which was
+  // landing users in the builder after a reload).
+  useEffect(()=>{
+    if(typeof window==="undefined")return;
+    try{if("scrollRestoration" in window.history)window.history.scrollRestoration="manual";}catch(e){}
+    if(!window.location.hash)window.scrollTo(0,0);
+  },[]);
+
   // Auto-open signup modal when arriving via a referral link (and not already logged in).
   // authLoading gate prevents a flash-open before Supabase confirms the session state.
   useEffect(()=>{
@@ -3094,7 +3103,7 @@ function App(){
                 <button onClick={()=>{setTopic("");setShow(false);}} style={{padding:"4px 10px",borderRadius:6,border:"1px solid #fca5a5",background:"#fee2e2",color:"#dc2626",cursor:"pointer",fontSize:11,fontFamily:"var(--f)",fontWeight:600,transition:"all .2s",display:"flex",alignItems:"center",gap:4}}>{I.trash(11,"#dc2626")} {t("clear")}</button>
               </div>
             )}
-            <textarea autoFocus value={topic} onChange={e=>{setTopic(e.target.value);setShow(false);}} placeholder={t("describeGoalPh")} rows={3} style={inp({resize:"vertical"})} />
+            <textarea value={topic} onChange={e=>{setTopic(e.target.value);setShow(false);}} placeholder={t("describeGoalPh")} rows={3} style={inp({resize:"vertical"})} />
           </div>
 
           {/* EXAMPLE PROMPTS */}
