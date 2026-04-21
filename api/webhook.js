@@ -51,6 +51,8 @@ module.exports = async (req, res) => {
             })
             .eq('id', userId);
           console.log(`User ${userId} upgraded to paid.`);
+
+          await grantReferralCreditIfEligible({ refereeId: userId, refereeCustomerId: customerId, stripeEventId: event.id });
         } else {
           console.warn('checkout.session.completed: missing or invalid userId in metadata');
         }
@@ -121,6 +123,80 @@ function getRawBody(req) {
     req.on('end', () => resolve(Buffer.concat(chunks)));
     req.on('error', reject);
   });
+}
+
+// Referral credit flow. Called on the referee's first successful checkout.
+// - Resolves the 8-char hex referral prefix stored on profiles.referred_by to a full UUID.
+// - Calls grant_referral_credit RPC (atomic, idempotent on stripe_event_id).
+// - On success, applies a $5 negative balance transaction to each Stripe customer so
+//   the credit auto-applies against their next invoice. Balance tx are idempotent per
+//   stripe_event_id via the RPC gate — we only reach Stripe if the RPC returned TRUE.
+const REFERRAL_CREDIT_CENTS = 500;
+
+async function grantReferralCreditIfEligible({ refereeId, refereeCustomerId, stripeEventId }) {
+  try {
+    const { data: profile, error: profErr } = await supabase
+      .from('profiles')
+      .select('referred_by')
+      .eq('id', refereeId)
+      .single();
+    if (profErr || !profile?.referred_by) return;
+
+    const prefix = String(profile.referred_by).toLowerCase();
+    if (!/^[a-f0-9]{8}$/.test(prefix)) return;
+    if (prefix === refereeId.slice(0, 8)) return; // self-referral guard
+
+    const { data: referrerId, error: resolveErr } = await supabase
+      .rpc('find_referrer_by_prefix', { p_prefix: prefix });
+    if (resolveErr || !referrerId || !isValidUUID(referrerId)) return;
+    if (referrerId === refereeId) return;
+
+    const { data: granted, error: grantErr } = await supabase.rpc('grant_referral_credit', {
+      p_referrer_id: referrerId,
+      p_referee_id: refereeId,
+      p_amount_cents: REFERRAL_CREDIT_CENTS,
+      p_stripe_event_id: stripeEventId,
+    });
+    if (grantErr) {
+      console.error('grant_referral_credit RPC failed:', grantErr.message);
+      return;
+    }
+    if (!granted) return; // already processed
+
+    // Referee: apply to their Stripe customer balance (auto-applies to next invoice).
+    if (refereeCustomerId) {
+      try {
+        await stripe.customers.createBalanceTransaction(refereeCustomerId, {
+          amount: -REFERRAL_CREDIT_CENTS,
+          currency: 'usd',
+          description: 'Referral credit (referee)',
+        });
+      } catch (e) {
+        console.error('Stripe balance tx (referee) failed:', e.message);
+      }
+    }
+
+    // Referrer: look up their Stripe customer id and apply credit.
+    const { data: referrerProfile } = await supabase
+      .from('profiles')
+      .select('stripe_customer_id')
+      .eq('id', referrerId)
+      .single();
+    if (referrerProfile?.stripe_customer_id) {
+      try {
+        await stripe.customers.createBalanceTransaction(referrerProfile.stripe_customer_id, {
+          amount: -REFERRAL_CREDIT_CENTS,
+          currency: 'usd',
+          description: 'Referral credit (referrer)',
+        });
+      } catch (e) {
+        console.error('Stripe balance tx (referrer) failed:', e.message);
+      }
+    }
+    console.log(`Referral credit granted: referrer=${referrerId} referee=${refereeId}`);
+  } catch (e) {
+    console.error('grantReferralCreditIfEligible error:', e.message);
+  }
 }
 
 // Vercel config: disable body parsing so we get raw body for Stripe signature verification

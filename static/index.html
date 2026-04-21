@@ -336,11 +336,11 @@ const UI={
   proMember:{en:"Pro member",no:"Pro-medlem"},
   upgradePro:{en:"Upgrade to Pro",no:"Oppgrader til Pro"},
   referFriend:{en:"Refer a friend",no:"Inviter en venn"},
-  refTitle:{en:"Give 3 months, get 3 months",no:"Gi 3 måneder, få 3 måneder"},
-  refSub:{en:"Share your referral link. When someone signs up and subscribes, you both get 3 months of Pro free — a $27 value for each of you.",no:"Del din henvisningslenke. Når noen melder seg på og abonnerer, får dere begge 3 måneder med Pro gratis — verdt 27 USD hver."},
+  refTitle:{en:"Give $5, get $5",no:"Gi 5 USD, få 5 USD"},
+  refSub:{en:"Share your referral link. When someone signs up and pays, you both get $5 off your next invoice — credit is applied automatically.",no:"Del din henvisningslenke. Når noen melder seg på og betaler, får dere begge 5 USD i rabatt på neste faktura — kreditten trekkes automatisk."},
   refShareX:{en:"Share on X",no:"Del på X"},
   refShareLi:{en:"Share on LinkedIn",no:"Del på LinkedIn"},
-  refTweet:{en:"I use Prompt Architect to turn vague ideas into expert AI prompts. Get 3 months of Pro free through my link:",no:"Jeg bruker Prompt Architect for å gjøre vage ideer til ekspertprompter. Få 3 måneder med Pro gratis via lenken min:"},
+  refTweet:{en:"I use Prompt Architect to turn vague ideas into expert AI prompts. Sign up through my link and we both get $5 off:",no:"Jeg bruker Prompt Architect for å gjøre vage ideer til ekspertprompter. Meld deg på via lenken min og vi får begge 5 USD i rabatt:"},
   refClose:{en:"Close",no:"Lukk"},
   refCopy:{en:"Copy",no:"Kopier"},
   refCopied:{en:"Copied!",no:"Kopiert!"},
@@ -2029,6 +2029,7 @@ function App(){
   const [nlEmail,setNlEmail]=useState("");
   const [nlStatus,setNlStatus]=useState("");
   const [showReferral,setShowReferral]=useState(false);
+  const [referralCents,setReferralCents]=useState(0);
   const [showCookies,setShowCookies]=useState(()=>!localStorage.getItem("pa_cookies"));
   const [refCode]=useState(()=>{const p=new URLSearchParams(window.location.search).get("ref");if(p&&/^[a-f0-9]{8}$/i.test(p)){window.history.replaceState({},"",window.location.pathname);return p;}return null;});
   const [showPalette,setShowPalette]=useState(false);
@@ -2361,6 +2362,13 @@ function App(){
     try{navigator.clipboard.writeText(referralLink).then(done,()=>{fallback();done();});}
     catch(e){fallback();done();}
   },[referralLink]);
+
+  useEffect(()=>{
+    if(!showReferral||!user?.id)return;
+    supabase.from("profiles").select("referral_credits_cents").eq("id",user.id).single().then(({data})=>{
+      if(data&&typeof data.referral_credits_cents==="number")setReferralCents(data.referral_credits_cents);
+    });
+  },[showReferral,user?.id]);
 
   const loadExample=useCallback((ex)=>{setTopic(ex.topic);setTask(ex.task);setIndustry(ex.industry);setOutput(ex.output);setModel(ex.model);if(ex.style)setStyle(ex.style);if(ex.tone)setTone(ex.tone);if(ex.len)setLen(ex.len);if(ex.fileOutput)setFileOutput(ex.fileOutput);if(ex.includes)setIncludes(ex.includes);if(ex.techs)setTechs(ex.techs);setSelectedFirm("");setSelectedRole("");setShow(false);},[]);
 
@@ -3455,7 +3463,8 @@ function App(){
             <div style={{width:52,height:52,borderRadius:14,background:ac+"10",display:"flex",alignItems:"center",justifyContent:"center"}}>{I.gift(26,ac)}</div>
           </div>
           <h3 style={{fontSize:20,fontWeight:700,margin:"0 0 8px",textAlign:"center",color:"var(--t1)"}}>{t("refTitle")}</h3>
-          <p style={{fontSize:13,color:"var(--t2)",margin:"0 0 20px",textAlign:"center",lineHeight:1.6}}>{t("refSub")}</p>
+          <p style={{fontSize:13,color:"var(--t2)",margin:"0 0 16px",textAlign:"center",lineHeight:1.6}}>{t("refSub")}</p>
+          {referralCents>0&&<div style={{background:"#10B98110",border:"1px solid #10B98130",borderRadius:10,padding:"10px 14px",marginBottom:16,textAlign:"center",fontSize:13,color:"#065F46",fontWeight:600}}>{uiLang==="no"?`Du har tjent $${(referralCents/100).toFixed(2)} i kreditt`:`You've earned $${(referralCents/100).toFixed(2)} in credit`}</div>}
           <div style={{background:"var(--bg)",border:"1px solid var(--bd)",borderRadius:10,padding:"12px 14px",display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
             <code style={{flex:1,fontSize:12,color:"var(--t2)",fontFamily:"var(--m)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{referralLink}</code>
             <button onClick={copyReferral} disabled={!referralLink} style={{padding:"6px 14px",borderRadius:7,border:"none",background:refCopied?"#10B981":ac,color:"#fff",fontSize:12,fontWeight:600,fontFamily:"var(--f)",cursor:referralLink?"pointer":"not-allowed",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:5,transition:"background .15s",opacity:referralLink?1:.5}}>{refCopied?I.check(12,"#fff"):I.copy(12,"#fff")} {refCopied?t("refCopied"):t("refCopy")}</button>
