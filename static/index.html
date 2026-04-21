@@ -2124,6 +2124,34 @@ function App(){
     setAuthErr("");
   },[refCode,authLoading,user]);
 
+  // Pointer glow — soft radial dot that follows the cursor with easing, grows on
+  // interactive hover. Mirrors the reference design exactly (60px → 90px, .18 easing).
+  // Touch devices skip the listeners entirely (CSS also hides the element).
+  useEffect(()=>{
+    if(typeof window==="undefined")return;
+    const dot=document.getElementById("pa-cursor-dot");
+    if(!dot)return;
+    if(window.matchMedia&&window.matchMedia("(hover:none),(pointer:coarse)").matches)return;
+    const body=document.body;
+    let mx=window.innerWidth/2,my=window.innerHeight/2,cx=mx,cy=my,raf=0;
+    const onMove=e=>{mx=e.clientX;my=e.clientY;if(!body.classList.contains("pa-cursor-ready"))body.classList.add("pa-cursor-ready");};
+    const onLeave=()=>body.classList.add("pa-cursor-hidden");
+    const onEnter=()=>body.classList.remove("pa-cursor-hidden");
+    const loop=()=>{cx+=(mx-cx)*.18;cy+=(my-cy)*.18;dot.style.left=cx+"px";dot.style.top=cy+"px";raf=requestAnimationFrame(loop);};
+    const addHover=()=>body.classList.add("pa-cursor-hover");
+    const removeHover=()=>body.classList.remove("pa-cursor-hover");
+    // Event delegation so nodes added/removed later (modals, dropdowns) still trigger hover scaling.
+    const onOver=e=>{if(e.target.closest&&e.target.closest("a,button,[role=button],input,textarea,select,.wow-fcard,.wow-pcard,.wow-mcard,.wow-tpill"))addHover();};
+    const onOut=e=>{if(e.target.closest&&e.target.closest("a,button,[role=button],input,textarea,select,.wow-fcard,.wow-pcard,.wow-mcard,.wow-tpill"))removeHover();};
+    document.addEventListener("mousemove",onMove,{passive:true});
+    document.addEventListener("mouseleave",onLeave);
+    document.addEventListener("mouseenter",onEnter);
+    document.addEventListener("mouseover",onOver,{passive:true});
+    document.addEventListener("mouseout",onOut,{passive:true});
+    raf=requestAnimationFrame(loop);
+    return ()=>{cancelAnimationFrame(raf);document.removeEventListener("mousemove",onMove);document.removeEventListener("mouseleave",onLeave);document.removeEventListener("mouseenter",onEnter);document.removeEventListener("mouseover",onOver);document.removeEventListener("mouseout",onOut);body.classList.remove("pa-cursor-ready","pa-cursor-hover","pa-cursor-hidden");};
+  },[]);
+
   // Handle return from Stripe checkout
   useEffect(()=>{
     const params=new URLSearchParams(window.location.search);
@@ -2705,7 +2733,13 @@ function App(){
         .wow-sec{padding:60px 20px}
         .wow-cta{margin:0 16px 60px;padding:50px 24px}
       }
+      #pa-cursor-dot{position:fixed;top:0;left:0;width:60px;height:60px;border-radius:50%;background:radial-gradient(circle,${ac}1A 0%,transparent 70%);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .3s,height .3s,opacity .3s;will-change:left,top;opacity:0}
+      body.pa-cursor-ready #pa-cursor-dot{opacity:1}
+      body.pa-cursor-hover #pa-cursor-dot{width:90px;height:90px}
+      body.pa-cursor-hidden #pa-cursor-dot{opacity:0}
+      @media(hover:none),(pointer:coarse){#pa-cursor-dot{display:none}}
     `}</style>
+    <div id="pa-cursor-dot" aria-hidden="true"/>
     {/* TOP OFFER BANNER */}
     {(!user||!usage.is_paid)&&<div style={{position:"fixed",top:0,left:0,right:0,zIndex:1001,background:ac,color:"#fff",textAlign:"center",padding:"6px 16px",fontSize:12,fontWeight:500,letterSpacing:.2}}>
       {t("welcomeOffer")}
